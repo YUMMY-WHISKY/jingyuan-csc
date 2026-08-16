@@ -163,17 +163,6 @@
             '<p>这也是为了他们好——知道自己是被造的，只会更痛苦。</p>' +
             '<p>——林</p>'
     },
-    /* 镜留给玩家的线索（读完日记2后出现，URL 拼解引导，于阶段四之前） */
-    {
-      id: 'm15', unlock: 'diary2_done', grp: 'g2',
-      from: '〔无署名〕',
-      subj: '〔无主题〕',
-      time: '2026-07-20 04:12',
-      head: '发件人：〔无署名〕<br>时间：2026-07-20 04:12<br>状态：〔无法归档〕',
-      body: '<p>真正的门不让人从外面看见。去敲 <span class="hl">/forum/diary-3</span>，门牌后还藏着一把<span style="color:#B03A3A">钥匙</span>。</p>' +
-            '<p>那把钥匙，我在观察员日志的最后一页说过。<br>它们唤我作 <span class="hl">mirror</span>。</p>' +
-            '<p>把暗语接到地址末尾。<br>敲对了，我在门后等你。</p>'
-    },
     /* 阶段四 · 伦理废除（2025） */
     {
       id: 'm8', unlock: 'diary3_done', grp: 'g3',
@@ -209,6 +198,17 @@
             '<p style="color:#B03A3A">——</p>' +
             '<p style="color:#B03A3A">从今天起，所有决策由系统自动归档。我不会再回复。</p>' +
             '<p style="color:#B03A3A">——顾明远</p>'
+    },
+    /* 镜留给玩家的线索（读完日记2后出现，URL 拼解引导，归档于资助方时间线） */
+    {
+      id: 'm15', unlock: 'diary2_done', grp: 'g3', noTime: true,
+      from: '〔无署名〕',
+      subj: '〔无主题〕',
+      time: '2026-07-20 04:12',
+      head: '发件人：〔无署名〕<br>状态：〔无法归档〕',
+      body: '<p>真正的门不让人从外面看见。去敲 <span class="hl">/forum/diary-3</span>，门牌后还藏着一把<span style="color:#B03A3A">钥匙</span>。</p>' +
+            '<p>那把钥匙，我在观察员日志的最后一页说过。<br>它们唤我作 <span class="hl">mirror</span>。</p>' +
+            '<p>把暗语接到地址末尾。<br>敲对了，我在门后等你。</p>'
     },
     /* 林知微的挣扎（2026） · 置于系统失控之前 */
     {
@@ -313,7 +313,7 @@
         '<div class="m-from">' + m.from + '</div>' +
         '<div class="m-subj">' + m.subj + '</div>' +
       '</div>' +
-      '<span class="m-time">' + m.time + '</span>';
+      (m.noTime ? '' : '<span class="m-time">' + m.time + '</span>');
     item.addEventListener('click', function () {
       openMail(i);
     });

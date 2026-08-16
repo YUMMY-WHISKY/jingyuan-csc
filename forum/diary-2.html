@@ -192,8 +192,31 @@
 <script>window.pageGate('diary_unlocked');</script>
 <script src="../js/diary.js"></script>
 <script>
-/* 日记访问标记：读到第二层 → 档案深层（历史归档/V4/身份比对）解锁（2026-08-16） */
-try { localStorage.setItem('diary2_done', '1'); } catch (e) {}
+/* 日记访问标记：读到第二层 → 档案深层（历史归档/V4/身份比对）解锁（2026-08-16）
+   修改：不再在页面加载时设置，改为翻到最后一页（日志007 · 8/8）才标记 diary2_done，
+   确保 m15 邮件只有在玩家真正读完整本观察日志后才解锁，避免提前出现。 */
+(function () {
+  var dNum = document.getElementById('dNum');
+  if (!dNum) return;
+  var isLastText = function (t) {
+    var m = String(t || '').match(/(\d+)\s*\/\s*(\d+)/);
+    return m && m[1] === m[2] && parseInt(m[1], 10) > 0;
+  };
+  if (isLastText(dNum.textContent)) { try { localStorage.setItem('diary2_done', '1'); } catch (e) {} return; }
+  var lastDone = false;
+  var setDone = function () {
+    if (lastDone) return;
+    lastDone = true;
+    try { localStorage.setItem('diary2_done', '1'); } catch (e) {}
+  };
+  var obs = new MutationObserver(function () {
+    if (isLastText(dNum.textContent)) setDone();
+  });
+  obs.observe(dNum, { childList: true, characterData: true, subtree: true });
+  /* 兜底：点击"下一页"时同步检查（兼容极端浏览器 MutationObserver 不触发的情况） */
+  var next = document.getElementById('dNext');
+  if (next) next.addEventListener('click', function () { if (isLastText(dNum.textContent)) setDone(); });
+})();
 </script>
 
 <!-- 方案A · 回响 r6 弹窗：首次访问观察日志层 → 镜的恐怖系弹窗（无晃动，纯弹窗） -->
