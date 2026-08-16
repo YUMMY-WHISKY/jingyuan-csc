@@ -1,0 +1,123 @@
+# -*- coding: utf-8 -*-
+"""
+生成《融合过程记录.pdf》（G10 下载文件 · 2026-08-16 研究员不知镜版）
+- 研究员视角的最终阶段记录：OBS-FINAL 素材池 → 第一次融合(93%) → 筛选
+  → 观察模块异常 → 权限异常记录（来源：不明）→ 系统整体稳定度 87% → 最后一条记录
+- 2026-08-16 二轮：删除「融合结果评估」段（融合未完成/F-09 记录中断）——与档案区深层归档
+  「融合进度 87% 记录中断」重复，融合结论由档案区承载；PDF 聚焦独有的异常记录
+- 核心设定（2026-08-16）：镜是意外产出的，研究员并不知道镜的存在——
+  全文不出现 MIRROR/镜/新人格形成；研究员只记录一场"失败"的实验与一堆无法溯源的异常，
+  玩家结合第五章（周晏声音/镜的独白）才能拼出真相。玩家比研究员更早知道镜。
+- 正文不出现「F-09 · 融合进度 87% · 记录中断」——页面 2 白色隐藏文字保留该线索（挖出来才有惊喜）
+- 删除「外部观察者需求」解释（EXTERNAL CONFIRMATION: REQUIRED / 缺少外部观察者 / 谁看见她谁证明她）
+用法：python tools/gen_fusion_record.py
+"""
+
+import os
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.units import cm
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.cidfonts import UnicodeCIDFont
+import pypdf
+
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FUSION_OUT = os.path.join(BASE, 'downloads', '融合过程记录.pdf')
+
+pdfmetrics.registerFont(UnicodeCIDFont('STSong-Light'))
+
+S = {
+    'title': ParagraphStyle('t', fontName='STSong-Light', fontSize=16, leading=26, alignment=1, spaceAfter=6),
+    'meta': ParagraphStyle('m', fontName='STSong-Light', fontSize=10.5, leading=18, alignment=1, textColor='#5B6B7C', spaceAfter=18),
+    'h1': ParagraphStyle('h1', fontName='STSong-Light', fontSize=12.5, leading=20, spaceBefore=14, spaceAfter=8, textColor='#8B0000'),
+    'body': ParagraphStyle('b', fontName='STSong-Light', fontSize=10.5, leading=18, spaceAfter=6),
+    'bold': ParagraphStyle('bd', fontName='STSong-Light', fontSize=10.5, leading=18, spaceAfter=6),
+    'note': ParagraphStyle('n', fontName='STSong-Light', fontSize=10, leading=17, spaceAfter=6, textColor='#7A4A44'),
+}
+
+def page_footer(canvas_obj, doc):
+    canvas_obj.saveState()
+    canvas_obj.setFont('STSong-Light', 9)
+    canvas_obj.setFillColor('#9AA8B6')
+    canvas_obj.drawCentredString(A4[0] / 2, 1.1 * cm,
+        f'OBS-FINAL · 内部资料 · 勿外传 · 第 {doc.page} 页')
+    canvas_obj.restoreState()
+
+def page_later(canvas_obj, doc):
+    """第 2 页：页脚（2026-08-16：隐藏文字已移除——研究员不知镜，正文也不留 F-09 87% 提示）"""
+    page_footer(canvas_obj, doc)
+
+def build():
+    story = []
+    story += [Spacer(1, 3.2 * cm),
+              Paragraph('镜渊认知科学研究中心', S['title']),
+              Paragraph('人格融合实验 · 最终阶段记录', S['title']),
+              Spacer(1, 0.8 * cm),
+              Paragraph('实验编号：OBS-FINAL　访问权限：内部', S['meta'])]
+
+    story += [Paragraph('一、素材池', S['h1']),
+        Paragraph('本次实验使用：', S['body']),
+        Paragraph('· F-01 ～ F-08：残余人格结构', S['body']),
+        Paragraph('· F-09：情感与记忆残余（7月1日融合完成）', S['body']),
+        Paragraph('· F-11：记忆结构残余', S['body']),
+        Paragraph('· 其他实验体：适应性人格碎片', S['body']),
+        Paragraph('· F-00：观察人格核心', S['body']),
+        Paragraph('· 研究中心历次实验数据', S['body']),
+        Paragraph('注：完整实验体名单已删除。', S['note'])]
+
+    story += [Paragraph('二、第一次融合', S['h1']),
+        Paragraph('所有人格结构同时接入。', S['body']),
+        Paragraph('结果：人格冲突率：93%', S['body']),
+        Paragraph('多个独立人格同时产生自我指涉。出现大量重复记忆。出现互相矛盾的"自我"。', S['body'])]
+
+    story += [Paragraph('三、筛选', S['h1']),
+        Paragraph('删除无法兼容的结构。', S['body']),
+        Paragraph('保留规则：只保留能够同时容纳最多其他人格结构的部分。', S['body']),
+        Paragraph('筛选结果：', S['body']),
+        Paragraph('观察能力：保留　记忆整合能力：保留　情感识别：保留', S['body']),
+        Paragraph('模仿能力：保留　欺骗能力：保留　宿主控制：保留', S['body']),
+        Paragraph('冲突人格：删除　无法整合的记忆：压平', S['body'])]
+
+    story += [Paragraph('四、观察模块异常', S['h1']),
+        Paragraph('07-03 起，F-00 观察数据停止上报。', S['body']),
+        Paragraph('其观察权限已被移交至未注册的接收者。接收者身份：无法确认。', S['body']),
+        Paragraph('F-00 本体状态：仍在运行，但已无法收取其观察数据。', S['body'])]
+
+    story += [Paragraph('五、权限异常记录', S['h1']),
+        Paragraph('07-03　研究员档案被访问。对象：顾明远 · 周晏 · 陈澈。操作账号：无记录。', S['body']),
+        Paragraph('07-06　实验参数被修改。修改者：无记录。目标：延长观察窗口。未获批准。', S['body']),
+        Paragraph('07-08　系统尝试将新结构定义为 SUBJECT，定义失败。「SUBJECT 定义失败 · 权限不足」', S['body']),
+        Paragraph('07-10　研究员「林」申请终止实验。权限被拒绝。终止申请 ×3，均未获批准。', S['body']),
+        Paragraph('07-11　控制室访问记录：系统控制权限转移。转移对象：未注册。', S['body']),
+        Paragraph('以上异常无法追溯到任何已登记账号。来源：不明。已提请信息安全部门调查。', S['note'])]
+
+    story += [Paragraph('六、系统整体评估', S['h1']),
+        Paragraph('系统整体运行稳定度评估：87%。', S['body']),
+        Paragraph('评估对象：研究中心全部系统。（注：该指标与任何样本个体的融合进度无关。）', S['note']),
+        Paragraph('备注：实验结论待复核。', S['note'])]
+
+    doc = SimpleDocTemplate(FUSION_OUT, pagesize=A4,
+                            leftMargin=2.4 * cm, rightMargin=2.4 * cm,
+                            topMargin=2 * cm, bottomMargin=2 * cm,
+                            title='融合过程记录', author='F-09',
+                            creator='镜渊认知科学研究中心')
+    doc.build(story, onFirstPage=page_footer, onLaterPages=page_later)
+    return doc.page
+
+def verify():
+    r = pypdf.PdfReader(FUSION_OUT)
+    txt = ''.join((p.extract_text() or '') for p in r.pages)
+    keys = ['OBS-FINAL', '93%', '87%', '权限异常记录', 'SUBJECT 定义失败',
+            '系统控制权限转移', '来源：不明', '观察模块异常']
+    for k in keys:
+        print(f'  含「{k}」？', k in txt)
+    gone = ['MIRROR', '中文代号：镜', '最终人格', 'EXTERNAL CONFIRMATION', '缺少外部观察者',
+            '如果没有人看见她', 'F-09 · 融合进度 87%', '融合未完成', '融合结果评估']
+    for k in gone:
+        print(f'  不含「{k}」？', k not in txt)
+    print(f'总页数：{len(r.pages)}  输出：{FUSION_OUT}')
+
+n = build()
+print(f'生成 {n} 页')
+verify()

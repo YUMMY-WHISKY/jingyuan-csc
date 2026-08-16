@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>病友档案 - 治疗者论坛</title>
+<link rel="icon" href="../img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header class="f-top">
+  <div class="container">
+    <a class="f-logo" href="index.html"><img src="../img/logo.svg" alt="">治疗者论坛</a>
+    <nav>
+      <ul class="f-nav">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="posts.html">全部帖子</a></li>
+        <li><a href="archive.html" class="active">病友档案</a></li>
+        <li><a href="pm.html">私信</a></li>
+      </ul>
+    </nav>
+    <span class="f-online"><span class="online-dot"></span><span id="fCountTop">—</span> 人在线</span>
+  </div>
+</header>
+
+<div class="page-head">
+  <div class="container">
+    <p class="breadcrumb"><a href="index.html">论坛首页</a> / 病友档案</p>
+    <h1>病友档案</h1>
+    <p>本页面用于查询病友的基本信息与住院状态。档案信息由本人或家属提供，如有出入请与管理员联系更新。</p>
+  </div>
+</div>
+
+<main>
+  <div class="container">
+    <div class="arc-lock" id="arcLock">
+      <p class="arc-lock-title">🔒 档案区已启用访问密码</p>
+      <p class="arc-lock-sub">本区域仅供内部工作人员查询。<br>请输入访问密码以继续。</p>
+      <div class="arc-lock-row">
+        <input type="password" id="arcPwd" placeholder="请输入访问密码" autocomplete="off">
+        <button onclick="arcUnlock()">进入</button>
+      </div>
+      <p class="arc-lock-err" id="arcErr" style="display:none">访问密码不正确。</p>
+    </div>
+    <div class="f-wrap" id="arcList">
+      <div class="f-card">
+        <div class="f-post">
+          <span class="f-avatar" style="background:#FBF3E4;color:#B98A3E">F</span>
+          <div class="f-body">
+            <p class="f-author">小F <span class="badge pat">病友</span> <span style="font-size:12px;color:#9AA8B6">已出院</span></p>
+            <p class="f-title"><a href="archive-09.html">小F · 档案</a></p>
+            <p class="f-snippet">喜欢画画。梦想是养一只眼睛一大一小的猫。</p>
+            <p class="f-meta"><span>入组时间：2025-12</span><span>最近更新：2026-07-01</span></p>
+            <p style="font-size:12px;margin-top:4px;display:none" id="idLink"><a href="identity.html" style="color:#5B7FA6">身份比对 · 档案差异核对工具 →</a></p>
+          </div>
+        </div>
+
+        <div class="f-post">
+          <span class="f-avatar" style="background:#FBEDF0;color:#C97A8B">暖</span>
+          <div class="f-body">
+            <p class="f-author">暖阳 <span class="badge pat">病友</span> <span style="font-size:12px;color:#9AA8B6">康复中</span></p>
+            <p class="f-title">暖阳 · 档案</p>
+            <p class="f-snippet">2026-04 入组。正在逐步恢复中，常在论坛分享康复心得。</p>
+            <p class="f-meta"><span>入组时间：2026-04</span><span>最近更新：2026-06-08</span></p>
+          </div>
+        </div>
+
+        <div class="f-post">
+          <span class="f-avatar" style="background:#E8F5EE;color:#5F9E74">猫</span>
+          <div class="f-body">
+            <p class="f-author">一只画画的猫 <span class="badge pat">病友</span> <span style="font-size:12px;color:#9AA8B6">住院中</span></p>
+            <p class="f-title">一只画画的猫 · 档案</p>
+            <p class="f-snippet">2026-02 入组。组里发起过画画小组，欢迎大家加入。</p>
+            <p class="f-meta"><span>入组时间：2026-02</span><span>最近更新：2026-05-30</span></p>
+          </div>
+        </div>
+
+        <div class="f-post">
+          <span class="f-avatar" style="background:#EEF2F6;color:#7E93A8">慢</span>
+          <div class="f-body">
+            <p class="f-author">慢慢走 <span class="badge pat">病友</span> <span style="font-size:12px;color:#9AA8B6">已出院</span></p>
+            <p class="f-title">慢慢走 · 档案</p>
+            <p class="f-snippet">2025-11 入组，2026-05 出院。出院后仍常回来看看。</p>
+            <p class="f-meta"><span>入组时间：2025-11</span><span>最近更新：2026-05-12</span></p>
+          </div>
+        </div>
+
+        <div class="f-post f-dead">
+          <span class="f-avatar" style="background:#EEF2F6;color:#9AA8B6">已</span>
+          <div class="f-body">
+            <p class="f-author">用户#8849 <span class="g3-tag" style="font-size:11px;color:#9AA8B6;border:1px solid #C9D8E8;border-radius:4px;padding:0 6px">已注销</span></p>
+            <p class="f-title">（账号已注销 · 档案已封存）</p>
+            <p class="f-snippet">该账号信息已按要求注销，档案封存备查。</p>
+            <p class="f-meta"><span>注销时间：2026-05-02</span></p>
+          </div>
+        </div>
+
+        <h3 style="margin:26px 0 4px 28px;font-size:15px;color:var(--text-sub)">已出院 / 已转院（历史）</h3>
+
+        <div class="f-post">
+          <span class="f-avatar" style="background:#F3F0EA;color:#9A8B6E">苏</span>
+          <div class="f-body">
+            <p class="f-author">苏女士 <span class="badge pat">病友</span> <span style="font-size:12px;color:#9AA8B6">已转院</span></p>
+            <p class="f-title">苏女士 · 档案</p>
+            <p class="f-snippet">早期入组，恢复良好，转院后未再联系。</p>
+            <p class="f-meta"><span>入组时间：第一年</span></p>
+          </div>
+        </div>
+
+        <div class="f-post">
+          <span class="f-avatar" style="background:#F3F0EA;color:#9A8B6E">何</span>
+          <div class="f-body">
+            <p class="f-author">何女士 <span class="badge pat">病友</span> <span style="font-size:12px;color:#9AA8B6">已出院</span></p>
+            <p class="f-title">何女士 · 档案</p>
+            <p class="f-snippet">早期入组，恢复良好，康复出院。</p>
+            <p class="f-meta"><span>入组时间：第一年</span></p>
+          </div>
+        </div>
+
+        <div class="f-post">
+          <span class="f-avatar" style="background:#F3F0EA;color:#9A8B6E">陈</span>
+          <div class="f-body">
+            <p class="f-author">陈女士 <span class="badge pat">病友</span> <span style="font-size:12px;color:#9AA8B6">已出院</span></p>
+            <p class="f-title">陈女士 · 档案</p>
+            <p class="f-snippet">早期入组，恢复良好，康复出院。</p>
+            <p class="f-meta"><span>入组时间：第一年</span></p>
+          </div>
+        </div>
+
+        <div class="f-post">
+          <span class="f-avatar" style="background:#F3F0EA;color:#9A8B6E">郑</span>
+          <div class="f-body">
+            <p class="f-author">郑女士 <span class="badge pat">病友</span> <span style="font-size:12px;color:#9AA8B6">已转院</span></p>
+            <p class="f-title">郑女士 · 档案</p>
+            <p class="f-snippet">早期入组，恢复良好，转院后未再联系。</p>
+            <p class="f-meta"><span>入组时间：第二年</span></p>
+          </div>
+        </div>
+
+        <div class="f-post">
+          <span class="f-avatar" style="background:#F3F0EA;color:#9A8B6E">叶</span>
+          <div class="f-body">
+            <p class="f-author">叶女士 <span class="badge pat">病友</span> <span style="font-size:12px;color:#9AA8B6">已出院</span></p>
+            <p class="f-title">叶女士 · 档案</p>
+            <p class="f-snippet">早期入组，恢复良好，康复出院。</p>
+            <p class="f-meta"><span>入组时间：第二年</span></p>
+          </div>
+        </div>
+
+        <div class="f-post">
+          <span class="f-avatar" style="background:#F3F0EA;color:#9A8B6E">吴</span>
+          <div class="f-body">
+            <p class="f-author">吴女士 <span class="badge pat">病友</span> <span style="font-size:12px;color:#9AA8B6">已转院</span></p>
+            <p class="f-title">吴女士 · 档案</p>
+            <p class="f-snippet">早期入组，恢复良好，转院后未再联系。</p>
+            <p class="f-meta"><span>入组时间：第二年</span></p>
+          </div>
+        </div>
+
+        <div class="f-post">
+          <span class="f-avatar" style="background:#F3F0EA;color:#9A8B6E">罗</span>
+          <div class="f-body">
+            <p class="f-author">罗女士 <span class="badge pat">病友</span> <span style="font-size:12px;color:#9AA8B6">已出院</span></p>
+            <p class="f-title">罗女士 · 档案</p>
+            <p class="f-snippet">早期入组，恢复良好，康复出院。</p>
+            <p class="f-meta"><span>入组时间：第二年</span></p>
+          </div>
+        </div>
+
+        <div class="f-post f-dead f-locked">
+          <span class="f-avatar" style="background:#EEF2F6;color:#9AA8B6"></span>
+          <div class="f-body">
+            <p class="f-author">不详 <span style="font-size:12px;color:#9AA8B6">已封存</span></p>
+            <p class="f-title"><a href="archive-07.html">不详 · 档案已封存</a></p>
+            <p class="f-snippet">本档案已封存。原因：保密</p>
+            <p class="f-meta"><span>入院：第一年</span><span>出院：转院</span></p>
+          </div>
+        </div>
+
+        <div class="f-post f-dead">
+          <span class="f-avatar" style="background:#EEF2F6;color:#9AA8B6">?</span>
+          <div class="f-body">
+            <p class="f-author"><span class="redact">林</span>（墨迹涂掉） <span style="font-size:12px;color:#9AA8B6">失联</span></p>
+            <p class="f-title"><a href="archive-unknown.html">归档待核</a></p>
+            <p class="f-snippet">3月3日入院。状态：在院 → 失联（最后记录 2026-07-20）。</p>
+            <p class="f-meta"><span>入组时间：2026-03-03</span></p>
+          </div>
+        </div>
+
+        <div id="deepArchive" class="arc-deep" style="display:none;margin-top:22px">
+          <p class="arc-title">融合进度 · 编号归档（与公开档案不一致，仅供内部核对）</p>
+          <p>F-01 ｜ 苏女士 ｜ 出院原因：<span class="res-fail">终止 · 原因未注明</span></p>
+          <p>F-02 ｜ 何女士 ｜ 出院原因：<span class="res-fail">终止 · 原因未注明</span></p>
+          <p>F-03 ｜ 陈女士 ｜ 出院原因：<span class="res-fail">终止 · 原因未注明</span></p>
+          <p>F-04 ｜ 郑女士 ｜ 出院原因：<span class="res-fail">终止 · 原因未注明</span></p>
+          <p>F-05 ｜ 叶女士 ｜ 出院原因：<span class="res-fail">终止 · 原因未注明</span></p>
+          <p>F-06 ｜ 吴女士 ｜ 出院原因：<span class="res-fail">终止 · 原因未注明</span></p>
+          <p>F-07 ｜ （档案封存）｜ 出院原因：<span class="res-gone">人格消散</span> <span class="arc-hand-red">（手写笔迹，与其余不同）</span></p>
+          <p>F-08 ｜ 罗女士 ｜ 出院原因：<span class="res-fail">终止 · 原因未注明</span></p>
+          <p>F-09 ｜ 小F（档案见上 · 多版本）｜ 融合进度：87% —— <span class="arc-hand-brown">记录中断（最后记录：6月29日，手写批注）</span></p>
+          <p>── 另有未编号归档 ×4，档案未开放 ──</p>
+          <p>（无名氏档案：3月3日入院 · 失联 —— 编号未公开）</p>
+          <p class="arc-hint">※ 此归档与公开档案存在差异，请勿外传。如有疑问请联系管理员。</p>
+        </div>
+
+        <button id="arcBtn" class="arc-btn" onclick="toggleArchive()" style="display:none">历史归档</button>
+
+        <div style="margin:6px 0 0 28px;font-size:13px;display:none" id="proposalLink">
+          <a href="original_proposal.html" style="color:#8B0000">→ 早期文件归档</a>
+          <span style="color:#C8BFAC">｜</span>
+          <a href="sample-guide.html" style="color:#8B0000">→ 内部文档 · 样本管理规范</a>
+        </div>
+      </div>
+
+      <aside class="f-side">
+        <div class="f-card">
+          <h4>在线状态</h4>
+          <p style="font-size:13px;color:var(--text-sub)"><span class="online-dot"></span> 当前在线：<b id="fCountSide" style="color:var(--accent)">—</b> 人</p>
+        </div>
+        <div class="f-card">
+          <h4>档案说明</h4>
+          <p style="font-size:13px;color:var(--text-sub);line-height:1.9">档案仅供内部工作人员查询，请勿外传。如您的档案信息有误，请联系林医生或论坛管理员。</p>
+        </div>
+        <div class="f-card" id="toolsCard" style="display:none">
+          <h4>常用工具</h4>
+          <p style="font-size:13px;line-height:2.2">
+            <a href="borrow-log.html" style="color:var(--accent)">档案借阅登记簿 →</a><br>
+            <a href="../mail.html" style="color:var(--accent)">内部邮箱 /mail →</a>
+          </p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2026 治疗者论坛 · 镜渊认知科学研究中心内部社区</span>
+      <span class="forum-entry"><a href="../index.html">返回研究中心官网</a></span>
+    </div>
+  </div>
+</footer>
+
+<button id="backTop" title="返回顶部">↑</button>
+<script src="../js/common.js"></script>
+<script src="../js/forum.js"></script>
+<script>
+/* 档案区访问密码（2026-08-16）：密码=论坛成立日 1220（提示见暖阳帖《今天的档案区好像进不去了》）
+   调试入口：?arc=1 直接解锁；错误提示中性，不引导找出处 */
+(function () {
+  var q = new URLSearchParams(location.search);
+  if (q.get('arc') === '1') { try { localStorage.setItem('archive_unlocked', '1'); } catch (e) {} }
+  var unlocked = false;
+  try { unlocked = localStorage.getItem('archive_unlocked') === '1'; } catch (e) {}
+  var lock = document.getElementById('arcLock');
+  var list = document.getElementById('arcList');
+  if (lock && list) {
+    lock.style.display = unlocked ? 'none' : 'block';
+    list.style.display = unlocked ? '' : 'none';
+  }
+})();
+
+function arcUnlock() {
+  var v = (document.getElementById('arcPwd').value || '').replace(/\D/g, '');
+  if (v === '1220' || v === '20251220') {
+    try { localStorage.setItem('archive_unlocked', '1'); } catch (e) {}
+    document.getElementById('arcLock').style.display = 'none';
+    document.getElementById('arcList').style.display = '';
+  } else {
+    document.getElementById('arcErr').style.display = 'block';
+  }
+}
+
+/* G5 门控（T2.3 进度锁模拟）：读完日记第一层（diary_unlocked，调试 ?g5=1）后，历史归档入口才出现
+   2026-08-16 十八轮：从 diary2_done 改回 diary_unlocked（用户：历史归档放日记一后面解锁） */
+(function () {
+  var q = new URLSearchParams(location.search);
+  if (q.get('g5') === '1') { try { localStorage.setItem('diary_unlocked', '1'); } catch (e) {} }
+  var unlocked = false;
+  try { unlocked = localStorage.getItem('diary_unlocked') === '1'; } catch (e) {}
+  var b = document.getElementById('arcBtn');
+  if (b) b.style.display = unlocked ? 'block' : 'none';
+})();
+
+/* 支线门控（2026-08-16）：所有支线——身份比对（A）、早期文件归档（E）、样本规范（F）、
+   借阅登记簿（G）、内部邮箱入口——统一在读完第三层日记（diary3_done，调试 ?d3=1）后开放 */
+(function () {
+  var q = new URLSearchParams(location.search);
+  if (q.get('d3') === '1') { try { localStorage.setItem('diary3_done', '1'); } catch (e) {} }
+  var deep = false;
+  try { deep = localStorage.getItem('diary3_done') === '1'; } catch (e) {}
+  var idLink = document.getElementById('idLink');
+  if (idLink) idLink.style.display = deep ? '' : 'none';
+  var pl = document.getElementById('proposalLink');
+  if (pl) pl.style.display = deep ? '' : 'none';
+  var tc = document.getElementById('toolsCard');
+  if (tc) tc.style.display = deep ? '' : 'none';
+})();
+
+function toggleArchive() {
+  var d = document.getElementById('deepArchive');
+  var b = document.getElementById('arcBtn');
+  var on = d.style.display !== 'block';
+  d.style.display = on ? 'block' : 'none';
+  b.textContent = on ? '返回公开档案' : '历史归档';
+}
+</script>
+</body>
+</html>

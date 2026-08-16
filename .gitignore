@@ -1,0 +1,10 @@
+prototype/
+content/
+design.md
+tasks.md
+*.docx
+ui_reference.png
+you find me*
+.site/
+docs/
+serve.py

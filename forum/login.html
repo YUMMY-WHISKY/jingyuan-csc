@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>治疗者论坛 - 登录</title>
+<link rel="icon" href="../img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header class="f-top">
+  <div class="container">
+    <a class="f-logo" href="login.html"><img src="../img/logo.svg" alt="">治疗者论坛</a>
+    <span class="f-online"><span class="online-dot"></span><span id="fCountTop">—</span> 人在线</span>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <div class="login-card">
+      <div class="f-avatar">疗</div>
+      <h2>治疗者论坛</h2>
+      <p class="sub">镜渊认知科学研究中心内部交流社区<br>新朋友请凭邀请码进入</p>
+      <input id="inviteCode" type="text" maxlength="8" placeholder="请输入邀请码" autocomplete="off">
+      <button class="btn" onclick="loginTry()">进入论坛</button>
+      <p class="login-hint" id="loginHint"></p>
+    </div>
+  </div>
+</main>
+
+<script src="../js/common.js"></script>
+<script src="../js/forum.js"></script>
+</body>
+</html>

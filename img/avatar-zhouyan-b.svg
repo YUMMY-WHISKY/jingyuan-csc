@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- 周晏 · 版本B（戴眼镜）｜占位图：正式版换 AI 生成照片 -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E8F0FA"/><stop offset="1" stop-color="#B9D4EE"/>
+    </linearGradient>
+  </defs>
+  <circle cx="60" cy="60" r="59" fill="url(#bg)"/>
+  <circle cx="60" cy="46" r="22" fill="#F2E5D5"/>
+  <path d="M30 62 Q30 28 60 26 Q90 28 90 62 L90 66 Q60 40 30 66 Z" fill="#6B5B4F"/>
+  <!-- 眼镜 -->
+  <circle cx="48" cy="49" r="10" fill="none" stroke="#4A6A8A" stroke-width="2.6"/>
+  <circle cx="72" cy="49" r="10" fill="none" stroke="#4A6A8A" stroke-width="2.6"/>
+  <path d="M58 49 H62" stroke="#4A6A8A" stroke-width="2.6"/>
+  <path d="M38.5 47 L33 43" stroke="#4A6A8A" stroke-width="2.6"/>
+  <path d="M81.5 47 L87 43" stroke="#4A6A8A" stroke-width="2.6"/>
+  <path d="M52 60 Q60 66 68 60" stroke="#C98A7B" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M52 46 Q60 50 68 46" stroke="#C98A7B" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".7"/>
+</svg>

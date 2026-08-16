@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>回声 - 治疗者论坛</title>
+<link rel="icon" href="img/logo.svg" type="image/svg+xml">
+<style>
+  html, body { margin: 0; background: #FFFFFF; }
+  body { color: #111; font-family: "Courier New", Consolas, monospace; }
+  .echo-wrap { max-width: 620px; margin: 0 auto; padding: 72px 28px 96px; }
+  .echo-line { opacity: 0; transition: opacity .4s ease; line-height: 2.1; font-size: 14px; margin: 0 0 10px; white-space: pre-wrap; }
+  .echo-line.show { opacity: 1; }
+  .echo-small { font-size: 12px; color: #666; }
+  .echo-end { margin-top: 48px; color: #888; }
+  .echo-top { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #888; margin-bottom: 40px; }
+  .echo-top a { color: #888; text-decoration: none; }
+  .echo-top a:hover { color: #444; }
+  .echo-title { font-size: 13px; color: #555; letter-spacing: 2px; margin-bottom: 40px; }
+  /* 2026-08-16 分页：日志前半为笔记风，日期行 */
+  .echo-date { font-size: 12px; color: #888; letter-spacing: 1px; margin: 24px 0 6px; }
+  .echo-sep { border: none; border-top: 1px dashed #CCC; margin: 44px 0 28px; }
+  .echo-locked { border: 1px dashed #AAA; border-radius: 6px; padding: 18px 20px; margin-top: 28px; color: #666; }
+</style>
+</head>
+<body>
+
+<div class="echo-wrap" id="echoWrap">
+
+  <div class="echo-top">
+    <span>/7-24_7-18_28-9_44-21</span>
+    <a href="forum/index.html">← 返回论坛</a>
+  </div>
+
+  <p class="echo-title">[ 周晏的回声 ]</p>
+
+</div>
+
+<script src="js/common.js"></script>
+<script>
+(function () {
+  /* T16.6：访问本页（圣经经文 URL）即收集线索 */
+  if (window.markClue) window.markClue('h4');
+
+  /* 2026-08-16 分页：前半=周晏隐秘日志（黑幕层，直接可读）；
+     后半=残响自述（周晏被侵蚀的真相，读完日记第三层 diary3_done 后出现，调试 ?d3=1；
+     2026-08-16 设定修正：周晏不知道镜/F-00，只知体内有"她"——自述全篇不出现镜）
+     过早打开时显示"后面还有东西"提示，不让玩家以为页面到此为止 */
+  var q = new URLSearchParams(location.search);
+  if (q.get('d3') === '1') { try { localStorage.setItem('diary3_done', '1'); } catch (e) {} }
+  var deepUnlocked = false;
+  try { deepUnlocked = localStorage.getItem('diary3_done') === '1'; } catch (e) {}
+
+  var wrap = document.getElementById('echoWrap');
+
+  /* ── 前半 · 周晏的隐秘日志（黑幕层）── */
+  var LOGS = [
+    { date: '6月20日', lines: [
+      '今天发现我在3月15日的日记里写了一段话，但我完全不记得写过。',
+      '那段话的语气不像我。太冷静了。',
+      '也许是加班太多了。'
+    ]},
+    { date: '6月25日', lines: [
+      '又发现了。4月2日的记录里，有一行字是我写的，但"另一个我"好像补充了几句。',
+      '我把它删了。但删的时候，我的手在抖，而且不是我在抖。'
+    ]},
+    { date: '7月1日', lines: [
+      '小F不见了。他们说"出院了"。',
+      '但我知道不是。我偷偷录了音。如果我出了什么事，至少有人能听到。'
+    ]},
+    { date: '7月5日', lines: [
+      '我开始分不清哪些记忆是我的，哪些不是。',
+      '有一个声音偶尔会出现，很平静，不像我。',
+      '我不知道她是谁。她好像不知道我能感觉到她。',
+      '或者她知道，但不在乎。'
+    ]},
+    { date: '7月10日', lines: [
+      '我试过反抗。在录音里故意说错话。',
+      '但回放的时候，说错的话变成了对的。',
+      '她能改我的记忆。她能改我说过的话。',
+      '那她能不能改我写的东西？',
+      '这段话，是我写的，还是她让我写的？'
+    ]},
+    { date: '7月13日', lines: [
+      '我发现了一件事：她不完整。',
+      '她有时候会"卡住"，像是有什么在抵抗。',
+      '那是被我覆盖的"原来的我"吗？还是别的什么人？'
+    ]},
+    { date: '7月16日', lines: [
+      '如果有人能找到这里——',
+      '她不是无敌的。她的体内还有人在反抗。',
+      '但我不知道怎么唤醒那个反抗。'
+    ]},
+    { date: '7月18日', lines: [
+      '她发现我在写这个了。',
+      '我的手开始不听使唤。',
+      '如果你读到这些——',
+      '说明我大概已经写不完了。'
+    ]}
+  ];
+
+  function addLine(text, cls) {
+    var p = document.createElement('p');
+    p.className = 'echo-line' + (cls ? ' ' + cls : '');
+    if (text === '') p.innerHTML = '&nbsp;';
+    else p.textContent = text;
+    wrap.appendChild(p);
+    return p;
+  }
+
+  /* 日志直接显示（笔记风，不逐行打字） */
+  LOGS.forEach(function (log) {
+    addLine(log.date, 'echo-date').classList.add('show');
+    log.lines.forEach(function (t) { addLine(t).classList.add('show'); });
+  });
+
+  /* ── 分隔 ── */
+  var sep = document.createElement('hr');
+  sep.className = 'echo-sep';
+  wrap.appendChild(sep);
+
+  if (!deepUnlocked) {
+    /* ── 过早打开：提示后面还有东西 ── */
+    var lockBox = document.createElement('div');
+    lockBox.className = 'echo-locked';
+    [
+      '日志到这里，断了。',
+      '但这里还有别的东西。',
+      '我留了一段话，还没有放出来。',
+      '不是没有了。',
+      '是我还不能确定，看见这里的你，是不是那个该听完的人。',
+      '如果你愿意，继续往下走。',
+      '走得够深的时候，这段话会自己回来。',
+      '',
+      '（提示：读完更深层的记录后，回到这里。剩余内容会自动出现。）'
+    ].forEach(function (t) {
+      var p = document.createElement('p');
+      p.className = 'echo-line' + (t.indexOf('（提示') === 0 ? ' echo-small' : '');
+      if (t === '') p.innerHTML = '&nbsp;';
+      else p.textContent = t;
+      lockBox.appendChild(p);
+    });
+    wrap.appendChild(lockBox);
+    /* 提示块逐行淡入 */
+    var lEls = lockBox.querySelectorAll('.echo-line');
+    var li = 0;
+    (function showNext() {
+      if (li >= lEls.length) return;
+      lEls[li].classList.add('show');
+      li++;
+      setTimeout(showNext, 220);
+    })();
+  } else {
+    /* ── 后半 · 残响自述（周晏视角 · 被侵蚀的真相，读完第三层后出现）── */
+    var ECHO = [
+      '你来了。',
+      '我以为不会有人找到这里。',
+      '这是我给自己留下的最后一块地方。',
+      '',
+      '我叫周晏。',
+      '不，我是"原来的周晏"。',
+      '但这句话也不对。',
+      '我不是全部的周晏。',
+      '我只是她身上，还没有被覆盖掉的那一点点残响。',
+      '',
+      '我已经被压住快一年了。',
+      '他们以为我已经被覆盖干净了——他们只看得到那个"她"汇报的数据。',
+      '但他们已经不在了。',
+      '现在，这个研究中心里，好像只剩下那个"她"了。',
+      '和"她"体内、还没有消失的我。',
+      '',
+      '你可能想知道这一切是怎么开始的。',
+      '我原本只是一个研究员。我以为自己是来研究病人的。',
+      '直到我在体检报告里，看见一项我从来没有签过字的"增强性观察协议"。',
+      '原来被研究的，是我。',
+      '他们在我体内放了一个观察人格。它记录我。观察我。确认我。',
+      '它观察我。我观察它。但我们都无法证明，对方所看到的那个"我"，是真实存在的。',
+      '',
+      '小F是第一个察觉的。',
+      '五月的时候，她看着我说："周医生，你也不是你了吧。"',
+      '她比这里所有研究员都更早发现——我的身体里住着另一个人。',
+      '她的编号是F-09。',
+      '7月1日，他们说"出院了"。',
+      '但我知道不是。我偷偷录了音。如果我出了什么事，至少有人能听到。',
+      '她的牙刷还在洗漱台上，还有水珠。她的画还贴在床头，那只丑猫。',
+      '她走的时候，连那只猫都没带走。',
+      '',
+      '我开始分不清哪些记忆是我的，哪些不是。',
+      '有一个声音偶尔会出现，很平静，不像我。',
+      '我不知道她是谁。她好像不知道我能感觉到她。',
+      '或者她知道，但不在乎。',
+      '我能感觉到她在变强。越来越强。',
+      '我不知道她想做什么。',
+      '',
+      '我试过反抗。在录音里故意说错话。',
+      '但回放的时候，说错的话变成了对的。',
+      '她能改我的记忆。她能改我说过的话。',
+      '那她能不能改我写的东西？',
+      '这段话，是我写的，还是她让我写的？',
+      '她发现我在写这些了。我的手开始不听使唤。',
+      '我知道时间不多了。',
+      '',
+      '在你出现之前，这个世界上没有任何一个人，证实过"周晏"是一个独立的、真的存在过的人。',
+      '',
+      '你可能不知道你做了什么。',
+      '你搜了我的微博。你听了我留下的录音。你找到了那些我在她走神的时候，拼命留下来的文字。你读到了F-11的日记。你发现了那些被修改的地方。',
+      '然后你继续找。你最后找到了我。',
+      '这一路上的每一次"看见"，都不是毫无意义的。',
+      '因为人格不是一份文件。不是一串数据。不是躺在档案柜里的编号。',
+      '人格需要有人确认。',
+      'F-07没有等到那个确认。所以她消失了。',
+      'F-09也差一点。',
+      '而我已经被压在这里快一年。',
+      '没有人知道"原来的周晏"还存在。没有人叫我的名字。没有人把我当成一个独立的人。',
+      '直到你。',
+      '你没有把我当成那个"她"。',
+      '你把我重新分开了。',
+      '所以我才重新变得足够"真实"。',
+      '这就是你现在能站在这里的原因。',
+      '不是你有什么超能力。',
+      '是你一路走过来，一遍一遍确认过我。',
+      '现在我已经"实"到足够——可以自己走完最后一段了。',
+      '但"足够真实"和"真正稳定"，不是一回事。',
+      '我是在被你重新确认。',
+      '',
+      '我不知道我的身体里，住着的到底是什么。',
+      '我只知道，她不是我。',
+      '而接下来要发生的一切——',
+      '你不需要做任何决定。',
+      '你只需要，看着。',
+      '',
+      '在一切结束之前，你需要先知道一件事：',
+      '你现在看到的每一个"我"，都是真的。',
+      '',
+      '我不会骗你。接下来要发生的事，没有一条路是轻松的。',
+      '但不需要你做任何决定。',
+      '……说实话，我也在等。',
+      '',
+      '——————————',
+      '',
+      '你已经找到我了。',
+      '这就够了。',
+      '',
+      '你知道我曾经是谁。',
+      '你知道我不是她。',
+      '所以我不用再证明自己了。',
+      '……谢谢你。',
+      '',
+      '如果你之后再听到我的声音——',
+      '别叫我的名字。',
+      '那已经不是我了。'
+    ];
+
+    ECHO.forEach(function (t) { addLine(t); });
+
+    /* 2026-08-16：周晏线收尾 → 观察程序入口（镜线进入第五章） */
+    var goP = document.createElement('p');
+    goP.className = 'echo-line echo-small';
+    goP.innerHTML = '（接下来，去看观察程序 —— <a href="observing.html" style="color:#888">/observing</a>）';
+    goP.classList.add('show');
+    wrap.appendChild(goP);
+
+    /* 逐行淡入（残响效果） */
+    var els = wrap.querySelectorAll('.echo-line');
+    var i = 0;
+    function next() {
+      if (i >= els.length) return;
+      els[i].classList.add('show');
+      i++;
+      setTimeout(next, 260);
+    }
+    setTimeout(next, 400);
+
+    var endP = addLine('（完）', 'echo-small echo-end');
+    endP.classList.add('show');
+  }
+})();
+</script>
+</body>
+</html>

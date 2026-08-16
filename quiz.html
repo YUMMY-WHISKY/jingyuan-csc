@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>免费心理测评 - 镜渊认知科学研究中心</title>
+<link rel="icon" href="img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="container">
+    <a class="logo" href="index.html">
+      <img src="img/logo.svg" alt="镜渊认知科学研究中心">
+      <span>镜渊认知科学研究中心</span>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="team.html">团队介绍</a></li>
+        <li><a href="research.html">研究成果</a></li>
+        <li><a href="quiz.html" class="active">心理测评</a></li>
+        <li><a href="downloads.html">资源下载</a></li>
+        <li><a href="index.html#contact">联系我们</a></li>
+      </ul>
+    </nav>
+</div>
+</header>
+
+<div class="page-head">
+  <div class="container">
+    <p class="breadcrumb"><a href="index.html">首页</a> / 心理测评</p>
+    <h1>认知风格与人格倾向测评</h1>
+    <p>10 分钟 · 免费开放 · 结果仅供参考，不构成医疗诊断</p>
+  </div>
+</div>
+
+<main>
+  <section class="section">
+    <div class="container">
+      <div class="quiz-box">
+
+        <!-- ═══ 阶段1：介绍页 ═══ -->
+        <div id="qIntro" class="quiz-result">
+          <h2 style="margin-bottom:12px">测评说明</h2>
+          <p style="color:var(--text-sub);margin-bottom:20px">
+            本测评由镜渊认知科学研究中心专家组编制，用于了解个体的认知风格与人格倾向。<br>
+            共 10 道题，大约需要 5-10 分钟。请凭第一直觉作答，答案没有对错。
+          </p>
+          <div style="text-align:left;background:var(--bg-soft);border-radius:8px;padding:14px 18px;font-size:13px;color:var(--text-sub);margin-bottom:24px">
+            <b style="color:var(--text)">隐私说明：</b>我们不会记录您的姓名等身份信息。为提供测评报告，请填写一个昵称（可任意填写），结果仅用于个人参考。
+          </div>
+          <button class="btn" onclick="quizStart()">开始测评</button>
+        </div>
+
+        <!-- ═══ 阶段2：问卷 ═══ -->
+        <div id="qForm" style="display:none">
+          <div style="text-align:center;margin-bottom:20px;color:var(--text-sub);font-size:14px">
+            第 <span id="qProgressNum">1</span> / 10 题
+            <div style="background:var(--bg-soft);border-radius:10px;height:8px;margin-top:8px;overflow:hidden">
+              <div id="qBar" style="height:100%;width:10%;background:var(--accent);transition:width .3s"></div>
+            </div>
+          </div>
+
+          <div id="q1" class="q-item">
+            <h4><span class="num">1.</span>你在阅读或工作时，走神（想别的事情）的频率是？</h4>
+            <div class="q-opts">
+              <label><input type="radio" name="q1" value="a">很少走神，能一直专注</label>
+              <label><input type="radio" name="q1" value="b">偶尔走神，很快能拉回来</label>
+              <label><input type="radio" name="q1" value="c">经常走神，回过神来已经过了很久</label>
+            </div>
+          </div>
+          <div id="q2" class="q-item">
+            <h4><span class="num">2.</span>回忆几天前发生的事，你通常记得的是？</h4>
+            <div class="q-opts">
+              <label><input type="radio" name="q2" value="a">细节：当时的对话、画面、气味</label>
+              <label><input type="radio" name="q2" value="b">大意：知道发生了什么，细节模糊</label>
+              <label><input type="radio" name="q2" value="c">情绪：记得当时的感觉，事件本身记不清</label>
+            </div>
+          </div>
+          <div id="q3" class="q-item">
+            <h4><span class="num">3.</span>同时面对多项任务时，你倾向于？</h4>
+            <div class="q-opts">
+              <label><input type="radio" name="q3" value="a">一件一件来，完成一件再做下一件</label>
+              <label><input type="radio" name="q3" value="b">按优先级灵活切换</label>
+              <label><input type="radio" name="q3" value="c">多线并行，随时切换</label>
+            </div>
+          </div>
+          <div id="q4" class="q-item">
+            <h4><span class="num">4.</span>对于"别人怎么看我"，你有多在意？</h4>
+            <div class="q-opts">
+              <label><input type="radio" name="q4" value="a">不太在意，按自己的节奏来</label>
+              <label><input type="radio" name="q4" value="b">会考虑，但不影响决定</label>
+              <label><input type="radio" name="q4" value="c">很在意，经常反复回想</label>
+            </div>
+          </div>
+          <div id="q5" class="q-item">
+            <h4><span class="num">5.</span>独处时，你通常感到？</h4>
+            <div class="q-opts">
+              <label><input type="radio" name="q5" value="a">充实，独处是充电</label>
+              <label><input type="radio" name="q5" value="b">舒服，但久了会想找人聊聊</label>
+              <label><input type="radio" name="q5" value="c">不安，需要有人陪伴</label>
+            </div>
+          </div>
+          <div id="q6" class="q-item">
+            <h4><span class="num">6.</span>做计划时，你的风格是？</h4>
+            <div class="q-opts">
+              <label><input type="radio" name="q6" value="a">详细计划，严格执行</label>
+              <label><input type="radio" name="q6" value="b">大概方向，边做边调</label>
+              <label><input type="radio" name="q6" value="c">几乎不做计划，随遇而安</label>
+            </div>
+          </div>
+          <div id="q7" class="q-item">
+            <h4><span class="num">7.</span>做重要决定时，你更依赖？</h4>
+            <div class="q-opts">
+              <label><input type="radio" name="q7" value="a">理性分析，列出利弊</label>
+              <label><input type="radio" name="q7" value="b">两者结合，最后凭感觉</label>
+              <label><input type="radio" name="q7" value="c">直觉，第一反应通常是对的</label>
+            </div>
+          </div>
+          <div id="q8" class="q-item">
+            <h4><span class="num">8.</span>社交之后，你需要多久"恢复电量"？</h4>
+            <div class="q-opts">
+              <label><input type="radio" name="q8" value="a">不需要，社交就是充电</label>
+              <label><input type="radio" name="q8" value="b">需要独处一小会儿</label>
+              <label><input type="radio" name="q8" value="c">需要很久，甚至一整天</label>
+            </div>
+          </div>
+          <div id="q9" class="q-item">
+            <h4><span class="num">9.</span>你做梦的频率是？</h4>
+            <div class="q-opts">
+              <label><input type="radio" name="q9" value="a">几乎每天都做梦，醒来还记得</label>
+              <label><input type="radio" name="q9" value="b">偶尔做梦，醒来记不清</label>
+              <label><input type="radio" name="q9" value="c">很少记得自己做过梦</label>
+            </div>
+          </div>
+          <div id="q10" class="q-item">
+            <h4><span class="num">10.</span>对待自己犯过的错，你通常？</h4>
+            <div class="q-opts">
+              <label><input type="radio" name="q10" value="a">分析原因，下次避免</label>
+              <label><input type="radio" name="q10" value="b">有些懊恼，但很快放下</label>
+              <label><input type="radio" name="q10" value="c">反复回想，很难原谅自己</label>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="nickname">请填写一个昵称（用于生成测评报告）</label>
+            <input id="nickname" type="text" maxlength="12" placeholder="例如：阿澈 / 匿名">
+          </div>
+          <p style="text-align:center">
+            <button class="btn" onclick="quizSubmit()">提交并查看结果</button>
+          </p>
+        </div>
+
+        <!-- ═══ 阶段3：结果页 ═══ -->
+        <div id="qResult" class="quiz-result" style="display:none">
+          <p style="font-size:14px;color:var(--text-sub);margin-bottom:10px">
+            您的昵称：<b id="rNick" style="color:var(--accent)"></b> · 测评完成
+          </p>
+          <div class="match-num" id="rMatch">97%</div>
+          <p class="match-label">您的人格与样本 F-09 匹配度</p>
+          <div style="background:var(--bg-soft);border-radius:8px;padding:16px 20px;text-align:left;font-size:14px;color:var(--text-sub);margin-bottom:18px">
+            <b style="color:var(--text)">类型解读 · 探索型：</b>您倾向于细腻地感知与记录生活中的细节，善于共情，对自我觉察有持续的追问。这类特质在人群中占比不高，值得被好好珍惜。<br><br>
+            <b style="color:var(--text)">中心建议：</b>如果您希望进一步了解自己，欢迎浏览本站的科普资料，或参与治疗者论坛的交流。
+          </div>
+          <p style="font-size:14px;color:var(--text-sub)">基于您的测评结果，推荐您访问中心内部交流社区：</p>
+          <p style="font-size:13px;color:var(--text-sub);margin-top:6px">治疗者论坛 · 邀请码：</p>
+          <div class="code-box">COG2024X</div>
+          <p>
+            <a class="btn" href="forum/login.html">进入治疗者论坛</a>
+            <button class="btn ghost" onclick="quizReset()" style="background:#fff">重新测评</button>
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-main">
+      <div>
+        <div class="footer-brand">
+          <img src="img/logo.svg" alt="">
+          <span>镜渊认知科学研究中心</span>
+          <small>JINGYUAN CSC</small>
+        </div>
+        <p style="font-size:13px;line-height:1.9">专注人格障碍康复治疗与认知科学研究。<br>每一种人格，都值得被理解。</p>
+      </div>
+      <div>
+        <h4>快速链接</h4>
+        <ul>
+          <li><a href="team.html">团队介绍</a></li>
+          <li><a href="research.html">研究成果</a></li>
+          <li><a href="quiz.html">免费心理测评</a></li>
+          <li><a href="downloads.html">资源下载</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>服务时间</h4>
+        <ul>
+          <li>门诊：周一至周五 9:00-18:00</li>
+          <li>测评：线上 24 小时开放</li>
+          <li>热线：400-086-0701</li>
+        </ul>
+      </div>
+      <div>
+        <h4>免责声明</h4>
+        <ul>
+          <li>本站测评结果仅供参考</li>
+          <li>不构成医疗诊断建议</li>
+          <li>紧急情况请拨打当地急救电话</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 镜渊认知科学研究中心 版权所有</span>
+      <span class="forum-entry"><a href="forum/login.html" title="治疗者论坛">治疗者论坛</a></span>
+    </div>
+  </div>
+</footer>
+
+<button id="backTop" title="返回顶部">↑</button>
+<script src="js/common.js"></script>
+<script src="js/quiz.js"></script>
+</body>
+</html>

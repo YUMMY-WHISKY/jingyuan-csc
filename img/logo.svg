@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <!-- 镜渊 Logo：圆形镜面中藏脑突触剪影（镜面含义第1章不可见——终局彩蛋）
+       v2：实底蓝色渐变 + 加粗白色线条，小尺寸下更清晰 -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5E9AD8"/>
+      <stop offset="1" stop-color="#3A78B8"/>
+    </linearGradient>
+  </defs>
+  <circle cx="24" cy="24" r="22" fill="url(#bg)"/>
+  <!-- 镜面高光弧（玻璃反光感，终局回望时才被注意到） -->
+  <path d="M9 19 A17 17 0 0 1 25 5.5" stroke="#FFFFFF" stroke-opacity=".4" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+  <!-- 脑突触：节点 + 连线 -->
+  <g stroke="#FFFFFF" stroke-width="2.1" fill="none" stroke-linecap="round">
+    <path d="M13 26 Q17 20 21 24 Q25 28 29 22 Q33 17 36 20"/>
+    <path d="M15 31 Q19 33 23 30 Q27 27 31 31 Q34 34 37 32"/>
+    <path d="M19 17 L21 21 M27 19 L29 22 M23 28 L25 26 M32 28 L34 26"/>
+  </g>
+  <circle cx="19" cy="17" r="1.8" fill="#fff"/>
+  <circle cx="29" cy="19" r="1.8" fill="#fff"/>
+  <circle cx="25" cy="27" r="1.8" fill="#fff"/>
+  <circle cx="34" cy="29" r="1.8" fill="#fff"/>
+</svg>

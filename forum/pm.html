@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>私信 - 治疗者论坛</title>
+<link rel="icon" href="../img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header class="f-top">
+  <div class="container">
+    <a class="f-logo" href="index.html"><img src="../img/logo.svg" alt="">治疗者论坛</a>
+    <nav>
+      <ul class="f-nav">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="posts.html">全部帖子</a></li>
+        <li><a href="archive.html">病友档案</a></li>
+        <li><a href="pm.html" class="active">私信</a></li>
+      </ul>
+    </nav>
+    <span class="f-online"><span class="online-dot"></span><span id="fCountTop">—</span> 人在线</span>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <div class="pm-box">
+      <div class="pm-head">
+        <span class="f-avatar" style="background:#E8F5EE;color:#5F9E74">猫</span>
+        <div>
+          <b>一只画画的猫</b>
+          <p style="font-size:12px;color:var(--text-sub)"><span class="online-dot"></span> 在线 · 病友</p>
+        </div>
+      </div>
+
+      <div class="pm-log" id="pmLog">
+        <div class="pm-msg">
+          <span class="f-avatar" style="background:#E8F5EE;color:#5F9E74">猫</span>
+          <div class="pm-bubble">你好呀，新来的朋友！你也住 302 病房吗？</div>
+        </div>
+        <div class="pm-msg">
+          <span class="f-avatar" style="background:#E8F5EE;color:#5F9E74">猫</span>
+          <div class="pm-recall">[消息已撤回]</div>
+        </div>
+        <div class="pm-msg">
+          <span class="f-avatar" style="background:#E8F5EE;color:#5F9E74">猫</span>
+          <div class="pm-bubble">嘻嘻，刚才打错字了。我住 302，床底下藏着一盒水彩，护士知道了要没收的 🤫</div>
+        </div>
+      </div>
+
+      <div class="pm-typing" id="pmTyping" style="display:none">对方正在输入…</div>
+
+      <div class="pm-input">
+        <input id="pmText" type="text" placeholder="试试给「一只画画的猫」发条消息…" autocomplete="off">
+        <button onclick="pmSend()">发送</button>
+      </div>
+      <p style="font-size:12px;color:#9AA8B6;margin-top:12px">
+        <a href="../index.html" style="color:var(--accent)">← 返回官网</a>
+      </p>
+    </div>
+  </div>
+</main>
+
+<script src="../js/common.js"></script>
+<script>window.pageGate('forum_unlocked', '登录后方可访问。');</script>
+<script src="../js/forum.js"></script>
+<script src="../js/pm.js"></script>
+</body>
+</html>

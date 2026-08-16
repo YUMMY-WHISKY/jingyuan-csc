@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>身份比对 - 治疗者论坛</title>
+<link rel="icon" href="../img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .id-wrap { max-width: 860px; margin: 30px auto 50px; padding: 0 22px; }
+  .id-hint { font-size: 13px; color: #9AA8B6; margin: 14px 0 20px; }
+  .id-cards { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 26px; }
+  .id-card { width: 178px; background: #fff; border: 1px solid #E3E8EE; border-radius: 10px; padding: 14px 16px; cursor: grab; user-select: none; box-shadow: 0 1px 3px rgba(0,0,0,.05); transition: box-shadow .2s, transform .2s; }
+  .id-card:active { cursor: grabbing; }
+  .id-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,.1); transform: translateY(-2px); }
+  .id-card .nm { font-size: 15px; font-weight: 700; color: #2B3A4A; }
+  .id-card .mt { font-size: 12px; color: #9AA8B6; margin: 4px 0 8px; }
+  .id-card .ag { font-size: 12px; color: #5B7FA6; margin-bottom: 8px; }
+  .id-card .note { font-size: 12px; color: #4A5A6A; line-height: 1.8; }
+  .id-drop { border: 2px dashed #C9D8E8; border-radius: 12px; padding: 22px; min-height: 96px; background: #F8FAFD; }
+  .id-drop.hover { border-color: #5B7FA6; background: #F0F5FB; }
+  .id-drop .ph { font-size: 13px; color: #9AA8B6; text-align: center; margin-top: 18px; }
+  .id-added { display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #C9D8E8; border-radius: 18px; padding: 6px 12px; margin: 5px 6px 5px 0; font-size: 13px; color: #2B3A4A; }
+  .id-added .rm { color: #B03A3A; cursor: pointer; font-size: 14px; }
+  .id-result { margin-top: 22px; display: none; }
+  .id-result .box { background: #FDFCF7; border: 1px solid #E7E2D2; border-radius: 10px; padding: 18px 22px; font-size: 13px; line-height: 2.1; color: #4A4438; }
+  .id-trait { display: inline-block; background: #F3F0E8; border: 1px solid #E0DAC8; color: #6B5F4E; border-radius: 12px; padding: 2px 10px; margin: 3px 4px 3px 0; font-size: 12px; }
+  .id-trait.hl { background: #FBF3E4; border-color: #D8C2A8; color: #8A6A3E; }
+  .id-reveal { font-size: 14px; line-height: 2.2; color: #3A2E2E; }
+  .id-reveal b { color: #8B0000; }
+</style>
+</head>
+<body>
+
+<header class="f-top">
+  <div class="container">
+    <a class="f-logo" href="index.html"><img src="../img/logo.svg" alt="">治疗者论坛</a>
+    <nav>
+      <ul class="f-nav">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="posts.html">全部帖子</a></li>
+        <li><a href="archive.html" class="active">病友档案</a></li>
+        <li><a href="pm.html">私信</a></li>
+      </ul>
+    </nav>
+    <span class="f-online"><span class="online-dot"></span><span id="fCountTop">—</span> 人在线</span>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <div class="id-wrap">
+      <p style="font-size:12px;color:#9AA8B6"><a href="archive.html">← 返回档案区</a> ｜ <a href="archive-09.html">F-09 档案</a></p>
+      <h1 style="font-size:22px;margin:12px 0 4px">身份比对 · 档案差异核对工具</h1>
+      <p style="font-size:12px;color:#9AA8B6;margin-bottom:6px">档案室内部工具 · 用于核对疑似重复归档的身份记录</p>
+      <p class="id-hint">将左侧档案 <b>拖入</b> 下方比对区域（或直接点击档案）。放入两份以上后开始比对。</p>
+
+      <div class="id-cards" id="idCards">
+        <div class="id-card" draggable="true" data-id="f1">
+          <div class="nm">小F</div>
+          <div class="mt">档案 V1 · 当前版本</div>
+          <div class="ag">19 岁 · 2025-12 入组 · 已出院</div>
+          <div class="note">兴趣：画画（丑猫）、草莓味饼干。入院原因：情绪障碍、分离焦虑。</div>
+        </div>
+        <div class="id-card" draggable="true" data-id="f2">
+          <div class="nm">苏晚</div>
+          <div class="mt">档案 V2 · 2025-12 归档</div>
+          <div class="ag">29 岁 · 小学教师 · 已转院</div>
+          <div class="note">行为治疗 + 绘画干预。「患者自称姓苏，拒绝提供真名」「她对'小F'这个名字，没有任何反应」。</div>
+        </div>
+        <div class="id-card" draggable="true" data-id="f3">
+          <div class="nm">江屿</div>
+          <div class="mt">档案 V3 · 2026-01 归档</div>
+          <div class="ag">27 岁 · 前端开发 · 已转院</div>
+          <div class="note">业余画插画。访谈中反复确认「我的经历没有被记错」。办公桌抽屉里，放着一只折好的纸鹤。</div>
+        </div>
+        <div class="id-card" draggable="true" data-id="f4">
+          <div class="nm">F-09</div>
+          <div class="mt">档案 V4 · 内部归档（非公开）</div>
+          <div class="ag">—— · 人格样本（合成）</div>
+          <div class="note">情感模块 · 社交依恋 · 视觉记忆 · 绘画能力 · 自我叙事能力。危险项：她开始询问「如果没有人记得我，我还存在吗？」</div>
+        </div>
+      </div>
+
+      <div class="id-drop" id="idDrop">
+        <p class="ph">把档案拖到这里进行比对</p>
+      </div>
+
+      <div class="id-result" id="idResult">
+        <div class="box" id="idResultBox"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2026 治疗者论坛 · 镜渊认知科学研究中心内部社区</span>
+      <span class="forum-entry"><a href="../index.html">返回研究中心官网</a></span>
+    </div>
+  </div>
+</footer>
+
+<button id="backTop" title="返回顶部">↑</button>
+<script src="../js/common.js"></script>
+<script src="../js/forum.js"></script>
+<script>
+/* ── 权限门控（2026-08-16 支线统一后移）：身份比对为支线 A，读完第三层日记（diary3_done，调试 ?d3=1）后开放 ── */
+(function () {
+  var q = new URLSearchParams(location.search);
+  if (q.get('d3') === '1') { try { localStorage.setItem('diary3_done', '1'); } catch (e) {} }
+  var ok = false;
+  try { ok = localStorage.getItem('diary3_done') === '1'; } catch (e) {}
+  if (!ok) {
+    var wrap = document.querySelector('.id-wrap');
+    if (wrap) wrap.innerHTML =
+      '<p style="font-size:12px;color:#9AA8B6"><a href="archive.html">← 返回档案区</a></p>' +
+      '<h1 style="font-size:22px;margin:12px 0 4px">身份比对 · 档案差异核对工具</h1>' +
+      '<p style="font-size:12px;color:#9AA8B6;margin:10px 0 20px">访问受限：该工具涉及内部归档，需档案室授权后开放。</p>' +
+      '<div class="box" style="background:#FDFCF7;border:1px solid #E7E2D2;border-radius:10px;padding:18px 22px;font-size:13px;color:#9AA8B6">' +
+      '<p>如需使用身份比对工具，请先完成档案核对流程。</p>' +
+      '<p style="font-size:12px;margin-top:6px">—— 档案室 · 系统提示</p></div>';
+    return; /* 阻止后续逻辑 */
+  }
+  /* 拦截后续初始化：用标记让主逻辑跳过 */
+  window.__idLocked = true;
+})();
+</script>
+<script>
+/* ── 身份比对（2026-08-15 · docx 四）：拖入档案 → 输出共同人格特征 ── */
+(function () {
+  'use strict';
+  if (window.__idLocked) return;
+  var TRAITS = {
+    draw:     { label: '绘画',          why: '绘画能力在全部档案中重复出现' },
+    cookie:   { label: '草莓味饼干',    why: '口味偏好被记录为「兴趣」' },
+    paper:    { label: '纸鹤',          why: '折纸鹤反复作为「留存物」出现' },
+    so:       { label: '社交依恋',      why: '对固定照护者形成强烈依赖' },
+    remember: { label: '对"被记住"的执着', why: '反复追问「有人记得我吗」' }
+  };
+  var CARDS = {
+    f1: { name: '小F',  traits: ['draw', 'cookie', 'so', 'remember'] },
+    f2: { name: '苏晚', traits: ['draw', 'remember'] },
+    f3: { name: '江屿', traits: ['draw', 'paper', 'so'] },
+    f4: { name: 'F-09', traits: ['draw', 'cookie', 'paper', 'so', 'remember'] }
+  };
+
+  var drop = document.getElementById('idDrop');
+  var result = document.getElementById('idResult');
+  var box = document.getElementById('idResultBox');
+  var added = [];   // 已加入比对的档案 id
+
+  function traitCount(t) {
+    var n = 0;
+    added.forEach(function (id) { if (CARDS[id].traits.indexOf(t) !== -1) n++; });
+    return n;
+  }
+
+  function render() {
+    /* 清空比对区并重绘已加入的档案 */
+    var ph = drop.querySelector('.ph');
+    if (ph) ph.style.display = added.length ? 'none' : '';
+    drop.querySelectorAll('.id-added').forEach(function (el) { el.remove(); });
+    added.forEach(function (id) {
+      var chip = document.createElement('span');
+      chip.className = 'id-added';
+      chip.innerHTML = CARDS[id].name + ' <span class="rm" data-id="' + id + '">✕</span>';
+      drop.appendChild(chip);
+    });
+
+    if (added.length === 0) {
+      result.style.display = 'none';
+      return;
+    }
+    result.style.display = '';
+    if (added.length === 1) {
+      box.innerHTML = '<p>已放入 1 份档案。请再放入一份，才能开始比对。</p>';
+      return;
+    }
+
+    /* 共同特征（所有已放入档案都具备的） */
+    var shared = Object.keys(TRAITS).filter(function (t) {
+      return added.every(function (id) { return CARDS[id].traits.indexOf(t) !== -1; });
+    });
+    /* 全部特征出现频次 */
+    var freq = Object.keys(TRAITS).map(function (t) {
+      return { t: t, n: traitCount(t) };
+    }).filter(function (x) { return x.n >= 2; }).sort(function (a, b) { return b.n - a.n; });
+
+    var html = '';
+    html += '<p><b>' + added.map(function (id) { return CARDS[id].name; }).join(' · ') + '</b> —— 已加入比对。</p>';
+
+    if (added.length === 2) {
+      if (shared.length) {
+        html += '<p>比对完成：两份档案存在 <b>' + shared.length + '</b> 项共同特征：';
+        shared.forEach(function (t) { html += '<span class="id-trait hl">' + TRAITS[t].label + '</span>'; });
+        html += '</p><p>不同档案出现相同特征——请确认档案归属。</p>';
+      } else {
+        html += '<p>比对完成：两份档案未发现共同特征。</p>';
+      }
+    } else if (added.length === 3) {
+      html += '<p>重复特征：';
+      shared.forEach(function (t) { html += '<span class="id-trait hl">' + TRAITS[t].label + '</span>'; });
+      html += '</p><p>这些特征在三份档案中反复出现。巧合的解释，已经越来越勉强。</p>' +
+              '<p>它们看起来不像三个人的共同点——更像一套模板的复印件。</p>';
+    } else {
+      html += '<p>比对完成。五项特征在不同身份档案中反复出现：</p><p>';
+      freq.forEach(function (x) { html += '<span class="id-trait hl">' + TRAITS[x.t].label + ' ×' + x.n + '</span>'; });
+      html += '</p><p>如果这是巧合，需要五个巧合同时发生。</p>' +
+              '<p class="id-reveal">另一种可能：研究中心并不是在给不同的人建立不同档案——<br>' +
+              '而是在把<b>同一套人格模块</b>，套进不同的<b>身份模板</b>。</p>' +
+              '<p style="font-size:12px;color:#9AA8B6">（本工具仅供内部核对。请勿外传。）</p>';
+      if (window.markStep) window.markStep('identity');
+      if (window.markClue) window.markClue('identity');
+    }
+    box.innerHTML = html;
+  }
+
+  /* 点击加入/移除（移动端兜底，无需拖拽） */
+  document.querySelectorAll('.id-card').forEach(function (card) {
+    card.addEventListener('click', function () {
+      var id = card.getAttribute('data-id');
+      var i = added.indexOf(id);
+      if (i === -1) { if (added.length < 4) added.push(id); }
+      else added.splice(i, 1);
+      render();
+    });
+    card.addEventListener('dragstart', function (e) {
+      e.dataTransfer.setData('text/plain', card.getAttribute('data-id'));
+    });
+  });
+
+  drop.addEventListener('dragover', function (e) { e.preventDefault(); drop.classList.add('hover'); });
+  drop.addEventListener('dragleave', function () { drop.classList.remove('hover'); });
+  drop.addEventListener('drop', function (e) {
+    e.preventDefault();
+    drop.classList.remove('hover');
+    var id = e.dataTransfer.getData('text/plain');
+    if (id && CARDS[id] && added.indexOf(id) === -1 && added.length < 4) added.push(id);
+    render();
+  });
+
+  drop.addEventListener('click', function (e) {
+    var rm = e.target.getAttribute && e.target.getAttribute('data-id');
+    if (rm) { added.splice(added.indexOf(rm), 1); render(); }
+  });
+})();
+</script>
+</body>
+</html>

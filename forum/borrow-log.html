@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>档案借阅登记簿 - 治疗者论坛</title>
+<link rel="icon" href="../img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .bl-wrap { max-width: 760px; margin: 30px auto 60px; padding: 0 22px; }
+  .bl-book { background: #FBF9F2; border: 1px solid #DDD5C2; padding: 26px 28px; box-shadow: 2px 3px 10px rgba(0,0,0,.06); }
+  .bl-title { font-size: 15px; text-align: center; color: #4A4438; letter-spacing: 2px; border-bottom: 1px solid #C8BFA6; padding-bottom: 14px; margin-bottom: 8px; }
+  .bl-title small { display: block; font-size: 11px; color: #9A8B6E; margin-top: 6px; letter-spacing: 1px; font-weight: normal; }
+  .bl-rule { font-size: 12px; color: #8A7F6C; line-height: 2.0; margin: 10px 0 18px; }
+  table.bl { width: 100%; border-collapse: collapse; font-size: 12.5px; color: #4A4438; }
+  table.bl th { background: #EFEAD8; color: #6B5F4E; font-weight: normal; letter-spacing: 1px; padding: 8px 6px; border: 1px solid #D8D0BC; }
+  table.bl td { padding: 8px 6px; border: 1px solid #E4DCC8; text-align: center; line-height: 1.8; }
+  table.bl td.l { text-align: left; }
+  .bl-odd { background: #F4F0E2; }
+  .bl-warn { color: #A63A2B; }
+  .bl-hand { font-family: "KaiTi", "STKaiti", serif; color: #7A6A5A; }
+  .bl-end { border-top: 1px dashed #C8BFA6; margin-top: 20px; padding-top: 14px; font-size: 12.5px; color: #8A7F6C; line-height: 2.2; }
+</style>
+</head>
+<body>
+
+<header class="f-top">
+  <div class="container">
+    <a class="f-logo" href="index.html"><img src="../img/logo.svg" alt="">治疗者论坛</a>
+    <nav>
+      <ul class="f-nav">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="posts.html">全部帖子</a></li>
+        <li><a href="archive.html" class="active">病友档案</a></li>
+        <li><a href="pm.html">私信</a></li>
+      </ul>
+    </nav>
+    <span class="f-online"><span class="online-dot"></span><span id="fCountTop">—</span> 人在线</span>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <div class="bl-wrap">
+      <p style="font-size:12px;color:#9AA8B6"><a href="archive.html">← 返回档案区</a></p>
+      <h1 style="font-size:20px;margin:12px 0 6px;color:#4A4438">档案借阅登记簿</h1>
+      <p style="font-size:12px;color:#9A8B6E;margin-bottom:22px">档案室 · 借阅登记（手工簿页电子存档）</p>
+
+      <div class="bl-book">
+        <p class="bl-title">档案借阅登记簿<small>借出需登记 · 归还时核验封条 · 借阅人请如实填写</small></p>
+        <p class="bl-rule">规则：档案借出不超过 24 小时；归还时核验封条编号并登记。合成样本（红封皮）借阅需两名研究员签字。封条完好 = 借阅期间未被开启。</p>
+
+        <table class="bl">
+          <tr><th>日期</th><th>档案</th><th>借阅人</th><th>借出</th><th>归还</th><th>备注</th></tr>
+          <tr><td>2026-03-03</td><td>F-11 日记扫描件</td><td>林知微</td><td>09:20</td><td>03-05 16:40</td><td class="l">正常归还，封条完好（编号 0023）</td></tr>
+          <tr class="bl-odd"><td>2026-03-03</td><td>F-09 观察记录（卷一）</td><td>周晏</td><td>10:05</td><td>03-03 17:30</td><td class="l">正常归还，封条完好（编号 0024）</td></tr>
+          <tr><td>2026-04-18</td><td>F-11 日记扫描件</td><td>林知微</td><td>14:10</td><td>04-20 11:00</td><td class="l">正常归还，封条完好（编号 0041）</td></tr>
+          <tr class="bl-odd"><td>2026-05-12</td><td>F-07 档案（红色封皮）</td><td>周晏</td><td>09:45</td><td>05-13 10:20</td><td class="l">归还时封条完好（编号 0057）· 复核人：陈澈</td></tr>
+          <tr><td>2026-05-30</td><td>F-09 观察记录（卷二）</td><td>周晏</td><td>15:30</td><td>05-31 09:00</td><td class="l">正常归还，封条完好（编号 0063）</td></tr>
+          <tr class="bl-odd"><td>2026-06-30</td><td>F-09 档案（红色封皮）</td><td>周晏</td><td>21:15</td><td class="bl-warn">——</td><td class="l bl-warn">未归还</td></tr>
+          <tr><td>2026-07-01</td><td>F-11 日记扫描件</td><td>林知微</td><td>08:50</td><td>07-01 16:30</td><td class="l">正常归还，封条完好（编号 0078）</td></tr>
+          <tr class="bl-odd"><td>2026-07-11</td><td>F-09 档案（红色封皮）</td><td><span class="bl-hand">〔系统〕</span></td><td>00:17</td><td class="bl-warn">——</td><td class="l bl-warn">借阅人非本人签字 · 系统权限 · 未归还</td></tr>
+          <tr><td>2026-07-02 之后</td><td colspan="5" class="l bl-warn">……登记簿未再更新。部分早期借出记录（第一年 · 苏／何／陈／郑／叶／吴／罗女士档案）无归还记录，借阅人：不详。</td></tr>
+        </table>
+
+        <div class="bl-end">
+          <p>页边批注：<span class="bl-hand">封条完好的意思，就是借出去的那几天，没人打开过。可 F-07 那份档案，借出记录是有的，看的人呢？</span></p>
+          <p class="bl-warn">〔2026-07-16 起，本登记簿已无人维护。〕</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2026 治疗者论坛 · 镜渊认知科学研究中心内部社区</span>
+      <span class="forum-entry"><a href="../index.html">返回研究中心官网</a></span>
+    </div>
+  </div>
+</footer>
+
+<button id="backTop" title="返回顶部">↑</button>
+<script src="../js/common.js"></script>
+<script>window.pageGate('diary3_done');</script>
+<script src="../js/forum.js"></script>
+</body>
+</html>

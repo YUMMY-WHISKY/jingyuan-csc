@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>页脚批注 - 治疗者论坛</title>
+<link rel="icon" href="../img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .diary-note { color: #B03A3A; }
+  /* r6 弹窗：纯弹窗、恐怖配色（暗黑底 + 血渗入 + 暗红微光），不晃动、不用 dglitch */
+  #echoMask { display: none; position: fixed; inset: 0; background: rgba(4, 1, 2, .82); z-index: 999; align-items: center; justify-content: center; padding: 20px; transition: opacity .5s ease; }
+  #echoDlg {
+    width: 430px; max-width: 94%;
+    background: #0b0506;
+    border: 1px solid #5c0e13;
+    border-radius: 4px;
+    padding: 38px 36px 32px;
+    font-family: "KaiTi", "STKaiti", serif;
+    text-align: center;
+    box-shadow: 0 0 70px rgba(110, 8, 14, .55), inset 0 0 34px rgba(52, 4, 7, .5);
+    position: relative;
+    animation: echoPop .5s ease;
+  }
+  @keyframes echoPop {
+    from { opacity: 0; transform: scale(.92); }
+    to { opacity: 1; transform: none; }
+  }
+  /* 顶部渗血 */
+  #echoDlg::before { content: ""; position: absolute; top: -1px; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, #7a0e13 30%, #a31a1f 50%, #7a0e13 70%, transparent); box-shadow: 0 0 12px rgba(140, 14, 20, .8); }
+  /* 底部血渍 */
+  #echoDlg::after { content: ""; position: absolute; bottom: -1px; left: 22%; right: 22%; height: 2px; background: radial-gradient(ellipse, rgba(122, 14, 19, .55), transparent 70%); }
+  #echoDlg p { text-shadow: 0 0 14px rgba(150, 10, 16, .5); }
+  #echoDlg .e-main { font-size: 17px; line-height: 2.5; color: #b33a3e; letter-spacing: 1px; }
+  #echoDlg .e-sign { font-size: 13px; color: #5f2327; margin-top: 24px; letter-spacing: 2px; }
+  #echoClose { margin-top: 26px; background: transparent; border: 1px solid #5c0e13; color: #8f2a2f; padding: 7px 28px; font-size: 13px; cursor: pointer; font-family: "Microsoft YaHei", sans-serif; border-radius: 3px; transition: all .25s; }
+  #echoClose:hover { border-color: #a31a1f; color: #c0392b; background: rgba(120, 10, 16, .15); }
+</style>
+</head>
+<body class="diary-body-layout">
+
+<header class="diary-top">
+  <div class="container">
+    <span>/forum/diary-2</span>
+    <a href="diary.html">← 返回日记</a>
+  </div>
+</header>
+
+<main class="diary-wrap">
+  <div class="container">
+
+    <div class="diary-card">
+
+      <!-- 封面 -->
+      <div class="diary-page diary-cover active">
+        <div class="diary-cover-img"><img src="../img/diary-cover2.jpg" alt="封面"></div>
+        <h1 style="color:#B03A3A">批注</h1>
+      </div>
+
+      <!-- 3月3日 注 -->
+      <div class="diary-page">
+        <p class="diary-date">3月3日 · 注</p>
+        <div class="diary-body diary-note">
+          <p>"周医生人很好"——她待人的温和是刻意训练出来的状态，用来让来到这里的人放下戒备。</p>
+          <p>"很丑的猫"——那是小F画下的自我写照。画里歪扭的线条，藏着她不安。</p>
+          <p>"糖。草莓味的。"——入院第一天给到的安抚小礼物。</p>
+          <p>她以为自己踏入一处可以休养的地方。实际上，她走进的是一间被精心布置好的房间。</p>
+        </div>
+      </div>
+
+      <!-- 3月15日 注 -->
+      <div class="diary-page">
+        <p class="diary-date">3月15日 · 注</p>
+        <div class="diary-body diary-note">
+          <p>"第一次有人给我过生日"。</p>
+          <p>那场生日会确实存在，蛋糕、蜡烛、天台的风全部都是真的。</p>
+          <p>那面被她小心收在枕头底下的小旗子，后来被随杂物一并收走。</p>
+          <p>她满心欢喜记下的美好时刻，在另外一套记录里，仅仅被记为一次观测活动。</p>
+          <p>她许愿期待的下一个生日，再也等不到了。</p>
+        </div>
+      </div>
+
+      <!-- 4月2日 注 -->
+      <div class="diary-page">
+        <p class="diary-date">4月2日 · 注</p>
+        <div class="diary-body diary-note">
+          <p>"觉得自己是两个人"。</p>
+          <p>那些混乱的感受都是真实的。她常常会说出自己完全没有想过的话。</p>
+          <p>她折了很多纸鹤，希望用纸鹤标记自己的存在。</p>
+          <p>纸鹤折得再工整，也拦不住变化正在发生在她身上。</p>
+          <p>夜里那道轻轻的哼唱，后来再也没有响起过。</p>
+        </div>
+      </div>
+
+      <!-- 5月20日 注 -->
+      <div class="diary-page">
+        <p class="diary-date">5月20日 · 注</p>
+        <div class="diary-body diary-note">
+          <p>"记不清昨天做了什么"。</p>
+          <p>很多片段直接从她们的生活里消失了。</p>
+          <p>周晏偶尔笑起来眼睛不再弯。有些时刻，坐在那里的人，已经不是F-11熟悉的那一个。</p>
+          <p>小F说出那句"你也不是你了吧"的时候，她已经察觉到周遭全部不对劲。</p>
+          <p>她们把发生过的事认认真真写两遍，害怕遗忘。可越是害怕，遗忘来得越快。</p>
+          <p>窗台的花确实开了两朵。她们反复数，想要抓住一点确定的东西。可很多东西，不是数几遍就可以留住。</p>
+        </div>
+      </div>
+
+      <!-- 7月1日 注 -->
+      <div class="diary-page">
+        <p class="diary-date">7月1日 · 注</p>
+        <div class="diary-body diary-note">
+          <p>"出院了。嗯。"</p>
+          <p>7月1日这天之后，小F再也没有回到这间病房。</p>
+          <p>她的牙刷还留在洗漱台，上面还留着水珠，是被仓促丢下的痕迹。</p>
+          <p>那副丑猫绘画，没有被她带走，被收进档案室的柜子。</p>
+          <p>画留了下来，人没有。</p>
+        </div>
+      </div>
+
+      <!-- 7月18日 注 -->
+      <div class="diary-page">
+        <p class="diary-date">7月18日 · 注</p>
+        <div class="diary-body diary-note">
+          <p>写吧。</p>
+          <p>继续往下写。</p>
+          <p>她真心期盼有人可以逃出去，哈哈哈真是妄想!!</p>
+          <p>她以为写下求救就可以带来希望。殊不知，这些文字最后只会引来人，来到此处。</p>
+          <p>文字会骗人。</p>
+          <p>但纸上记录下的恐惧，是真的。</p>
+          <p>对了，封面的图片里，我给你留了礼物。就当是见面礼，往后还请多多指教。</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 翻页导航 -->
+    <div class="diary-nav">
+      <button class="diary-btn" id="dPrev" disabled>← 上一页</button>
+      <span class="diary-page-num" id="dNum">1 / 8</span>
+      <button class="diary-btn" id="dNext">下一页 →</button>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2026 治疗者论坛 · 镜渊认知科学研究中心内部社区</span>
+      <span class="forum-entry"><a href="../index.html">返回研究中心官网</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/common.js"></script>
+<script>window.pageGate('diary_unlocked');</script>
+<script src="../js/diary.js"></script>
+<script>
+/* 日记访问标记：读到第二层 → 档案深层（历史归档/V4/身份比对）解锁（2026-08-16） */
+try { localStorage.setItem('diary2_done', '1'); } catch (e) {}
+</script>
+
+<!-- 方案A · 回响 r6 弹窗：首次解开批注层 → 镜的恐怖系弹窗（无晃动，纯弹窗） -->
+<div id="echoMask">
+  <div id="echoDlg">
+    <p class="e-main">你解开了，恭喜！</p>
+    <button id="echoClose">我知道了</button>
+  </div>
+</div>
+
+<script>
+/* 方案A · 回响 r6（弹窗版）：首次访问批注层 → 纯弹窗（无晃动，配色恐怖） */
+(function () {
+  var fresh = false;
+  if (window.markStep) {
+    if (!window.hasStep('r6')) { fresh = true; window.markStep('r6'); }
+  }
+  if (!fresh) return;
+  var mask = document.getElementById('echoMask');
+  var dlg = document.getElementById('echoDlg');
+  if (!mask || !dlg) return;
+  mask.style.display = 'flex';
+  var close = function () {
+    mask.style.opacity = '0';
+    setTimeout(function () { mask.style.display = 'none'; mask.style.opacity = ''; }, 500);
+  };
+  mask.addEventListener('click', function (e) { if (e.target === mask) close(); });
+  document.getElementById('echoClose').addEventListener('click', close);
+})();
+</script>
+</body>
+</html>

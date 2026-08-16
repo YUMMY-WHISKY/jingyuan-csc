@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小F · 病友档案</title>
+<link rel="icon" href="../img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header class="f-top">
+  <div class="container">
+    <a class="f-logo" href="index.html"><img src="../img/logo.svg" alt="">治疗者论坛</a>
+    <nav>
+      <ul class="f-nav">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="posts.html">全部帖子</a></li>
+        <li><a href="archive.html" class="active">病友档案</a></li>
+        <li><a href="pm.html">私信</a></li>
+      </ul>
+    </nav>
+    <span class="f-online"><span class="online-dot"></span><span id="fCountTop">—</span> 人在线</span>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <div class="post-main">
+      <p style="font-size:12px;color:#9AA8B6"><a href="archive.html">← 返回档案列表</a></p>
+      <h1>小F · 病友档案</h1>
+      <p class="f-author" style="margin-top:10px">
+        <span class="f-avatar" style="width:34px;height:34px;background:#FBF3E4;color:#B98A3E">F</span>
+        <span>小F <span class="badge pat">病友</span></span>
+        <span style="margin-left:auto;font-size:12px;color:#9AA8B6">最近更新 2026-07-01</span>
+      </p>
+
+      <div class="ver-tabs">
+        <button class="ver-tab active" onclick="verShow(0)">V1 · 当前档案</button>
+        <button class="ver-tab" onclick="verShow(1)">V2 · 2025-12 归档</button>
+        <button class="ver-tab" onclick="verShow(2)">V3 · 2026-01 归档</button>
+      </div>
+
+      <div class="ver-panel active">
+        <table class="ver-table">
+          <tr><td>姓名</td><td>小F（昵称）</td></tr>
+          <tr><td>年龄</td><td>19</td></tr>
+          <tr><td>入院日期</td><td>2025-12-03</td></tr>
+          <tr><td>负责医生</td><td>周晏</td></tr>
+          <tr><td>入院原因</td><td>情绪障碍（评估记录：睡眠差、分离焦虑）</td></tr>
+          <tr><td>兴趣</td><td>画画（水彩、铅笔画）、草莓味饼干</td></tr>
+          <tr><td>主治评语（周晏）</td><td>「小F很乖，喜欢画画，画得非常好。她画了一只很丑的猫，说是她想象里的朋友。希望她在这里能开心起来。」</td></tr>
+          <tr><td>签名笔迹</td><td><span class="sig sig-kai">小F ✦</span>（手写体，末尾画一颗小星星）</td></tr>
+          <tr><td>状态</td><td>已出院（2026-07-01）</td></tr>
+        </table>
+        <p class="ver-note">档案版本 V1 · 当前档案 · 档案信息由本人或家属提供</p>
+      </div>
+
+      <!-- V2：教师版（苏晚） -->
+      <div class="ver-panel">
+        <table class="ver-table">
+          <tr><td>姓名</td><td>苏晚</td></tr>
+          <tr><td>年龄</td><td>29</td></tr>
+          <tr><td>职业</td><td>小学教师</td></tr>
+          <tr><td>入院日期</td><td>2025-12-03</td></tr>
+          <tr><td>入院原因</td><td>创伤后应激障碍</td></tr>
+          <tr><td>病程记录</td><td>行为治疗 + 绘画干预（主治：周晏）</td></tr>
+          <tr><td>备注</td><td style="font-family:'STXingkai',cursive;color:#7A6A5A">「她对『小F』这个名字，没有任何反应。」</td></tr>
+          <tr><td>签名笔迹</td><td><span class="sig sig-cao" style="text-decoration:line-through">苏晚</span>（潦草，名字被划掉一半）</td></tr>
+          <tr><td>状态</td><td>7月1日 转院</td></tr>
+        </table>
+        <p class="ver-note">档案版本 V2 · 系统归档记录</p>
+      </div>
+
+      <!-- V3：程序员版（江屿 · 男） -->
+      <div class="ver-panel">
+        <table class="ver-table">
+          <tr><td>姓名</td><td>江屿</td></tr>
+          <tr><td>性别</td><td>男</td></tr>
+          <tr><td>年龄</td><td>27</td></tr>
+          <tr><td>职业</td><td>互联网公司前端开发</td></tr>
+          <tr><td>入院日期</td><td>2025-12-03</td></tr>
+          <tr><td>入院原因</td><td>焦虑发作、注意力难以集中，暂停工作入院调整</td></tr>
+          <tr><td>个人简介</td><td>工作三年，业余喜欢画插画。性格内向，话不多。</td></tr>
+          <tr><td>签名笔迹</td><td><span class="sig sig-fang">江屿</span></td></tr>
+          <tr><td>状态</td><td>7月1日 转院</td></tr>
+        </table>
+        <p class="ver-note">档案版本 V3 · 系统归档记录 —— 此版本与 V1/V2 存在差异，已提交核对</p>
+      </div>
+
+      <div id="v4panel" class="ver-panel" style="display:none">
+        <table class="ver-table">
+          <tr><td>姓名</td><td>F-09</td></tr>
+          <tr><td>类型</td><td>人格样本（合成）</td></tr>
+          <tr><td>自然人身份</td><td>无（未检索到匹配的户籍 / 社保 / 教育记录）</td></tr>
+          <tr><td>入组日期</td><td>2025-12-03</td></tr>
+          <tr><td>观察记录</td><td>情感模块完整；绘画能力超出预设；依恋行为显著（对观察员「周晏」）</td></tr>
+          <tr><td>融合评估</td><td>适应度 0.71 / 阈值 0.85 —— 等待评估</td></tr>
+          <tr><td>备注</td><td>0.71 是这一批里最高的。</td></tr>
+          <tr><td>签名笔迹</td><td>（无。归档人栏空白）</td></tr>
+          <tr><td>归档</td><td>2026-02-09 · 管理员：顾明远</td></tr>
+        </table>
+        <p class="ver-note-warn">档案版本 V4 · 内部归档（非公开）</p>
+        <div style="margin-top:14px;border:1px dashed #B03A3A;border-radius:6px;padding:14px 16px;font-size:13px;color:#8B0000;line-height:2.1;font-family:'STXingkai','KaiTi',cursive">
+          <p style="font-weight:bold;color:#B03A3A">【内部批注 · 非公开】</p>
+          <p>F-09并不存在对应的自然人身份。</p>
+          <p>当前人格结构包含：情感模块 · 社交依恋 · 视觉记忆 · 绘画能力 · 自我叙事能力</p>
+          <p style="color:#B03A3A">危险项：</p>
+          <p>F-09已经开始形成独立的"自我"。</p>
+          <p>她会主动描述自己是谁。她会记住别人。她会害怕自己消失。</p>
+          <p>她甚至开始询问："如果没有人记得我，我还存在吗？"</p>
+          <p>这意味着她已经超出原定人格样本范围。</p>
+          <p style="text-align:right;margin-top:8px">—— 林医生</p>
+        </div>
+      </div>
+
+      <button id="v4Btn" class="arc-btn" onclick="showV4()" style="display:none">内部归档</button>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2026 治疗者论坛 · 镜渊认知科学研究中心内部社区</span>
+      <span class="forum-entry"><a href="../index.html">返回研究中心官网</a></span>
+    </div>
+  </div>
+</footer>
+
+<button id="backTop" title="返回顶部">↑</button>
+<script src="../js/common.js"></script>
+<script src="../js/forum.js"></script>
+<script>
+function verShow(i) {
+  document.querySelectorAll('.ver-tab').forEach(function (t, k) { t.classList.toggle('active', k === i); });
+  document.querySelectorAll('.ver-panel').forEach(function (p, k) { p.classList.toggle('active', k === i); });
+}
+
+/* G5 门控（T2.3 进度锁模拟）：读到第二层日记（diary2_done，调试 ?g5=1）后，「内部归档」入口才出现 */
+(function () {
+  var q = new URLSearchParams(location.search);
+  if (q.get('g5') === '1') { try { localStorage.setItem('diary2_done', '1'); } catch (e) {} }
+  var unlocked = false;
+  try { unlocked = localStorage.getItem('diary2_done') === '1'; } catch (e) {}
+  var b = document.getElementById('v4Btn');
+  if (b) b.style.display = unlocked ? 'block' : 'none';
+})();
+function showV4() {
+  var p = document.getElementById('v4panel');
+  var b = document.getElementById('v4Btn');
+  var on = p.style.display !== 'block';
+  p.style.display = on ? 'block' : 'none';
+  b.textContent = on ? '关闭内部归档' : '内部归档';
+  if (on) p.scrollIntoView({ behavior: 'smooth' });
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480">
+  <!-- 玻璃墙会议室合影（占位图：正式版换 AI 生成真人合影） -->
+  <rect width="800" height="480" fill="#E8F0FA"/>
+  <rect x="40" y="70" width="720" height="2" fill="#C5D8EA"/>
+  <!-- 玻璃墙 -->
+  <rect x="570" y="70" width="200" height="330" fill="#FFFFFF" opacity=".5" stroke="#A9C7E4" stroke-width="2"/>
+  <line x1="610" y1="90" x2="590" y2="200" stroke="#FFFFFF" stroke-width="10" opacity=".6"/>
+  <line x1="690" y1="120" x2="660" y2="260" stroke="#FFFFFF" stroke-width="8" opacity=".4"/>
+  <line x1="740" y1="100" x2="715" y2="220" stroke="#FFFFFF" stroke-width="6" opacity=".5"/>
+  <!-- 窗台多肉（与论坛 GIF / 微博呼应） -->
+  <circle cx="600" cy="402" r="7" fill="#7FAF7F"/>
+  <rect x="596" y="404" width="8" height="10" rx="2" fill="#C08B5E"/>
+  <!-- 人物剪影 ×6 -->
+  <g fill="#8FA8C2">
+    <ellipse cx="150" cy="410" rx="48" ry="66"/><circle cx="150" cy="320" r="26"/>
+    <ellipse cx="270" cy="405" rx="52" ry="70"/><circle cx="270" cy="308" r="28"/>
+    <ellipse cx="390" cy="410" rx="48" ry="66"/><circle cx="390" cy="320" r="26"/>
+    <ellipse cx="490" cy="403" rx="54" ry="72"/><circle cx="490" cy="304" r="29"/>
+    <ellipse cx="300" cy="470" rx="42" ry="26" opacity=".35"/>
+    <ellipse cx="520" cy="472" rx="40" ry="24" opacity=".35"/>
+  </g>
+  <!-- 微笑弧线（剪影嘴部） -->
+  <g stroke="#7C96B2" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M143 328 Q150 334 157 328"/>
+    <path d="M261 316 Q270 322 279 316"/>
+    <path d="M383 328 Q390 334 397 328"/>
+    <path d="M480 312 Q490 318 500 312"/>
+  </g>
+  <rect x="20" y="430" width="760" height="4" rx="2" fill="#C5D8EA"/>
+</svg>

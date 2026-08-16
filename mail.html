@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>内部邮箱 - 镜渊认知科学研究中心</title>
+<link rel="icon" href="img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  body { background: #1A1F26; color: #C9D6E4; }
+  .mail-top { background: #101318; border-bottom: 1px solid #2A3340; }
+  .mail-top .container { display: flex; justify-content: space-between; align-items: center; height: 52px; font-size: 13px; color: #8FA3B8; }
+  .mail-top a { color: #6E8BA8; text-decoration: none; }
+  .mail-top a:hover { color: #fff; }
+  .mail-wrap { max-width: 720px; margin: 40px auto 60px; padding: 0 24px; }
+  .mail-title { font-size: 20px; color: #E8F0FA; letter-spacing: 3px; margin-bottom: 6px; }
+  .mail-sub { font-size: 12px; color: #6E7E90; margin-bottom: 26px; }
+  .mail-list { background: #151A21; border: 1px solid #2A3340; border-radius: 8px; overflow: hidden; }
+  .mail-item { display: flex; align-items: center; gap: 14px; padding: 16px 20px; border-bottom: 1px solid #222A33; cursor: pointer; transition: background .2s; }
+  .mail-item:last-child { border-bottom: none; }
+  .mail-item:hover { background: #1C232D; }
+  .mail-item.unread .m-from { font-weight: bold; color: #E8F0FA; }
+  .m-dot { width: 8px; height: 8px; border-radius: 50%; background: #3A78B8; flex-shrink: 0; }
+  .mail-item.read .m-dot { background: #2A3340; }
+  .m-body { flex: 1; min-width: 0; }
+  .m-from { font-size: 14px; color: #B8C6D4; margin-bottom: 3px; }
+  .m-subj { font-size: 13px; color: #8FA3B8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .m-time { font-size: 12px; color: #5A6B7C; flex-shrink: 0; }
+  /* 邮件详情 */
+  .mail-detail { display: none; background: #151A21; border: 1px solid #2A3340; border-radius: 8px; padding: 28px 30px; }
+  .mail-detail.show { display: block; }
+  .md-head { border-bottom: 1px solid #222A33; padding-bottom: 16px; margin-bottom: 20px; font-size: 13px; line-height: 2.1; color: #8FA3B8; }
+  .md-head b { color: #E8F0FA; font-weight: normal; }
+  .md-body { font-size: 14px; line-height: 2.2; color: #C9D6E4; }
+  .md-body p { margin-bottom: 14px; }
+  .md-body .hl { color: #D8A657; }
+  .md-back { font-size: 12px; color: #6E8BA8; cursor: pointer; margin-bottom: 14px; display: inline-block; }
+  .md-back:hover { color: #fff; }
+</style>
+</head>
+<body>
+
+<header class="mail-top">
+  <div class="container">
+    <span>内部邮箱 · 镜渊认知科学研究中心</span>
+    <a href="forum/archive.html">← 返回档案区</a>
+  </div>
+</header>
+
+<main class="mail-wrap">
+  <div class="mail-title">内部邮箱</div>
+  <div class="mail-sub">仅限中心内部人员使用。所有邮件自动归档，请勿外传。</div>
+
+  <!-- 收件箱 -->
+  <div class="mail-list" id="inbox">
+    <div class="mail-item unread" onclick="openMail(0)">
+      <span class="m-dot"></span>
+      <div class="m-body">
+        <div class="m-from">观察者：<span id="mFrom0">访客</span></div>
+        <div class="m-subj">关于"<span id="mSubj0">…</span>"的确认记录</div>
+      </div>
+      <span class="m-time" id="mTime0">刚刚</span>
+    </div>
+    <div class="mail-item read" onclick="openMail(1)">
+      <span class="m-dot"></span>
+      <div class="m-body">
+        <div class="m-from">系统通知</div>
+        <div class="m-subj">档案室数据同步完成 · 请查收 6 月归档</div>
+      </div>
+      <span class="m-time">2026-06-30 03:12</span>
+    </div>
+    <div class="mail-item read" onclick="openMail(2)">
+      <span class="m-dot"></span>
+      <div class="m-body">
+        <div class="m-from">林医生</div>
+        <div class="m-subj">关于 F-09 评估材料的一个问题</div>
+      </div>
+      <span class="m-time">2026-07-05 14:22</span>
+    </div>
+    <div class="mail-item read" onclick="openMail(3)">
+      <span class="m-dot"></span>
+      <div class="m-body">
+        <div class="m-from">林医生</div>
+        <div class="m-subj">（无主题）</div>
+      </div>
+      <span class="m-time">2026-07-12 22:47</span>
+    </div>
+    <div class="mail-item unread" id="mailR5" style="display:none" onclick="openMail(4)">
+      <span class="m-dot"></span>
+      <div class="m-body">
+        <div class="m-from">系统通知</div>
+        <div class="m-subj">文件访问提醒 · 归档已记录</div>
+      </div>
+      <span class="m-time" id="mTimeR5">刚刚</span>
+    </div>
+  </div>
+
+  <!-- 邮件详情 -->
+  <div class="mail-detail" id="detail">
+    <span class="md-back" onclick="backToInbox()">← 返回收件箱</span>
+    <div class="md-head" id="mdHead"></div>
+    <div class="md-body" id="mdBody"></div>
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var nickname = '访客#1';
+  try { nickname = localStorage.getItem('jingyuan_nickname') || '访客#1'; } catch (e) {}
+
+  /* G11 正文（2026-08-15：只陈述系统实际记录的事实，不做心理推测——删除"你在找什么/你舍不得走/你在赶什么"类读心文案） */
+  var body1 = '';
+  try {
+    var visits = JSON.parse(localStorage.getItem('visits') || '{}');
+    var best = null, bestSec = 0;
+    for (var k in visits) {
+      if (visits[k] > bestSec) { bestSec = visits[k]; best = k; }
+    }
+    if (best && bestSec >= 5) {
+      body1 = '你在"' + best + '"停留了' + Math.floor(bestSec / 60) + '分' + (bestSec % 60) + '秒。比其他页面都久。停留记录已归档。';
+    } else {
+      body1 = '你到这里用了不到十分钟。比之前的所有人都快。访问记录已归档。';
+    }
+  } catch (e) {
+    body1 = '你到这里用了不到十分钟。比之前的所有人都快。你在赶什么？';
+  }
+  /* 2026-08-15 改型：不再解释"观察=确认"，改为同期系统异常日志（研究中心失控） */
+  var anom = [
+    '[07-02 09:14] F-00 在非任务时段访问实验体档案。 —— 已标记为异常。未处理。',
+    '[07-03 03:17] 账号"顾明远"存在本人无记录的登录行为。来源 IP：内网。本人表示当天未值班。',
+    '[07-06 11:40] F-09 归档数据出现双版本记录。两套数据均未被修改。来源：不明。',
+    '[07-08 15:22] 关于是否继续实验的讨论：研究员甲：「我建议停止。」研究员乙：「再等等。快完成了。」研究员甲：「她开始记住我们的名字了。」',
+    '[07-10 09:05] 林医生提交《关于审查人格数据采集流程的申请》。回复：暂无。',
+    '[07-11 00:17] 控制室权限验证失败 ×3。申请人：〔系统〕。'
+  ];
+  body1 += '<p>附：同期系统日志摘录（归档时间 2026-07）</p>';
+  for (var i = 0; i < anom.length; i++) {
+    body1 += '<p class="hl" style="color:#D8A657">' + anom[i] + '</p>';
+  }
+  body1 += '<p>以上记录均已归档。请相关研究员于工作日核实。</p>';
+
+  /* G11 追踪邮件正文：完整归档记录 */
+  function buildG11Body(nickname) {
+    var L = [];
+    L.push('<p>【归档记录 · 供内部核对】</p>');
+    L.push('<p>编号：观察者#1</p>');
+    L.push('<p>登记名：<span class="hl">"' + nickname + '"</span></p>');
+    L.push('<p>——</p>');
+    L.push('<p>你填问卷的时候，说自己叫"' + nickname + '"。</p>');
+    L.push('<p>从输入的那一刻起，这个名字就已经被归档了。</p>');
+    L.push('<p>F-00也曾经填过。</p>');
+    L.push('<p>——</p>');
+    L.push('<p>' + body1 + '</p>');
+    L.push('<p>——</p>');
+    L.push('<p>记录摘要：</p>');
+    var hasRec = false;
+    try {
+      var visits = JSON.parse(localStorage.getItem('visits') || '{}');
+      var sorted = Object.keys(visits).sort(function (a, b) { return visits[b] - visits[a]; }).slice(0, 3);
+      sorted.forEach(function (k) {
+        if (visits[k] >= 3) {
+          L.push('<p>· 访问 "' + k + '" — ' + Math.floor(visits[k] / 60) + '分' + (visits[k] % 60) + '秒</p>');
+          hasRec = true;
+        }
+      });
+    } catch (e) {}
+    if (!hasRec) {
+      L.push('<p>（记录很少。你几乎什么都没留下——除了你的名字。）</p>');
+    }
+    L.push('<p>——</p>');
+    L.push('<p>这些记录，和她们的记录，放在同一个柜子里。</p>');
+    L.push('<p>——</p>');
+    L.push('<p>为什么是"你"？</p>');
+    L.push('<p>这个系统里每个人都被记录。但只有你，会走到最后。</p>');
+    L.push('<p>——</p>');
+    return L.join('');
+  }
+
+  var mails = [
+    {
+      from: '观察者：' + nickname,
+      subj: '关于"' + (nickname === '访客#1' ? '你的到来' : nickname) + '"的访问记录',
+      time: new Date().toISOString().slice(0, 16).replace('T', ' '),
+      head: '发件人：' + nickname + '<br>收件人：所有已终止实验体<br>时间：' + new Date().toISOString().slice(0, 16).replace('T', ' ') + '<br>状态：<b>已发送</b>',
+      body: buildG11Body(nickname)
+    },
+    {
+      from: '系统通知',
+      subj: '档案室数据同步完成 · 请查收 6 月归档',
+      time: '2026-06-30 03:12',
+      head: '发件人：系统通知<br>收件人：全体研究员<br>时间：2026-06-30 03:12<br>状态：已读',
+      body: '<p>档案室已完成 6 月数据同步，归档记录请于工作日核对。</p>' +
+            '<p>备注：F-09 档案状态已更新，出院流程已办结。</p>'
+    },
+    {
+      from: '林医生',
+      subj: '关于 F-09 评估材料的一个问题',
+      time: '2026-07-05 14:22',
+      head: '发件人：林医生<br>收件人：周晏<br>时间：2026-07-05 14:22<br>状态：已读<br>回复：无',
+      body: '<p>周晏：</p>' +
+            '<p>6 月访谈安排维持原计划，不必调整。</p>' +
+            '<p>但我在核对 F-09 的评估材料时，有一件事一直想问——</p>' +
+            '<p>为什么我们收集的人格数据，比病情记录还要详细？</p>' +
+            '<p>这不是评估流程的一部分。你那边有答案吗？</p>' +
+            '<p>——林</p>'
+    },
+    {
+      from: '林医生',
+      subj: '（无主题）',
+      time: '2026-07-10 22:47',
+      head: '发件人：林医生<br>收件人：陈澈<br>时间：2026-07-10 22:47<br>状态：已读<br>回复：无',
+      body: '<p>陈澈：</p>' +
+            '<p>F-07、F-09 的原始记录，和访谈录音，单独备份一份。</p>' +
+            '<p>周晏的值班日志也收一份。</p>' +
+            '<p>不要走系统归档。不要问为什么。</p>' +
+            '<p>以后会用到。</p>' +
+            '<p>——林</p>' +
+            '<p style="margin-top:16px;font-size:12px;color:#6E8BA8">[档案区 → <a href="forum/lin_private.html" style="color:#8B0000">林医生 · 私人笔记（加密分区）</a>]</p>'
+    }
+  ];
+
+  /* 方案A · 回响 r5：下载过证据文件（第五章 5-1 F-11_final.log；原 G6 入口 2026-08-16 移除）→ 系统邮件提醒 */
+  if (window.hasStep && window.hasStep('r5')) {
+    mails.push({
+      from: '系统通知',
+      subj: '文件访问提醒 · 归档已记录',
+      time: new Date().toISOString().slice(0, 16).replace('T', ' '),
+      head: '发件人：系统通知<br>收件人：全体研究员<br>时间：' + new Date().toISOString().slice(0, 16).replace('T', ' ') + '<br>状态：<b>未读</b>',
+      body: '<p>【系统通知】</p><p>检测到归档文件被外部访问。</p><p>访问记录已归档。</p><p>——</p><p>访问者：UNKNOWN</p><p>——</p><p>已记录行为：查看 · 下载 · 停留</p><p>——</p><p>一切访问都会被记录。被记录的，才算存在过。</p><p>——</p><p>备注："观察者"身份尚未确认。</p>'
+    });
+    var r5 = document.getElementById('mailR5');
+    if (r5) r5.style.display = '';
+    var t5 = document.getElementById('mTimeR5');
+    if (t5) t5.textContent = new Date().toISOString().slice(0, 16).replace('T', ' ');
+  }
+
+  window.openMail = function (i) {
+    var m = mails[i];
+    document.getElementById('mdHead').innerHTML = m.head;
+    document.getElementById('mdBody').innerHTML = m.body;
+    document.getElementById('inbox').style.display = 'none';
+    var d = document.getElementById('detail');
+    d.classList.add('show');
+    d.style.display = 'block';
+    /* 支线 D（2026-08-15）：读过林医生 → 陈澈的私存邮件后，档案区解锁「林医生 · 私人笔记」入口 */
+    if (i === 3 && window.markStep) window.markStep('lin_mail_read');
+    if (i === 0 || i === 4) {
+      var items = document.querySelectorAll('.mail-item');
+      if (items[i]) items[i].classList.remove('unread');
+    }
+  };
+  window.backToInbox = function () {
+    document.getElementById('inbox').style.display = '';
+    document.getElementById('detail').classList.remove('show');
+    document.getElementById('detail').style.display = 'none';
+  };
+})();
+</script>
+<script src="js/common.js"></script>
+<script>window.pageGate('diary3_done');</script>
+</body>
+</html>

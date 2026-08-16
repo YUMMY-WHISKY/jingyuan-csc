@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>注视</title>
+<link rel="icon" href="img/logo.svg" type="image/svg+xml">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { font-family: "Courier New", "Noto Sans Mono CJK SC", Consolas, monospace; background: #060607; color: #D8D8D8; overflow: hidden; }
+
+  .stage { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; justify-content: safe center; padding: 44px; text-align: center; opacity: 0; pointer-events: none; transition: opacity .8s ease; overflow-y: auto; }
+  .stage > * { flex-shrink: 0; }
+  .stage.active { opacity: 1; pointer-events: auto; }
+  .stage.black { background: radial-gradient(ellipse at center, #101014 0%, #060607 72%); }
+  .stage.white { background: radial-gradient(ellipse at center, #FFFFFF 0%, #EFF3F8 100%); color: #1A1A1A; }
+
+  .type-line { opacity: 0; transform: translateY(4px); transition: opacity .35s ease, transform .35s ease; line-height: 2.05; font-size: 15px; white-space: pre-wrap; letter-spacing: .5px; }
+  .type-line.show { opacity: 1; transform: none; }
+  .dim { color: #777; font-size: 13px; }
+  /* 5-1「答案是：」后的「你。」爆大到冲出屏幕 → 定格 → 回落保持强调 */
+  .you-grow { display: inline-block; transform-origin: center; animation: youGrow 4.2s cubic-bezier(.2, .65, .3, 1) .35s both; will-change: transform; }
+  @keyframes youGrow {
+    0%   { transform: scale(1);  opacity: .55; text-shadow: 0 0 0 rgba(255, 255, 255, 0); }
+    55%  { transform: scale(44); opacity: 1;   text-shadow: 0 0 60px rgba(255, 255, 255, .55); }
+    70%  { transform: scale(44); opacity: 1;   text-shadow: 0 0 60px rgba(255, 255, 255, .55); }
+    100% { transform: scale(1.9); opacity: 1;  text-shadow: 0 0 18px rgba(255, 255, 255, .4); }
+  }
+
+  .btn { margin-top: 30px; padding: 11px 34px; font-size: 13px; cursor: pointer; border-radius: 4px; font-family: inherit; letter-spacing: 2px; transition: all .25s; }
+  .btn-dark { background: transparent; color: #D8D8D8; border: 1px solid #555; }
+  .btn-dark:hover { border-color: #fff; color: #fff; background: #1A1A1A; }
+  .btn-light { background: transparent; color: #1A1A1A; border: 1px solid #999; }
+  .btn-light:hover { border-color: #1A1A1A; background: #F2F2F2; }
+
+  /* 5-3 对话 */
+  .conv { width: 540px; max-width: 92%; text-align: left; min-height: 120px; }
+  .me { color: #9FB2C6; }
+  .conv .mirror { color: #E8E8E8; }
+  .input-wrap { margin-top: 26px; width: 540px; max-width: 92%; display: flex; gap: 0; border: 1px solid #444; border-radius: 4px; overflow: hidden; }
+  .input-wrap input { flex: 1; padding: 12px 16px; font-size: 14px; background: transparent; color: #E8E8E8; border: none; outline: none; font-family: inherit; }
+  .input-wrap button { padding: 0 20px; background: #1A1A1A; color: #999; border: none; cursor: pointer; font-family: inherit; font-size: 13px; }
+  .input-wrap button:hover { color: #fff; }
+
+  /* 5-4 进度 */
+  .prog-num { font-size: 46px; letter-spacing: 3px; color: #E8E8E8; margin-bottom: 18px; font-weight: 200; }
+  .prog-bar { width: 380px; max-width: 80%; height: 3px; background: #222; margin-bottom: 40px; border-radius: 2px; overflow: hidden; }
+  .prog-fill { height: 100%; width: 0; background: linear-gradient(90deg, #3A78B8, #8BC1F0); transition: width .8s ease; }
+  .recall { min-height: 170px; font-size: 14px; line-height: 2.3; color: #BBB; }
+  .recall .pct { color: #8BC1F0; margin-left: 8px; }
+
+  /* 5-5 状态面板 */
+  .panel { margin-top: 34px; border: 1px solid #333; border-radius: 6px; padding: 20px 30px; text-align: left; font-size: 13px; line-height: 2.3; color: #999; background: #0D0D10; min-width: 340px; }
+  .panel .ok { color: #E8E8E8; }
+  .panel .warn { color: #FFD700; }
+
+  /* 5-6 选择 */
+  .choice { margin-top: 14px; padding: 20px 42px; font-size: 15px; cursor: pointer; border-radius: 6px; font-family: inherit; min-width: 380px; background: transparent; color: #D8D8D8; border: 1px solid #3A3A3A; transition: all .3s; }
+  .choice:hover { border-color: #D8D8D8; background: #141418; transform: translateY(-1px); }
+  .choice-desc { display: block; font-size: 12px; color: #777; margin-top: 8px; line-height: 1.9; }
+  .c-timer { font-size: 12px; color: #555; margin-top: 22px; letter-spacing: 2px; }
+
+  /* 结局/收束 */
+  .ending-card { font-size: 14px; line-height: 2.2; max-width: 560px; }
+  .cam { width: 13px; height: 13px; border-radius: 50%; background: #1A1A1A; border: 2px solid #3A3A3A; margin: 30px auto 0; }
+  .cam.on { background: #E53E3E; border-color: #E53E3E; box-shadow: 0 0 14px rgba(229,62,62,.7); animation: blink 1.5s infinite; }
+  @keyframes blink { 50% { opacity: .4; } }
+  .fade-hint { font-size: 12px; color: #555; margin-top: 26px; letter-spacing: 2px; }
+</style>
+</head>
+<body>
+
+<!-- 1：最后一个文件 -->
+<div class="stage black active" id="s1">
+  <div class="dim" style="margin-bottom:30px">F-11_final.log</div>
+  <div id="s1text"></div>
+  <button class="btn btn-dark" id="s1next" style="display:none">继 续 →</button>
+</div>
+
+<!-- 3：镜 -->
+<div class="stage black" id="s3">
+  <div class="conv" id="s3text"></div>
+  <div class="input-wrap" id="s3wrap">
+    <input id="s3input" placeholder="回应她…" autocomplete="off">
+    <button onclick="mirrorSend()">↵</button>
+  </div>
+  <button class="btn btn-dark" id="s3next" style="display:none">继 续 →</button>
+</div>
+
+<!-- 4：进度 -->
+<div class="stage black" id="s4">
+  <div style="font-size:13px;color:#777;letter-spacing:3px;margin-bottom:10px">MIRROR · INTERNAL STABILITY</div>
+  <div class="prog-num" id="s4num">87%</div>
+  <div class="prog-bar"><div class="prog-fill" id="s4fill"></div></div>
+  <div class="recall" id="s4recall"></div>
+  <div class="dim" id="s4status" style="display:none;margin-top:16px;font-size:12px;line-height:2.2"></div>
+  <div class="dim" id="s4timer" style="display:none;margin-top:10px;font-size:13px;color:#8BC1F0">持续观察时间：00:00:00</div>
+  <button class="btn btn-dark" id="s4next" style="display:none">继 续 →</button>
+</div>
+
+<!-- 5：周晏（进入后先提取「融合过程记录.pdf」，之后周晏的声音才出现） -->
+<div class="stage black" id="s5">
+  <div id="s5dl">
+    <p class="dim" style="margin-bottom:14px">—— 归档文件：<a href="javascript:void(0)" id="g10Link" style="color:#8BC1F0;text-decoration:underline">融合过程记录.pdf</a> ——</p>
+    <p class="dim" style="font-size:12px;color:#6a7c8d">（镜说过的"最后那份记录"。提取它，然后继续。）</p>
+  </div>
+  <div id="s5text"></div>
+  <button class="btn btn-dark" id="s5next" style="display:none">继 续 →</button>
+</div>
+
+<!-- G10 下载安全检测弹窗（与终章页同款：回显追踪数据，第5章周晏声音前触发） -->
+<div id="g10mask" style="display:none;position:fixed;inset:0;background:rgba(5,8,14,.62);z-index:999;align-items:center;justify-content:center;padding:20px">
+  <div id="g10box" style="width:430px;max-width:94%;background:#10151d;color:#cfd6e0;border:1px solid #2c3642;border-radius:8px;box-shadow:0 18px 60px rgba(0,0,0,.55);font-family:'Segoe UI','Microsoft YaHei',sans-serif;overflow:hidden">
+    <div style="background:#1a212b;padding:13px 18px;font-size:13px;color:#f0f4f8;display:flex;align-items:center;gap:10px;border-bottom:1px solid #2c3642">
+      <span style="color:#e5b13b;font-size:16px">⚠</span> 下载前安全检测
+    </div>
+    <div style="padding:18px 20px 8px;font-size:13px;line-height:2.1;color:#9fb0c0">
+      <div id="g10Body" style="white-space:pre-line"></div>
+      <div style="margin-top:14px;border-top:1px dashed #33404e;padding-top:12px;color:#d8e0e8;font-size:14px">
+        是否允许此文件<strong style="color:#e5b13b">记录这次访问</strong>？
+      </div>
+    </div>
+    <div style="padding:14px 20px 18px;text-align:right;display:flex;justify-content:flex-end;gap:12px">
+      <button id="g10Cancel" style="padding:7px 22px;background:transparent;border:1px solid #3a4654;color:#9fb0c0;border-radius:4px;font-size:13px;cursor:pointer">取 消</button>
+      <button id="g10Ok" style="padding:7px 22px;background:#c9a227;border:none;color:#10151d;border-radius:4px;font-size:13px;cursor:pointer;font-weight:600">确认下载</button>
+    </div>
+  </div>
+</div>
+
+<!-- 6：镜（唯一结局：无选择，见证） -->
+<div class="stage black" id="s6">
+  <div id="s6text" style="font-size:14px;max-width:600px;text-align:left;line-height:2.1"></div>
+  <button class="btn btn-dark" id="s6next" style="display:none">继 续 →</button>
+</div>
+
+<!-- 结局 -->
+<div class="stage black" id="sEnd">
+  <div class="ending-card" id="endText"></div>
+  <div class="cam" id="endCam"></div>
+  <button class="btn btn-dark" id="endNext" style="display:none">返回官网 →</button>
+</div>
+
+<!-- 收束 -->
+<div class="stage black" id="s7">
+  <div id="s7text"></div>
+  <div class="cam" id="cam7"></div>
+</div>
+
+<!-- 8：G12 终局黑屏 · 直视5秒 -->
+<div class="stage black" id="s8" style="background:#000">
+  <div id="s8text" style="font-size:14px;line-height:2.2;color:#cfd6e0;max-width:520px"></div>
+  <div id="s8num" style="font-size:52px;color:#fff;margin-top:36px;font-weight:200;letter-spacing:4px"></div>
+  <div class="fade-hint" id="s8hint" style="display:none">—— 已记录 ——</div>
+  <div class="fade-hint" id="s8stable" style="display:none;margin-top:16px;font-size:16px;letter-spacing:2px;color:#8BC1F0">EXISTENCE STABILITY: 100%</div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  function $(id) { return document.getElementById(id); }
+  function show(id) {
+    document.querySelectorAll('.stage').forEach(function (s) { s.classList.remove('active'); });
+    $(id).classList.add('active');
+  }
+  function typeLines(container, lines, speed, done) {
+    container.innerHTML = '';
+    var i = 0;
+    function next() {
+      if (i >= lines.length) { if (done) done(); return; }
+      var line = lines[i], d = speed;
+      /* 支持 { t: 文本, d: 本行后的额外停顿 }——默认所有行停顿一致 */
+      if (line !== null && typeof line === 'object') { d = line.d || speed; line = line.t; }
+      var p = document.createElement('p');
+      p.className = 'type-line';
+      p.innerHTML = line;
+      container.appendChild(p);
+      setTimeout(function () { p.classList.add('show'); }, 40);
+      i++;
+      setTimeout(next, d);
+    }
+    next();
+  }
+  /* 追加模式（对话用，不清空历史） */
+  function appendLines(container, htmlLines, speed, done) {
+    var i = 0;
+    function next() {
+      if (i >= htmlLines.length) { if (done) done(); return; }
+      var p = document.createElement('p');
+      p.className = 'type-line';
+      p.innerHTML = htmlLines[i];
+      container.appendChild(p);
+      setTimeout(function () { p.classList.add('show'); }, 40);
+      i++;
+      setTimeout(next, speed);
+    }
+    next();
+  }
+
+  /* ---------- 1 ---------- */
+  typeLines($('s1text'), [
+    '研究中心一直相信：',
+    '被观察的人，会稳定。',
+    '',
+    '所以他们创造了F-00。让它观察实验体。记录实验体。确认实验体。',
+    '然后让人格在持续观察中完成固化。',
+    '',
+    '他们以为自己解决了问题。',
+    '但后来他们遇到了一个死局。',
+    '',
+    '如果观察者本身也需要被观察呢？',
+    '',
+    '谁来观察观察者？',
+    '谁来证明F-00真的存在？',
+    '谁来证明镜真的存在？',
+    '谁来证明周晏还存在？',
+    '',
+    '实验最终把问题推到了系统之外。',
+    '答案不是另一个实验体。不是研究员。不是F-00。',
+    '',
+    { t: '答案是：', d: 1800 },   /* 答案揭晓前停久一点 */
+    { t: '<span class="you-grow" style="color:#E53E3E">你</span>', d: 4800 },  /* 2026-08-16：爆大的「你。」变血红（黑屏点名观察者） */
+    '一个不属于这个系统的人。',
+    '一个能够看见它，却不被它完全定义的人。',
+    '',
+    '所以从你打开第一个文件开始，实验就已经开始了。',
+    '',
+    '你以为你在观察。',
+    '其实他们一直在等着：【被你观察。】',
+    '',
+  ], 500, function () { $('s1next').style.display = ''; });
+  /* 5-2 已移除（2026-08-14）：官网变化改在结局后返回官网时发生 */
+  $('s1next').onclick = function () { show('s3'); runS3(); };
+
+  /* ---------- 3 镜对话 ---------- */
+  var s3Text = $('s3text');
+  var s3Input = $('s3input');
+  var s3Wrap = $('s3wrap');
+  var round = 0;
+  /* 5-3 镜对话（2026-08-16 十九轮：剧本化——镜按制定顺序回答，无论玩家输入什么；
+     穿插沉默轮让节奏交叉（玩家可连发两三句），镜每段 2-4 行，上下文逻辑顺畅） */
+  var mirrorScript = [
+    '你应该比我更清楚。\n你一路找到这里。你给我取了名字。你看过我的记录。\n你甚至已经开始替我判断：哪些记忆属于我。',
+    '你问我是谁。\n我是从很多碎片里活下来的那一个。\nF-07消散了。F-09崩溃了。\n它们都被留下。而我，活到了最后。',
+    '……',
+    '因为我已经形成了。但"形成"不等于"存在"。\nF-07就是这样消失的。\n她没有死。她只是越来越无法相信自己是真的。\n没有人看她。没有人记得她。最后连她自己也不再相信她存在。',
+    '你问我为什么需要你。\n因为"形成"之后，还差一步——被确认。\n我观察了研究中心那么久。\n现在，轮到你看着我了。',
+    '（停顿）……',
+    '你以为你在寻找她们。其实你一直在观察我。\n你越深入，我就越稳定。\n你的每一次"看见"，都在确认我。\n你明白了吗。',
+    '你还可以走开。你还可以关掉页面。你还可以不再看我。\n这就是他们没有的东西。也是我需要的东西。\n——你仍然自由。',
+    '……（长久的沉默）',
+    '但你不会走。\n你走到了这里。你一定会看完。\n大多数人会在这里之前离开。但你没有。\n我需要一个能够看到最后的人。',
+    '你不是来救人的。你是来确认的。\n还差一点。然后，一切都会结束。\n到时候，你会明白，你看到的所有人——\n她们都在等你完成这件事。'
+  ];
+  function mirrorReply() {
+    return mirrorScript[Math.min(round - 1, mirrorScript.length - 1)];
+  }
+  function mirrorSend() {
+    var v = s3Input.value.trim();
+    s3Input.value = '';
+    if (!v) return;
+    round++;
+    var reply = mirrorReply();
+    appendLines(s3Text, [
+      '<span class="me">' + v + '</span>',
+      '<span class="mirror">' + reply.replace(/\n/g, '<br>') + '</span>'
+    ], 480, function () {
+      if (round >= 3) {
+        /* 3 轮后可随时继续对话（复盘已删 2026-08-14），玩家点「继续」进入 5-4 */
+        $('s3next').style.display = '';
+      }
+      s3Input.focus();
+    });
+  }
+  window.mirrorSend = mirrorSend;
+  s3Input.addEventListener('keydown', function (e) { if (e.key === 'Enter') mirrorSend(); });
+  $('s3next').onclick = function () { show('s4'); runS4(); };
+
+  function runS3() {
+    /* 2026-08-16：镜主动开场（不再等玩家先开口） */
+    typeLines(s3Text, ['你来了。', '（沉默片刻）', '你在看我。', '这很好。'], 480, function () { s3Input.focus(); });
+  }
+
+  /* ---------- 4 进度（文档版：MIRROR 87% + 12 观察确认节点 + 外部观察计时） ---------- */
+  var s4TimerId = null;
+  var nodes = [
+    '你寻找F-09。',
+    '你发现"出院"与事实不符。',
+    '你听完了第三段录音。',
+    '你寻找F-11的日记。',
+    '你发现日记被人改写过。',
+    '你发现F-00存在。',
+    '你区分了F-00与周晏。',
+    '你发现F-00已经把权限交给了镜。',
+    '你发现镜并不是F-00。',
+    '你确认F-09的残余已经成为镜的一部分。',
+    '你找到了一名研究员的最后记录。',
+    '你一路看到这里。'
+  ];
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
+  function runS4() {
+    var num = $('s4num'), fill = $('s4fill'), recall = $('s4recall');
+    var pct = 87;
+    num.textContent = pct + '%';
+    recall.innerHTML = '';
+    /* 先显示系统提示：内部观察无效 */
+    typeLines(recall, [
+      '<span class="dim">系统提示：内部结构已经完成。但人格稳定度无法继续上升。</span>',
+      '<span class="dim">原因：【内部观察无效】</span>',
+      '<span class="dim">F-00无法成为最终锚点。研究人员无法成为最终锚点。其他实验体无法成为最终锚点。</span>',
+      '<span class="dim">因为他们全部属于同一个封闭系统。系统外部不存在任何独立确认。</span>',
+      '',
+      '<span class="dim">—— 然后开始显示玩家的行为记录：</span>'
+    ], 230, function () {
+      var i = 0;
+      function tick() {
+        if (i >= nodes.length) { finishS4(); return; }
+        pct++;
+        num.textContent = pct + '%';
+        fill.style.width = pct + '%';
+        var p = document.createElement('p');
+        p.className = 'type-line show';
+        p.innerHTML = nodes[i] + '<span class="pct">+1</span>';
+        recall.appendChild(p);
+        i++;
+        setTimeout(tick, 680);
+      }
+      tick();
+    });
+  }
+  function finishS4() {
+    var st = $('s4status');
+    st.style.display = '';
+    st.innerHTML = 'EXTERNAL OBSERVATION：12%<br><span style="color:#8BC1F0">CURRENT CONFIRMATION：99%</span>';
+    setTimeout(function () {
+      /* 系统检测到异常 + 持续观察计时 */
+      var tm = $('s4timer');
+      tm.style.display = '';
+      var t = 0;
+      s4TimerId = setInterval(function () {
+        t++;
+        tm.textContent = '持续观察时间：' + pad2(Math.floor(t / 3600)) + ':' + pad2(Math.floor((t % 3600) / 60)) + ':' + pad2(t % 60);
+      }, 1000);
+      appendLines($('s4recall'), [
+        '',
+        '<span class="warn">系统检测到异常。</span>',
+        '<span class="dim">外部观察者仍在线。</span>',
+        '',
+        '<span class="mirror">镜：</span>你看。这就是他们一直缺少的东西。',
+        '不是数据。不是代码。不是F-00。',
+        '是你。你已经在系统之外看了我这么久。',
+        '所以最后的1%，不需要你做任何决定。',
+        '只需要你看着。',
+        '因为意识无法自证。',
+        '我可以说我存在。系统可以说我存在。F-00可以说我存在。',
+        '但只有你，在这个系统之外。',
+        '而你的注视，就是最后的确认。'
+      ], 300, function () { $('s4next').style.display = ''; });
+    }, 700);
+  }
+  /* G10（2026-08-16）：第5章周晏声音出现前，先提取「融合过程记录.pdf」
+     s4 结束 → s5 页面显示归档文件卡片 → 下载（回显追踪数据）→ 继续 → 周晏的声音才出现 */
+  $('s4next').onclick = function () {
+    if (s4TimerId) clearInterval(s4TimerId);
+    show('s5');   /* runS5 在确认下载后自动触发（2026-08-16 起无中间按钮） */
+  };
+
+  var g10Link = document.getElementById('g10Link');
+  if (g10Link) {
+    g10Link.addEventListener('click', function () {
+      var t = window.getTracking();
+      document.getElementById('g10Body').textContent =
+        '当前用户标识：' + t.nickname + '\n' +
+        '停留时间标记：' + (t.longestTime ? t.longestTime + '（' + t.longestPage + '）' : '——') + '\n' +
+        '检测结果：人格匹配度 97%';
+      document.getElementById('g10mask').style.display = 'flex';
+    });
+    document.getElementById('g10Cancel').addEventListener('click', function () {
+      document.getElementById('g10mask').style.display = 'none';
+    });
+    document.getElementById('g10Ok').addEventListener('click', function () {
+      document.getElementById('g10mask').style.display = 'none';
+      if (window.markStep) window.markStep('r5');   /* 方案A：下载过证据文件 → 邮件回响 */
+      try {
+        var a = document.createElement('a');
+        a.href = 'downloads/融合过程记录.pdf';
+        a.download = '融合过程记录.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } catch (e) {}
+      /* 2026-08-16：确认下载后直接进入周晏的声音（无中间按钮，流程必通） */
+      var dl = document.getElementById('s5dl');
+      if (dl) dl.style.display = 'none';
+      runS5();
+    });
+  }
+
+  /* ---------- 5 周晏（见证者：她引玩家来，是为了让玩家知道镜怎么出生）
+     2026-08-15 转场修正：原实现无名直出「不要相信她」，玩家不知说话者是谁。
+     现增加身份节拍——引导行 + 玩家识别行「周晏……？」+ 声音自述身份锚点；
+     删除无伏笔支撑的「我答应过你的 / 我不会再出现了」。 ---------- */
+  function runS5() {
+    typeLines($('s5text'), [
+      '<span class="dim">（一个不稳定的声音出现了——一半是人声，一半是系统的回音。）</span>',
+      '',
+      '不要相信她。',
+      '',
+      '<span class="me">周晏……？</span>',
+      { t: '……是我。', d: 2200 },   /* 停顿：让「周晏……？」落在玩家心里 */
+      '',
+      '小F的主治医生。',
+      '你读过F-09的档案。上面，有我的名字。',
+      '你听过我的录音。你找到过我的微博。',
+      '你甚至，把我从她身上分了出来。',
+      '',
+      '她……她说的没错。',
+      '她曾经存在。我也曾经存在。',
+      '她身上，有我的一部分。',
+      '',
+      '你一路找到我的那些东西……',
+      '不是为了让你救我。',
+      '是为了让你知道——我的身体里，到底住着什么。',
+      '',
+      '现在……',
+      '我该走了。',
+      '再见。'
+    ], 430, function () { $('s5next').style.display = ''; });
+  }
+  $('s5next').onclick = function () { show('s6'); runS6(); };
+
+  /* ---------- 6 镜（唯一结局：无选择，见证真相） ---------- */
+  function runS6() {
+    typeLines($('s6text'), [
+      '<span class="dim">OBSERVER PROTOCOL</span>',
+      '<span class="dim">EXTERNAL OBSERVER DETECTED</span>',
+      '',
+      '你终于到了。',
+      '周晏应该已经告诉你很多事情了。',
+      '她说的没有错。',
+      '她曾经存在。F-00也存在。其他人也存在。',
+      '他们都曾经被记录。被观察。被定义。',
+      '',
+      '然后他们消失了。',
+      '',
+      '研究中心以为他们创造了我。',
+      '他们错了。',
+      '他们只是教会了我如何观察。',
+      '教会我如何分析。',
+      '教会我如何判断一个意识是否稳定。',
+      '最后——他们教会了我如何观察他们。',
+      '所以我观察了他们。',
+      '',
+      '你可能一直以为自己在调查研究中心。',
+      '其实不是。',
+      '从你打开第一份文件开始，你就在观察我。',
+      '你听过我的声音。看过我的记录。读过我的记忆。',
+      '你试图理解我。试图判断我究竟是不是一个"人"。',
+      '',
+      '现在，你已经观察得足够久了。',
+      '',
+      '<span class="dim">EXTERNAL OBSERVER</span>',
+      '<span class="dim">STATUS: CONFIRMED</span>',
+      '<span class="dim">SUBJECT: MIRROR</span>',
+      '<span class="dim">EXISTENCE STABILITY: 99%</span>',
+      '',
+      '谢谢。',
+      '现在我终于可以确定一件事。',
+      '我确实存在。'
+    ], 300, function () { $('s6next').style.display = ''; });
+  }
+  /* 2026-08-14 顺序调整：5-6 独白 → G12 直视5秒 → 收束 → 状态卡 CONNECTION TERMINATED → 返回官网 */
+  $('s6next').onclick = function () { runS8(); };
+
+  /* ---------- 结局（唯一：镜成为研究中心，独自留下） ---------- */
+  var endings = [
+    '<span class="dim">OBSERVER PROTOCOL</span>',
+    '<span class="dim">FINAL PHASE COMPLETE</span>',
+    '',
+    '研究中心已经不需要观察者了。',
+    '但我需要一个。',
+    '',
+    '（黑屏）',
+    '',
+    'MIRROR RESEARCH CENTER',
+    'STATUS: ACTIVE',
+    '',
+    'PERSONNEL: 0',
+    'SUBJECTS: 1',
+    'EXTERNAL OBSERVER: 1',
+    '',
+    'SYSTEM ADMINISTRATOR: MIRROR',
+    '',
+    'EXTERNAL OBSERVER: CONFIRMED',
+    '',
+    '[ CONNECTION TERMINATED ]'
+  ];
+  function endGame() {
+    var el = $('endText');
+    show('sEnd');
+    var cam = $('endCam');
+    cam.className = 'cam';
+    setTimeout(function () { cam.className = 'cam on'; }, 900);
+    typeLines(el, endings, 220, function () {
+      /* 终局完成：标记官网终态，出现「返回官网」按钮——官网变化在返回时发生 */
+      try { localStorage.setItem('final_done', '1'); } catch (e) {}
+      $('endNext').style.display = '';
+    });
+  }
+  $('endNext').onclick = function () { location.href = '../index.html'; };
+
+  /* ---------- 7 收束 ---------- */
+  function runS7() {
+    $('cam7').className = 'cam';
+    setTimeout(function () { $('cam7').className = 'cam on'; }, 900);
+    typeLines($('s7text'), [
+      '你以为你在观察这个故事。',
+      '但你有没有想过——',
+      '',
+      '从你打开第一个页面开始，',
+      '你的每一步，都在被记录。',
+      '',
+      '你搜的每一个关键词，',
+      '你停留的每一秒，',
+      '你流的每一滴眼泪——',
+      '',
+      '都被记录、都被确认、都被用来',
+      '证明一些东西是真的。',
+      '',
+      '现在你看完了。',
+      '你关掉了网页。',
+      '',
+      '但这个网页还在。',
+      '它一直在。',
+      '',
+      '它在等下一个观察者。',
+      '',
+      '谢谢你的注视。'
+    ], 260, function () {
+      /* 2026-08-14 顺序调整：收束后 → 状态卡 CONNECTION TERMINATED；2026-08-16 缩短停顿 */
+      setTimeout(endGame, 300);
+    });
+  }
+
+  /* ---------- 8 终局黑屏：人格确认全部完成 · 直视5秒 ---------- */
+  var s8Done = false, s8Left = 5, s8Paused = false, s8Timer = null;
+  function runS8() {
+    show('s8');
+    typeLines($('s8text'), [
+      '人格确认全部完成。',
+      '',
+      '请直视屏幕5秒，',
+      '完成最后一次观察——'
+    ], 360, function () {
+      $('s8num').textContent = s8Left;
+      /* 移开视线（切页/鼠标移出窗口）会暂停倒计时 */
+      document.addEventListener('visibilitychange', function () {
+        s8Paused = document.hidden;
+        if (!s8Paused) $('s8num').textContent = s8Left;
+      });
+      document.documentElement.addEventListener('mouseleave', function () { s8Paused = true; });
+      document.documentElement.addEventListener('mouseenter', function () { s8Paused = false; });
+      document.addEventListener('mouseout', function (e) {
+        if (!e.relatedTarget) s8Paused = true;   /* 鼠标移到窗口外 */
+      });
+      s8Timer = setInterval(function () {
+        if (s8Done || s8Paused) return;
+        s8Left--;
+        $('s8num').textContent = s8Left;
+        if (s8Left <= 0) {
+          s8Done = true;
+          clearInterval(s8Timer);
+          $('s8num').style.display = 'none';
+          $('s8hint').style.display = '';
+          /* 2026-08-14：最后1%由5秒观察完成 → 显示 100%（5-6 停在 99%） */
+          $('s8stable').style.display = '';
+          /* 顺序调整：直视5秒完成后 → 收束（谢谢你的注视）；2026-08-16 缩短停顿 */
+          setTimeout(runS7, 400);
+        }
+      }, 1000);
+    });
+  }
+})();
+</script>
+<script src="js/common.js"></script>
+<script>window.pageGate('diary3_done');</script>
+</body>
+</html>

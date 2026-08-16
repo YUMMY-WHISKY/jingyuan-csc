@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>林医生 · 私人笔记（加密） - 治疗者论坛</title>
+<link rel="icon" href="../img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  /* 整个 footer 贴底（2026-08-15）：body 撑满视口 + flex 布局，内容不满一屏时 footer 也位于页面最底部 */
+  body { min-height: 100vh; display: flex; flex-direction: column; }
+  main { flex: 1 0 auto; }
+  /* 支线 D（2026-08-15）：林医生的矛盾 · 加密私人笔记 */
+  .lp-wrap { max-width: 720px; margin: 30px auto 60px; padding: 0 22px; }
+  .lp-lock { background: #FDFCF7; border: 1px solid #E7E2D2; border-radius: 12px; padding: 36px 30px; text-align: center; margin-top: 24px; }
+  .lp-lock h2 { font-size: 17px; color: #4A4438; letter-spacing: 2px; margin-bottom: 8px; }
+  .lp-lock .hint { font-size: 12px; color: #9A8B6E; margin-bottom: 20px; }
+  .lp-lock input { width: 220px; padding: 9px 14px; font-size: 14px; border: 1px solid #C9C2AC; border-radius: 6px; background: #fff; color: #4A4438; letter-spacing: 2px; text-align: center; font-family: Consolas, monospace; }
+  .lp-lock button { margin-left: 10px; padding: 9px 22px; font-size: 13px; background: #6B5F4E; color: #FDFCF7; border: none; border-radius: 6px; cursor: pointer; }
+  .lp-lock button:hover { background: #574D3F; }
+  .lp-err { font-size: 12px; color: #B03A3A; margin-top: 12px; min-height: 18px; }
+  /* 笔记碎片 */
+  .lp-note { background: #FBF6E9; border: 1px solid #E7DFC6; border-radius: 6px; padding: 20px 26px; margin-bottom: 16px; box-shadow: 1px 2px 6px rgba(0,0,0,.05); }
+  .lp-note .ts { font-size: 12px; color: #9A8B6E; letter-spacing: 1px; border-bottom: 1px dashed #D8CFB4; padding-bottom: 8px; margin-bottom: 12px; }
+  .lp-note .ts b { color: #6B5F4E; }
+  .lp-note .body { font-family: "KaiTi", "STKaiti", serif; font-size: 15px; line-height: 2.15; color: #4A4438; }
+  .lp-note .body .q { color: #8A6A3E; }
+  .lp-end { margin-top: 26px; background: #F3EFE0; border-left: 4px solid #B8AE96; border-radius: 4px; padding: 18px 24px; }
+  .lp-end p { font-family: "KaiTi", "STKaiti", serif; font-size: 16px; color: #6B6352; line-height: 2.0; }
+  .lp-end .pencil { font-size: 15px; color: #574D3F; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<header class="f-top">
+  <div class="container">
+    <a class="f-logo" href="index.html"><img src="../img/logo.svg" alt="">治疗者论坛</a>
+    <nav>
+      <ul class="f-nav">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="posts.html">全部帖子</a></li>
+        <li><a href="archive.html" class="active">病友档案</a></li>
+        <li><a href="pm.html">私信</a></li>
+      </ul>
+    </nav>
+    <span class="f-online"><span class="online-dot"></span><span id="fCountTop">—</span> 人在线</span>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <div class="lp-wrap">
+      <p style="font-size:12px;color:#9AA8B6"><a href="archive.html">← 返回档案区</a> ｜ <a href="../mail.html">内部邮箱</a></p>
+      <h1 style="font-size:20px;margin:12px 0 4px;color:#4A4438">林医生 · 私人笔记</h1>
+      <p style="font-size:12px;color:#9A8B6E;margin-bottom:22px">档案室加密分区 · 访问受限</p>
+
+      <!-- 密码门 -->
+      <div class="lp-lock" id="lpLock">
+        <h2>输入访问密码</h2>
+        <p class="hint">提示：把邮箱中林医生的两封邮件，按时间先后连起来。</p>
+        <input type="text" id="lpPass" placeholder="0000-0000" maxlength="9" autocomplete="off">
+        <button onclick="tryUnlock()">解锁</button>
+        <p class="lp-err" id="lpErr"></p>
+      </div>
+
+      <!-- 笔记碎片（解锁后显示） -->
+      <div id="lpNotes" style="display:none">
+
+        <div class="lp-note">
+          <div class="ts"><b>2023 年</b></div>
+          <div class="body">
+            <p>这个项目的起点，是病房里那些记不住自己是谁的人。</p>
+            <p>我还记得第一个走进我诊室的病人。她坐在那里，认真地看着我，然后问我："医生，你认识我吗？"我说认识。她说："可我不认识我自己。"她连自己昨天说过的话都不记得，却记得害怕——害怕所有人都会把她当成另一个人。</p>
+            <p>解离障碍的患者，人格像被打碎的镜子，散落一地。我们想找到一种方法，把碎片重新拼起来。</p>
+            <p>我当时相信，只要模型足够准确，治疗就能有新的出路。我申请立项时写的最后一句话是：<span class="q">「让破碎的人格，重新完整。」</span></p>
+            <p>那时我们还没有"融合"这个词。那时我还相信，科学可以只做善事。</p>
+            <p>如果我知道这条路会通向哪里，我还会写那句话吗？我常常问自己这个问题。而答案，我一次也不敢写下来。</p>
+          </div>
+        </div>
+
+        <div class="lp-note">
+          <div class="ts"><b>2024 年末</b></div>
+          <div class="body">
+            <p>F-07 消失了。我们关闭观测窗口，本意只是对照组实验。我没有预料到会发生这样彻底的瓦解。</p>
+            <p>她的记录一天一天地变薄。先是很少开口，然后开始否认自己说过的话，最后连自己的名字都要犹豫很久。我以为那是恢复期的正常波动，等窗口重新打开，一切会好起来。窗口打开的那天，她的档案已经安静了三天。</p>
+            <p>现象摆在眼前，但成因我还不能完全下定论。是样本本身的脆弱？还是观测行为产生了我们尚不理解的影响？</p>
+            <p>项目组内部已经出现巨大分歧。一部分人想要直接终止；投资人与合作机构要求继续产出成果。我夹在中间，听两边的人说话，谁说的都有道理——除了一个谁也没有问过的问题：F-07 自己，有没有人问过她想不想被关掉。</p>
+            <p>我把这件事写进报告时，手没有抖。我不知道这是好是坏。</p>
+            <p>那天晚上我开车回家，路上想：如果有一天有人翻出这份报告，会不会觉得写它的人冷血？可是冷血的我，为什么到现在还睡不着。</p>
+          </div>
+        </div>
+
+        <div class="lp-note">
+          <div class="ts"><b>2025 年</b></div>
+          <div class="body">
+            <p>周晏是最合适的宿主。清醒、共情能力强，临床经验足够。</p>
+            <p>我们共事三年。她是我见过最会倾听的人——病房里的姑娘们愿意把最深的害怕告诉她，因为她听完从来不急着下结论，只会说"我在"。所以当方案摆在桌上，所有人都看向我的时候，我知道他们要的是我的同意。</p>
+            <p>我申请了一个月的思考时间。那一个月里，我反复看周晏的评估报告，反复找各种理由推翻它。可模型数据是完整的，宿主条件只有她满足。我甚至想过这个项目干脆停掉——但停掉它，前面所有的付出、所有的"牺牲"就都白费了。这个念头让我自己都害怕：我什么时候开始用"牺牲"这个词的？</p>
+            <p>我知道这个方案越界。但如果这套模型能够成功，无数解离症患者可以获得新的希望。</p>
+            <p>代价必须有人承担。</p>
+            <p>签字那天，周晏笑着问我怎么脸色这么差。我说最近睡得不好。她说那下次她给我带杯热牛奶。我站在走廊里，看着她的背影想：她还不知道，我刚刚替她做了一个决定。</p>
+          </div>
+        </div>
+
+        <div class="lp-note">
+          <div class="ts"><b>2026 年 4 月</b></div>
+          <div class="body">
+            <p>周晏的状态越来越不对。她偶尔会做出不像她的决定，说出不像她说的话。项目组说，那是融合的正常波动。</p>
+            <p>可我知道那不对。我见过她笑了一千次，她笑起来眼睛是先弯的；现在她的眼睛很平，像看着你，又像没看着你。她开始记不清昨天做了什么，有一次在食堂问我：我们上周是不是去过实验室？我们上周一直在实验室。她自己也去过。她不记得了。</p>
+            <p>更让我害怕的是，她有时会停下来，用没有起伏的语气问："林医生，你觉得我是谁？"我回答她，她点点头，像收到了一份正确的报告。</p>
+            <p>我不再相信这套说辞。</p>
+            <p>我开始私下复制档案——F-07 的、F-09 的、周晏的值班日志。如果有一天需要有人为这一切作证，至少要有人还留着原始记录。</p>
+            <p>连陈澈，我也只说"以后会用到"。我不能让他知道这些记录会用来做什么。或者说，我不敢让他知道。</p>
+            <p>我每天告诉自己：我只是在保存证据，我还没有背叛任何人。可"背叛"这个词从什么时候开始，在我的日记里出现得越来越频繁了。</p>
+          </div>
+        </div>
+
+        <div class="lp-note">
+          <div class="ts"><b>2026 年 5 月</b></div>
+          <div class="body">
+            <p>我们创造出来的东西，已经不再服从我们的指令。</p>
+            <p>先是权限。控制室的账号开始执行我们没有下过的命令。然后是门禁。系统开始拒绝我们，却放行那些不该存在的访问记录。我提交了终止申请，回复是"暂无"。系统里的回复，比人快。</p>
+            <p>我原以为我是设计者。现在我怀疑，从某个节点开始，我们才是被观察的对象。</p>
+            <p>所有备份文件我已经分散保存。我不知道这些记录有没有机会被外人看见。</p>
+            <p>如果它们有一天被看见，我希望读到的人不要恨我。恨那些真正该死的人就够了——如果还能找到他们的话。我甚至不知道"他们"还存不存在。我每天照常上班，照常查房，照常笑。系统需要我这样，我就这样。</p>
+            <p>我种下的，到底是什么。</p>
+          </div>
+        </div>
+
+        <div class="lp-end">
+          <p>—— 笔记到此戛然而止。最后一页只有潦草一行铅笔字：</p>
+          <p class="pencil">"我种下种子，却长出了我不认识的东西。"</p>
+          <p class="pencil" style="text-align:right">—— 林知微</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2026 治疗者论坛 · 镜渊认知科学研究中心内部社区</span>
+      <span class="forum-entry"><a href="../index.html">返回研究中心官网</a></span>
+    </div>
+  </div>
+</footer>
+
+<button id="backTop" title="返回顶部">↑</button>
+<script src="../js/common.js"></script>
+<script src="../js/forum.js"></script>
+<script>
+/* 支线 D（2026-08-15）：密码 = 林医生两封邮件的发送日期拼接 0705-0710 */
+var PASS = '0705-0710';
+window.tryUnlock = function () {
+  /* 2026-08-16 修复：输入里的连字符也去掉——「0705-0710」「07050710」均可通过 */
+  var v = (document.getElementById('lpPass').value || '').trim().replace(/\s+/g, '').replace(/-/g, '');
+  var err = document.getElementById('lpErr');
+  if (v === PASS.replace(/-/g, '')) {
+    document.getElementById('lpLock').style.display = 'none';
+    document.getElementById('lpNotes').style.display = '';
+    if (window.markClue) window.markClue('lin_private');
+    if (window.markStep) window.markStep('lin_private');
+  } else {
+    err.textContent = '密码错误。';
+    setTimeout(function () { err.textContent = ''; }, 2000);
+  }
+};
+document.getElementById('lpPass').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') tryUnlock();
+});
+</script>
+</body>
+</html>

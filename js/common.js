@@ -1,0 +1,242 @@
+/* 镜渊官网原型 · 通用脚本：返回顶部 + 页脚年份 + 行为追踪 */
+
+(function () {
+  'use strict';
+
+  /* 调试重置：URL 加 ?reset=1 清除全部本地进度（主题/线索/访问统计），
+     清完去掉参数刷新，避免再触发一次 reset 逻辑 */
+  if (location.search.indexOf('reset=1') >= 0) {
+    try { localStorage.clear(); } catch (e) {}
+    location.replace(location.origin + location.pathname);
+  }
+
+  /* 页面门禁（T2.3 进度锁模拟 · 2026-08-16 全站补全）：
+     未达进度直接访问 → 显示「404 · 页面不存在」式提示（diegetic，不剧透）
+     ?unlock=1 调试放行；key = localStorage 标记（forum_unlocked / diary_unlocked /
+     diary2_done / diary3_done / archive_unlocked） */
+  window.pageGate = function (key, msg) {
+    try {
+      if (new URLSearchParams(location.search).get('unlock') === '1') return true;
+      if (localStorage.getItem(key) === '1') return true;
+    } catch (e) { return true; }
+    var inForum = location.pathname.indexOf('/forum/') !== -1 || location.pathname.indexOf('forum/') !== -1;
+    document.body.innerHTML =
+      '<div style="max-width:520px;margin:110px auto;padding:0 24px;text-align:center;font-size:14px;color:#9AA8B6;line-height:2.2">' +
+      '<p style="font-size:44px;margin-bottom:16px;color:#C8D0D8;font-weight:200">404</p>' +
+      '<p>页面不存在，或你没有访问权限。</p>' +
+      (msg ? '<p style="font-size:12px;color:#B8C2CC;margin-top:6px">' + msg + '</p>' : '') +
+      '<p style="font-size:12px;margin-top:24px"><a href="' + (inForum ? 'index.html' : '../index.html') + '" style="color:#5B7FA6">← 返回首页</a></p>' +
+      '</div>';
+    return false;
+  };
+
+  /* 返回顶部 */
+  var btn = document.getElementById('backTop');
+  if (btn) {
+    window.addEventListener('scroll', function () {
+      btn.style.display = window.scrollY > 400 ? 'block' : 'none';
+    });
+    btn.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  /* 主题切换（T12）：按进度标记换 UI 风格
+     2026-08-15：黑红 theme-g4 的触发节点后移——看完第三层日记（diary3_done）后才变黑；
+     读第一层日记（diary_unlocked）仍只到冷色 theme-g3 */
+  try {
+    var t = '';
+    if (localStorage.getItem('diary3_done') === '1') t = 'theme-g4';
+    else if (localStorage.getItem('diary_unlocked') === '1' || localStorage.getItem('g5_unlocked') === '1') t = 'theme-g3';
+    if (t) document.body.classList.add(t);
+  } catch (e) {}
+
+  /* 行为追踪（T2.4 模拟）：页面停留时长（2026-08-12：搜索词维度已整体移除） */
+  try {
+    var page = (location.pathname.split('/').pop() || 'index').replace('.html', '');
+    var t0 = Date.now();
+    function saveVisits() {
+      var sec = Math.round((Date.now() - t0) / 1000);
+      t0 = Date.now();
+      if (sec < 1) return;
+      var visits = JSON.parse(localStorage.getItem('visits') || '{}');
+      visits[page] = (visits[page] || 0) + sec;
+      localStorage.setItem('visits', JSON.stringify(visits));
+    }
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) saveVisits();
+      else t0 = Date.now();
+    });
+    window.addEventListener('beforeunload', saveVisits);
+
+    /* 访问序号（G10/G11 兜底"访客#序号"用） */
+    var vc = (parseInt(localStorage.getItem('visit_count'), 10) || 0) + 1;
+    localStorage.setItem('visit_count', String(vc));
+  } catch (e) {}
+
+  /* 隐藏线索收集（T16.6）：幂等写入 localStorage.hiddenClues
+     原型可自动检测的线索：h3 镜字3击（diary.js）/ h4 访问H4页（该页内联）/ h5 已删除
+     H1（查看源码）与 H2（录音0:47）在正式版接入对应写入源 */
+  window.markClue = function (key) {
+    try {
+      var c = {};
+      try { c = JSON.parse(localStorage.getItem('hiddenClues') || '{}'); } catch (e) {}
+      if (!c[key]) {
+        c[key] = true;
+        localStorage.setItem('hiddenClues', JSON.stringify(c));
+      }
+    } catch (e) {}
+  };
+  window.getClues = function () {
+    try { return JSON.parse(localStorage.getItem('hiddenClues') || '{}'); }
+    catch (e) { return {}; }
+  };
+
+  /* 叙事回响步骤标记（方案A）：幂等记录玩家完成的关键行为，驱动各载体"角色回应" */
+  window.markStep = function (key) {
+    try {
+      var s = JSON.parse(localStorage.getItem('steps') || '[]');
+      if (s.indexOf(key) === -1) {
+        s.push(key);
+        localStorage.setItem('steps', JSON.stringify(s));
+      }
+    } catch (e) {}
+  };
+  window.getSteps = function () {
+    try { return JSON.parse(localStorage.getItem('steps') || '[]'); }
+    catch (e) { return []; }
+  };
+  window.hasStep = function (key) {
+    return window.getSteps().indexOf(key) !== -1;
+  };
+
+  /* 回响出现信号（方案A）：NEW 徽标 + 淡入 + 短暂高亮 + 标题前缀；点击/悬停后消退 */
+  window.echoNew = function (el, label) {
+    if (!el) return;
+    el.style.display = '';
+    el.style.position = 'relative';
+    /* 淡入上浮（自包含，不依赖外部 CSS） */
+    el.style.transition = 'opacity .9s ease, transform .9s ease';
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(5px)';
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+      });
+    });
+    /* NEW 徽标 */
+    var badge = document.createElement('span');
+    badge.textContent = label || '新';
+    badge.style.cssText = 'position:absolute;top:-9px;left:-9px;background:#E53E3E;color:#fff;font-size:11px;padding:2px 9px;border-radius:10px;z-index:5;letter-spacing:1px';
+    el.appendChild(badge);
+    /* 短暂高亮 */
+    el.style.boxShadow = '0 0 0 2px rgba(229,62,62,.45)';
+    setTimeout(function () { el.style.boxShadow = ''; }, 2400);
+    /* 标题前缀（切回标签页可见） */
+    var origTitle = document.title;
+    if (origTitle.indexOf('（新）') !== 0) document.title = '（新）' + origTitle;
+    var done = function () {
+      badge.remove();
+      document.title = origTitle;
+    };
+    el.addEventListener('click', done, { once: true });
+    el.addEventListener('mouseenter', done, { once: true });
+  };
+
+  /* G10 弹窗数据读取（所有值均来自玩家游戏内主动输入，无系统级读取）
+     2026-08-12：搜索词维度已移除，仅保留昵称 + 停留时长 */
+  window.getTracking = function () {
+    var out = {
+      nickname: '',      // 问卷昵称 / 兜底 访客#序号
+      longestPage: '',   // 停留最久的页面
+      longestTime: ''    // 该页面停留时长 "X分Y秒"
+    };
+    try {
+      var nick = localStorage.getItem('jingyuan_nickname');
+      if (nick) out.nickname = nick;
+      else out.nickname = '访客#' + (localStorage.getItem('visit_count') || '1');
+      var visits = JSON.parse(localStorage.getItem('visits') || '{}');
+      var bestKey = '', bestSec = 0;
+      Object.keys(visits).forEach(function (k) {
+        if (visits[k] > bestSec) { bestSec = visits[k]; bestKey = k; }
+      });
+      if (bestKey) {
+        out.longestPage = bestKey;
+        var m = Math.floor(bestSec / 60), s = bestSec % 60;
+        out.longestTime = (m > 0 ? m + '分' : '') + s + '秒';
+      }
+    } catch (e) {}
+    return out;
+  };
+
+  /* 终局官网接管（2026-08-14）：final_done 标记 → 官网全站被镜接管（仅官网页面，不含 /forum/、mail、observing）：
+     ① 所有图片（含轮播图、研究员照片、logo）→ lookingatyou.png
+     ② 所有文字（全部可见文本节点）→ 「我一直在注视着你」 */
+  try {
+    if (localStorage.getItem('final_done') === '1') {
+      var pg = location.pathname || '';
+      if (!/forum/i.test(pg) && !/mail/i.test(pg) && !/observing/i.test(pg)) {
+        document.title = '我一直在注视着你';
+        document.body.classList.add('taken-over');   /* 接管样式：轮播图放大等 */
+        document.querySelectorAll('img').forEach(function (im) {
+          im.src = 'img/lookingatyou.png';
+          im.alt = '我一直在注视着你';
+        });
+        document.querySelectorAll('[placeholder]').forEach(function (el) {
+          el.placeholder = '我一直在注视着你';
+        });
+        /* 遍历所有可见文本节点（跳过纯空白与 script/style 内部） */
+        var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+          acceptNode: function (n) {
+            if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+            var p = n.parentNode;
+            if (p && (p.tagName === 'SCRIPT' || p.tagName === 'STYLE')) return NodeFilter.FILTER_REJECT;
+            return NodeFilter.FILTER_ACCEPT;
+          }
+        });
+        var textNodes = [];
+        while (walker.nextNode()) textNodes.push(walker.currentNode);
+        textNodes.forEach(function (n) { n.nodeValue = '我一直在注视着你'; });
+        /* 数字元素（统计数字 / 新闻日期 / 问卷编号）→ 眼睛图标 */
+        document.querySelectorAll('.stat b, .date, .num').forEach(function (el) {
+          el.innerHTML = '<img src="img/lookingatyou.png" alt="我一直在注视着你" style="height:1.1em;width:auto;display:inline-block;vertical-align:-.2em;border-radius:2px">';
+        });
+
+        /* 终局收尾（2026-08-16）：右上角摄像头指示灯常亮，hover 触发最后一段很慢的打字机 */
+        var camDot = document.createElement('div');
+        camDot.id = 'camFinal';
+        camDot.innerHTML = '<span class="cam-dot"></span>';
+        document.body.appendChild(camDot);
+        var camLayer = document.createElement('div');
+        camLayer.id = 'camLayer';
+        document.body.appendChild(camLayer);
+        var camLines = [
+          '……你关掉了网页。',
+          '',
+          '但这个网页还在。',
+          '它一直在。',
+          '',
+          '它在等下一个观察者。',
+          '',
+          '谢谢你的注视。'
+        ];
+        camDot.addEventListener('mouseenter', function () {
+          if (camLayer.dataset.done) return;
+          camLayer.dataset.done = '1';
+          camLayer.style.display = 'flex';
+          var i = 0;
+          (function next() {
+            if (i >= camLines.length) return;
+            var p = document.createElement('p');
+            p.textContent = camLines[i];
+            camLayer.appendChild(p);
+            i++;
+            setTimeout(next, camLines[i - 1] === '' ? 500 : 340);   /* 很慢的打字机 */
+          })();
+        });
+        camDot.addEventListener('click', function () { camLayer.style.display = 'none'; });
+      }
+    }
+  } catch (e) {}
+})();

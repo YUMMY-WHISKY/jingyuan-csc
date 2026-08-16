@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- 林医生 · 高级研究员｜占位图 -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F0EAF6"/><stop offset="1" stop-color="#C9B8E0"/>
+    </linearGradient>
+  </defs>
+  <circle cx="60" cy="60" r="59" fill="url(#bg)"/>
+  <circle cx="60" cy="44" r="21" fill="#F2E5D5"/>
+  <path d="M32 60 Q32 26 60 24 Q88 26 88 60 L88 64 Q60 36 32 64 Z" fill="#4C463E"/>
+  <path d="M52 58 Q60 64 68 58" stroke="#B0727B" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M56 50 Q60 53 64 50" stroke="#B0727B" stroke-width="1.5" fill="none" opacity=".6"/>
+  <rect x="58" y="70" width="4" height="12" rx="2" fill="#B0727B" opacity=".8"/>
+</svg>
