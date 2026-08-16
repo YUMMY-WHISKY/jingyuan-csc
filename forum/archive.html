@@ -218,7 +218,7 @@
           <p class="arc-hint">※ 此归档与公开档案存在差异，请勿外传。如有疑问请联系管理员。</p>
         </div>
 
-        <button id="arcBtn" class="arc-btn" onclick="toggleArchive()" style="display:none">历史归档</button>
+        <button id="arcBtn" class="arc-btn" onclick="toggleArchive()" style="display:none;margin:22px auto;width:fit-content">历史归档</button>
       </div>
 
       <aside class="f-side">
@@ -256,8 +256,9 @@
 <script src="../js/forum.js"></script>
 <script>
 /* 档案区访问密码（2026-08-16）：密码=论坛成立日 1220（提示见暖阳帖《今天的档案区好像进不去了》）
-   调试入口：?arc=1 直接解锁；错误提示中性，不引导找出处 */
-(function () {
+   调试入口：?arc=1 直接解锁；错误提示中性，不引导找出处
+   2026-08-17：封装为函数；pageshow / 切回前台时重跑，避免后退需刷新才显示已解锁列表 */
+function applyArcUnlockGate() {
   var q = new URLSearchParams(location.search);
   if (q.get('arc') === '1') { try { localStorage.setItem('archive_unlocked', '1'); } catch (e) {} }
   var unlocked = false;
@@ -268,7 +269,10 @@
     lock.style.display = unlocked ? 'none' : 'block';
     list.style.display = unlocked ? '' : 'none';
   }
-})();
+}
+applyArcUnlockGate();
+window.addEventListener('pageshow', function () { applyArcUnlockGate(); });
+document.addEventListener('visibilitychange', function () { if (!document.hidden) applyArcUnlockGate(); });
 
 function arcUnlock() {
   var v = (document.getElementById('arcPwd').value || '').replace(/\D/g, '');
@@ -282,8 +286,10 @@ function arcUnlock() {
 }
 
 /* G5 门控（T2.3 进度锁模拟）：读完日记第一层（diary_unlocked，调试 ?g5=1）后，历史归档入口才出现
-   2026-08-16 十八轮：从 diary2_done 改回 diary_unlocked（用户：历史归档放日记一后面解锁） */
-(function () {
+   2026-08-16 十八轮：从 diary2_done 改回 diary_unlocked（用户：历史归档放日记一后面解锁）
+   2026-08-17：封装为函数；在 pageshow（后退 BFCache 恢复）与切回前台时重跑，
+   避免玩家看完日记1后退回档案页仍需刷新才显示 */
+function applyG5Gate() {
   var q = new URLSearchParams(location.search);
   if (q.get('g5') === '1') { try { localStorage.setItem('diary_unlocked', '1'); } catch (e) {} }
   var unlocked = false;
@@ -292,7 +298,10 @@ function arcUnlock() {
   if (b) b.style.display = unlocked ? 'block' : 'none';
   var d2 = document.getElementById('diary2Card');
   if (d2) d2.style.display = unlocked ? '' : 'none';
-})();
+}
+applyG5Gate();
+window.addEventListener('pageshow', function () { applyG5Gate(); });
+document.addEventListener('visibilitychange', function () { if (!document.hidden) applyG5Gate(); });
 
 /* 档案三链门控（2026-08-16）：
    档案异常链（浅，历史归档/编号归档）→ 读日记1（diary_unlocked）即解锁，见上方 G5 门控。
@@ -305,6 +314,10 @@ var PWD_DEEP = 'hajiminameiluduo';
   var q = new URLSearchParams(location.search);
   if (q.get('id') === '1') { try { localStorage.setItem('archive_id', '1'); } catch (e) {} }
   if (q.get('deep') === '1') { try { localStorage.setItem('archive_deep', '1'); } catch (e) {} }
+})();
+/* 三链入口显示：随 localStorage（archive_id / archive_deep）变化即时刷新。
+   同 G5，封装后在 pageshow / 切回前台时重跑，避免后退要刷新才显示 */
+function applyArchiveGates() {
   var idOk = false, deepOk = false;
   try { idOk = localStorage.getItem('archive_id') === '1'; } catch (e) {}
   try { deepOk = localStorage.getItem('archive_deep') === '1'; } catch (e) {}
@@ -314,7 +327,10 @@ var PWD_DEEP = 'hajiminameiluduo';
   if (pl) pl.style.display = deepOk ? '' : 'none';
   var tc = document.getElementById('toolsCard');
   if (tc) tc.style.display = deepOk ? '' : 'none';
-})();
+}
+applyArchiveGates();
+window.addEventListener('pageshow', function () { applyArchiveGates(); });
+document.addEventListener('visibilitychange', function () { if (!document.hidden) applyArchiveGates(); });
 
 /* 归档检索：输入口令A / 口令B，确认后直接跳转到对应页面（不再仅显示入口）
    口令A（iamwaitingforyou，日记1角标凯撒解出）→ 身份比对工具 identity.html

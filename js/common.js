@@ -303,8 +303,10 @@
         'border-radius:6px;padding:12px 20px;font-size:13px;color:#fff;letter-spacing:1px;' +
         'box-shadow:0 6px 24px rgba(0,0,0,.45);cursor:pointer;animation:mtFade .4s ease;' +
         'display:flex;align-items:center;gap:14px;';
+      /* 邮箱页固定在根目录，不用 forum 相对路径：在 forum 子页面里会落去不存在的 forum/mail.html */
+      var mailHref = location.pathname.indexOf('forum') !== -1 ? '../mail.html' : 'mail.html';
       var link = document.createElement('a');
-      link.href = 'mail.html';
+      link.href = mailHref;
       link.textContent = '收到 ' + fresh.length + ' 封新邮件 · 查看 →';
       link.style.cssText = 'color:#fff;text-decoration:none;white-space:nowrap;';
       var close = document.createElement('span');
@@ -313,7 +315,7 @@
       close.addEventListener('click', function (e) { e.stopPropagation(); toast.remove(); });
       toast.appendChild(link);
       toast.appendChild(close);
-      toast.addEventListener('click', function () { location.href = 'mail.html'; });
+      toast.addEventListener('click', function () { location.href = mailHref; });
       document.body.appendChild(toast);
 
       /* 自动消失（12s） */
