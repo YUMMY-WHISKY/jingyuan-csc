@@ -106,12 +106,12 @@
 <script src="../js/common.js"></script>
 <script src="../js/forum.js"></script>
 <script>
-/* ── 权限门控（2026-08-16 支线统一后移）：身份比对为支线 A，读完第三层日记（diary3_done，调试 ?d3=1）后开放 ── */
+/* ── 权限门控（2026-08-16 档案三链口令门禁）：身份比对属「身份之谜链」，口令A（iamwaitingforyou，日记1角标凯撒解出）解锁，调试 ?id=1 ── */
 (function () {
   var q = new URLSearchParams(location.search);
-  if (q.get('d3') === '1') { try { localStorage.setItem('diary3_done', '1'); } catch (e) {} }
+  if (q.get('id') === '1') { try { localStorage.setItem('archive_id', '1'); } catch (e) {} }
   var ok = false;
-  try { ok = localStorage.getItem('diary3_done') === '1'; } catch (e) {}
+  try { ok = localStorage.getItem('archive_id') === '1'; } catch (e) {}
   if (!ok) {
     var wrap = document.querySelector('.id-wrap');
     if (wrap) wrap.innerHTML =

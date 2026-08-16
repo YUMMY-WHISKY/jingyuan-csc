@@ -239,4 +239,69 @@
       }
     }
   } catch (e) {}
+
+  /* 全局新邮件浮窗（2026-08-16）：任意页面检测到「已解锁但尚未闭环」的新邮件，
+     就在页面顶部弹出提示，点击跳转内部邮箱。
+     mail_seen：在邮箱页浏览后写入；mail_global_notified：全局浮窗已提示过的批次（避免每页每次都弹）。
+     解锁映射必须与 mail.html 保持一致。 */
+  try {
+    (function globalMailToast() {
+      function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+      function arrGet(k) { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch (e) { return []; } }
+      function arrSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+      /* 与 mail.html 一致的解锁映射 */
+      var map = {
+        diary_unlocked: ['m1', 'm2', 'm3'],
+        diary2_done: ['m4', 'm5', 'm6', 'm7'],
+        diary3_done: ['m8', 'm9', 'm10', 'm13', 'm14'],
+        final_done: ['m11']
+      };
+      var unlocked = [];
+      Object.keys(map).forEach(function (k) {
+        if (lsGet(k) === '1') unlocked = unlocked.concat(map[k]);
+      });
+      if (window.hasStep && window.hasStep('r5')) unlocked.push('mr5');
+
+      var seen = arrGet('mail_seen');
+      var noted = arrGet('mail_global_notified');
+      var fresh = unlocked.filter(function (id) {
+        return seen.indexOf(id) === -1 && noted.indexOf(id) === -1;
+      });
+      if (fresh.length === 0) return;
+
+      /* 先标记已提示，避免重复弹 */
+      arrSet('mail_global_notified', noted.concat(fresh));
+
+      /* 动画关键帧（一次性注入） */
+      if (!document.getElementById('mtKeyframes')) {
+        var st = document.createElement('style');
+        st.id = 'mtKeyframes';
+        st.textContent = '@keyframes mtFade{from{opacity:0;transform:translate(-50%,-8px)}to{opacity:1;transform:translate(-50%,0)}}';
+        document.head.appendChild(st);
+      }
+
+      var toast = document.createElement('div');
+      toast.style.cssText = 'position:fixed;top:14px;left:50%;transform:translate(-50%,0);z-index:9999;' +
+        'background:rgba(16,20,26,.97);border:1px solid #3A78B8;border-left:3px solid #3A78B8;' +
+        'border-radius:6px;padding:12px 20px;font-size:13px;color:#fff;letter-spacing:1px;' +
+        'box-shadow:0 6px 24px rgba(0,0,0,.45);cursor:pointer;animation:mtFade .4s ease;' +
+        'display:flex;align-items:center;gap:14px;';
+      var link = document.createElement('a');
+      link.href = 'mail.html';
+      link.textContent = '收到 ' + fresh.length + ' 封新邮件 · 查看 →';
+      link.style.cssText = 'color:#fff;text-decoration:none;white-space:nowrap;';
+      var close = document.createElement('span');
+      close.textContent = '×';
+      close.style.cssText = 'color:#6E7E90;cursor:pointer;font-size:15px;line-height:1;';
+      close.addEventListener('click', function (e) { e.stopPropagation(); toast.remove(); });
+      toast.appendChild(link);
+      toast.appendChild(close);
+      toast.addEventListener('click', function () { location.href = 'mail.html'; });
+      document.body.appendChild(toast);
+
+      /* 自动消失（12s） */
+      setTimeout(function () { if (toast.parentNode) toast.remove(); }, 12000);
+    })();
+  } catch (e) {}
 })();

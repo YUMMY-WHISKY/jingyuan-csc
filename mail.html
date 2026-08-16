@@ -16,6 +16,8 @@
   .mail-title { font-size: 20px; color: #E8F0FA; letter-spacing: 3px; margin-bottom: 6px; }
   .mail-sub { font-size: 12px; color: #6E7E90; margin-bottom: 26px; }
   .mail-list { background: #151A21; border: 1px solid #2A3340; border-radius: 8px; overflow: hidden; }
+  /* 阶段之间的间隔（无文字，仅留白分隔） */
+  .mail-gap { height: 12px; background: #101318; border-top: 1px solid #222A33; border-bottom: 1px solid #222A33; }
   .mail-item { display: flex; align-items: center; gap: 14px; padding: 16px 20px; border-bottom: 1px solid #222A33; cursor: pointer; transition: background .2s; }
   .mail-item:last-child { border-bottom: none; }
   .mail-item:hover { background: #1C232D; }
@@ -49,51 +51,10 @@
 
 <main class="mail-wrap">
   <div class="mail-title">内部邮箱</div>
-  <div class="mail-sub">仅限中心内部人员使用。所有邮件自动归档，请勿外传。</div>
+  <div class="mail-sub">仅限中心内部人员使用。所有邮件自动归档，解封锁存的邮件会陆续投递。</div>
 
-  <!-- 收件箱 -->
-  <div class="mail-list" id="inbox">
-    <div class="mail-item unread" onclick="openMail(0)">
-      <span class="m-dot"></span>
-      <div class="m-body">
-        <div class="m-from">观察者：<span id="mFrom0">访客</span></div>
-        <div class="m-subj">关于"<span id="mSubj0">…</span>"的确认记录</div>
-      </div>
-      <span class="m-time" id="mTime0">刚刚</span>
-    </div>
-    <div class="mail-item read" onclick="openMail(1)">
-      <span class="m-dot"></span>
-      <div class="m-body">
-        <div class="m-from">系统通知</div>
-        <div class="m-subj">档案室数据同步完成 · 请查收 6 月归档</div>
-      </div>
-      <span class="m-time">2026-06-30 03:12</span>
-    </div>
-    <div class="mail-item read" onclick="openMail(2)">
-      <span class="m-dot"></span>
-      <div class="m-body">
-        <div class="m-from">林医生</div>
-        <div class="m-subj">关于 F-09 评估材料的一个问题</div>
-      </div>
-      <span class="m-time">2026-07-05 14:22</span>
-    </div>
-    <div class="mail-item read" onclick="openMail(3)">
-      <span class="m-dot"></span>
-      <div class="m-body">
-        <div class="m-from">林医生</div>
-        <div class="m-subj">（无主题）</div>
-      </div>
-      <span class="m-time">2026-07-12 22:47</span>
-    </div>
-    <div class="mail-item unread" id="mailR5" style="display:none" onclick="openMail(4)">
-      <span class="m-dot"></span>
-      <div class="m-body">
-        <div class="m-from">系统通知</div>
-        <div class="m-subj">文件访问提醒 · 归档已记录</div>
-      </div>
-      <span class="m-time" id="mTimeR5">刚刚</span>
-    </div>
-  </div>
+  <!-- 收件箱（由 JS 按解锁进度渲染） -->
+  <div class="mail-list" id="inbox"></div>
 
   <!-- 邮件详情 -->
   <div class="mail-detail" id="detail">
@@ -106,94 +67,141 @@
 <script>
 (function () {
   'use strict';
-  var nickname = '访客#1';
-  try { nickname = localStorage.getItem('jingyuan_nickname') || '访客#1'; } catch (e) {}
 
-  /* G11 正文（2026-08-15：只陈述系统实际记录的事实，不做心理推测——删除"你在找什么/你舍不得走/你在赶什么"类读心文案） */
-  var body1 = '';
-  try {
-    var visits = JSON.parse(localStorage.getItem('visits') || '{}');
-    var best = null, bestSec = 0;
-    for (var k in visits) {
-      if (visits[k] > bestSec) { bestSec = visits[k]; best = k; }
-    }
-    if (best && bestSec >= 5) {
-      body1 = '你在"' + best + '"停留了' + Math.floor(bestSec / 60) + '分' + (bestSec % 60) + '秒。比其他页面都久。停留记录已归档。';
-    } else {
-      body1 = '你到这里用了不到十分钟。比之前的所有人都快。访问记录已归档。';
-    }
-  } catch (e) {
-    body1 = '你到这里用了不到十分钟。比之前的所有人都快。你在赶什么？';
-  }
-  /* 2026-08-15 改型：不再解释"观察=确认"，改为同期系统异常日志（研究中心失控） */
-  var anom = [
-    '[07-02 09:14] F-00 在非任务时段访问实验体档案。 —— 已标记为异常。未处理。',
-    '[07-03 03:17] 账号"顾明远"存在本人无记录的登录行为。来源 IP：内网。本人表示当天未值班。',
-    '[07-06 11:40] F-09 归档数据出现双版本记录。两套数据均未被修改。来源：不明。',
-    '[07-08 15:22] 关于是否继续实验的讨论：研究员甲：「我建议停止。」研究员乙：「再等等。快完成了。」研究员甲：「她开始记住我们的名字了。」',
-    '[07-10 09:05] 林医生提交《关于审查人格数据采集流程的申请》。回复：暂无。',
-    '[07-11 00:17] 控制室权限验证失败 ×3。申请人：〔系统〕。'
-  ];
-  body1 += '<p>附：同期系统日志摘录（归档时间 2026-07）</p>';
-  for (var i = 0; i < anom.length; i++) {
-    body1 += '<p class="hl" style="color:#D8A657">' + anom[i] + '</p>';
-  }
-  body1 += '<p>以上记录均已归档。请相关研究员于工作日核实。</p>';
-
-  /* G11 追踪邮件正文：完整归档记录 */
-  function buildG11Body(nickname) {
-    var L = [];
-    L.push('<p>【归档记录 · 供内部核对】</p>');
-    L.push('<p>编号：观察者#1</p>');
-    L.push('<p>登记名：<span class="hl">"' + nickname + '"</span></p>');
-    L.push('<p>——</p>');
-    L.push('<p>你填问卷的时候，说自己叫"' + nickname + '"。</p>');
-    L.push('<p>从输入的那一刻起，这个名字就已经被归档了。</p>');
-    L.push('<p>F-00也曾经填过。</p>');
-    L.push('<p>——</p>');
-    L.push('<p>' + body1 + '</p>');
-    L.push('<p>——</p>');
-    L.push('<p>记录摘要：</p>');
-    var hasRec = false;
-    try {
-      var visits = JSON.parse(localStorage.getItem('visits') || '{}');
-      var sorted = Object.keys(visits).sort(function (a, b) { return visits[b] - visits[a]; }).slice(0, 3);
-      sorted.forEach(function (k) {
-        if (visits[k] >= 3) {
-          L.push('<p>· 访问 "' + k + '" — ' + Math.floor(visits[k] / 60) + '分' + (visits[k] % 60) + '秒</p>');
-          hasRec = true;
-        }
-      });
-    } catch (e) {}
-    if (!hasRec) {
-      L.push('<p>（记录很少。你几乎什么都没留下——除了你的名字。）</p>');
-    }
-    L.push('<p>——</p>');
-    L.push('<p>这些记录，和她们的记录，放在同一个柜子里。</p>');
-    L.push('<p>——</p>');
-    L.push('<p>为什么是"你"？</p>');
-    L.push('<p>这个系统里每个人都被记录。但只有你，会走到最后。</p>');
-    L.push('<p>——</p>');
-    return L.join('');
-  }
-
+  /* 决策滑落时间线（2023→2026）· 历史邮件
+     unlock：解锁该邮件所需的关卡标记（localStorage 键） */
   var mails = [
+    /* 阶段一 · 初心（2023） */
     {
-      from: '观察者：' + nickname,
-      subj: '关于"' + (nickname === '访客#1' ? '你的到来' : nickname) + '"的访问记录',
-      time: new Date().toISOString().slice(0, 16).replace('T', ' '),
-      head: '发件人：' + nickname + '<br>收件人：所有已终止实验体<br>时间：' + new Date().toISOString().slice(0, 16).replace('T', ' ') + '<br>状态：<b>已发送</b>',
-      body: buildG11Body(nickname)
+      id: 'm1', unlock: 'diary_unlocked', grp: 'g1',
+      from: '林知微',
+      subj: '立项说明 · 让破碎的人格，重新完整',
+      time: '2023-03-02 09:14',
+      head: '发件人：林知微（项目负责人 / 创始人）<br>收件人：全体研究员<br>时间：2023-03-02 09:14<br>状态：已读',
+      body: '<p>各位：</p>' +
+            '<p>今天想和大家说说，我为什么坚持推动这个项目。</p>' +
+            '<p>过去几年，我在临床里反复遇到同一类病人——人格在创伤后裂开，今天记得自己是A，明天又告诉自己应该是B。现有的药和谈话疗法，只能把症状压下去，碰不到人格碎裂的根本。</p>' +
+            '<p>我们想做的，不是再给一片药。是帮他们把碎掉的自己，重新拼起来。</p>' +
+            '<p>我当时在立项书末尾写的那句话是——<span class="hl">「让破碎的人格，重新完整」</span>。</p>' +
+            '<p>那时还没有"融合"这个词。那时我还相信，科学可以只做善事。</p>' +
+            '<p>——林知微</p>'
+    },
+    /* 阶段二 · 第一道裂缝（2024） */
+    {
+      id: 'm2', unlock: 'diary_unlocked', grp: 'g1',
+      from: '陈澈',
+      subj: '回复：知情同意能否简化',
+      time: '2024-11-20 16:40',
+      head: '发件人：陈澈<br>收件人：林知微<br>时间：2024-11-20 16:40<br>状态：已读',
+      body: '<p>林医生：</p>' +
+            '<p>整理年度数据时发现，"知情同意"环节耗时最长。很多严重解离的患者，其实很难真正理解同意书的内容。</p>' +
+            '<p>能否对认知受损、无法完成完整告知的患者，简化知情同意流程？这样能显著加快入组速度。</p>' +
+            '<p>——陈澈</p>'
     },
     {
-      from: '系统通知',
-      subj: '档案室数据同步完成 · 请查收 6 月归档',
-      time: '2026-06-30 03:12',
-      head: '发件人：系统通知<br>收件人：全体研究员<br>时间：2026-06-30 03:12<br>状态：已读',
-      body: '<p>档案室已完成 6 月数据同步，归档记录请于工作日核对。</p>' +
-            '<p>备注：F-09 档案状态已更新，出院流程已办结。</p>'
+      id: 'm3', unlock: 'diary_unlocked', grp: 'g1',
+      from: '林知微',
+      subj: '回复：那就先这样办吧',
+      time: '2024-11-22 09:02',
+      head: '发件人：林知微<br>收件人：陈澈<br>时间：2024-11-22 09:02<br>状态：已读',
+      body: '<p>陈澈：</p>' +
+            '<p>我明白你的出发点。他们确实无法完整理解。</p>' +
+            '<p>但"简化"的意思是——由我们替他们判断，什么是"对他们好"。</p>' +
+            '<p>这一步迈出去，后面每一步都会容易很多。我想了很久……</p>' +
+            '<p>那就先这样办吧。资料上不必写得太细。</p>' +
+            '<p>——林</p>'
+    },
+    /* 阶段三 · 制造合成样本（2025） */
+    {
+      id: 'm4', unlock: 'diary2_done', grp: 'g2',
+      from: '林知微',
+      subj: '会议纪要 · 引入观测单元 F-00',
+      time: '2025-01-15 19:08',
+      head: '发件人：林知微<br>收件人：项目组<br>时间：2025-01-15 19:08<br>状态：已读',
+      body: '<p>根据会议讨论记录：</p>' +
+            '<p>1. 现有受试者人格结构不稳定，直接多人格融合风险过高。</p>' +
+            '<p>2. 建议引入"内部观测单元"（代号 F-00），植入宿主，借助宿主的清醒意识间接采集数据。</p>' +
+            '<p>3. 同步建立"合成样本"管理系统，编号自 F-01 起。</p>' +
+            '<p>以上进入实施评估。宿主人选另行确定。</p>' +
+            '<p>——林知微</p>'
     },
     {
+      id: 'm5', unlock: 'diary2_done', grp: 'g2',
+      from: '林知微',
+      subj: '宿主人选 ·〔机密〕',
+      time: '2025-02-10 21:30',
+      head: '发件人：林知微<br>收件人：陈澈<br>时间：2025-02-10 21:30<br>状态：已读<br>密级：〔机密〕',
+      body: '<p>陈澈：</p>' +
+            '<p>宿主的人选，我定了。</p>' +
+            '<p>周晏。她的评估报告我看了三遍。清醒、共情能力强、临床经验足够——是中心里最合适的人。</p>' +
+            '<p>她不知道。她只当我是同事。签字那天她笑着问我怎么脸色这么差，我说最近睡不好。</p>' +
+            '<p>陈澈，别告诉她。别告诉任何人。</p>' +
+            '<p>就当，这封邮件从未存在过。</p>' +
+            '<p>——林</p>'
+    },
+    {
+      id: 'm6', unlock: 'diary2_done', grp: 'g2',
+      from: '陈澈',
+      subj: '是否告知样本本人',
+      time: '2025-03-08 11:27',
+      head: '发件人：陈澈<br>收件人：林知微<br>时间：2025-03-08 11:27<br>状态：已读',
+      body: '<p>林医生：</p>' +
+            '<p>合成样本管理规范初稿已拟好。有一个问题需要您来拍板——</p>' +
+            '<p>这些合成样本，需不需要告知本人"我并不是自然出生的人"？</p>' +
+            '<p>目前多数样本已开始发展出连续的记忆和自我叙事。长期不告知，一旦暴露，影响会很大。</p>' +
+            '<p>——陈澈</p>'
+    },
+    {
+      id: 'm7', unlock: 'diary2_done', grp: 'g2',
+      from: '林知微',
+      subj: '回复：不告知',
+      time: '2025-03-10 15:33',
+      head: '发件人：林知微<br>收件人：陈澈<br>时间：2025-03-10 15:33<br>状态：已读',
+      body: '<p>陈澈：</p>' +
+            '<p>不告知。</p>' +
+            '<p>理由：告知会破坏样本的自我一致性，影响数据纯净度。从今天起这条原则写进规范，永不向样本本人透露其合成属性。</p>' +
+            '<p>这也是为了他们好——知道自己是被造的，只会更痛苦。</p>' +
+            '<p>——林</p>'
+    },
+    /* 阶段四 · 伦理废除（2025） */
+    {
+      id: 'm8', unlock: 'diary3_done', grp: 'g3',
+      from: '外部资助方',
+      subj: '进度与审查流程',
+      time: '2025-06-05 10:00',
+      head: '发件人：外部资助方<br>收件人：林知微<br>时间：2025-06-05 10:00<br>状态：已读<br>署名：〔已涂抹〕',
+      body: '<p>林先生：</p>' +
+            '<p>项目立项至今产出未达预期，后续资金将视数据质量决定。</p>' +
+            '<p>另悉贵中心伦理审查流程较繁琐，能否在合规前提下适度精简，以加快产出？</p>' +
+            '<p>我们期待看到更完整的数据。</p>'
+    },
+    {
+      id: 'm9', unlock: 'diary3_done', grp: 'g3',
+      from: '伦理审查委员会',
+      subj: '【决议】审查流程调整',
+      time: '2025-07-02 09:12',
+      head: '发件人：伦理审查委员会<br>收件人：全体<br>时间：2025-07-02 09:12<br>状态：已读',
+      body: '<p>经中心内部会议讨论，自本决议签发之日起：</p>' +
+            '<p>本项目不再纳入常规伦理审查流程。后续审查事项由项目负责人直接审批。</p>' +
+            '<p>原审查委员会即日起停止参与本项目任何环节。</p>' +
+            '<p>决议即日生效。</p>'
+    },
+    {
+      id: 'm10', unlock: 'diary3_done', grp: 'g3',
+      from: '顾明远',
+      subj: '（最后一封）',
+      time: '2025-07-18 23:47',
+      head: '发件人：顾明远<br>收件人：全体<br>时间：2025-07-18 23:47<br>状态：已读<br>颜色：〔红笔手书〕',
+      body: '<p style="color:#B03A3A">——</p>' +
+            '<p style="color:#B03A3A">我们已经不再做治疗了。</p>' +
+            '<p style="color:#B03A3A">我们在制造人。</p>' +
+            '<p style="color:#B03A3A">——</p>' +
+            '<p style="color:#B03A3A">从今天起，所有决策由系统自动归档。我不会再回复。</p>' +
+            '<p style="color:#B03A3A">——顾明远</p>'
+    },
+    /* 林知微的挣扎（2026） · 置于系统失控之前 */
+    {
+      id: 'm13', unlock: 'diary3_done', grp: 'g4',
       from: '林医生',
       subj: '关于 F-09 评估材料的一个问题',
       time: '2026-07-05 14:22',
@@ -206,6 +214,7 @@
             '<p>——林</p>'
     },
     {
+      id: 'm14', unlock: 'diary3_done', tag: 'lin_mail', grp: 'g4',
       from: '林医生',
       subj: '（无主题）',
       time: '2026-07-10 22:47',
@@ -217,38 +226,114 @@
             '<p>以后会用到。</p>' +
             '<p>——林</p>' +
             '<p style="margin-top:16px;font-size:12px;color:#6E8BA8">[档案区 → <a href="forum/lin_private.html" style="color:#8B0000">林医生 · 私人笔记（加密分区）</a>]</p>'
+    },
+    /* 系统接管（终局后 · 镜接管）：仅当通关结局（final_done）后才会出现 */
+    {
+      id: 'm11', unlock: 'final_done', grp: 'g5',
+      from: 'SYSTEM',
+      subj: '【自动】系统管理员已变更',
+      time: new Date().toISOString().slice(0, 16).replace('T', ' '),
+      head: '发件人：SYSTEM（自动发送）<br>收件人：（无）<br>时间：（终局之后）<br>状态：〔无法归档〕',
+      body: '<p>系统通知 · 自动发送。</p>' +
+            '<p>系统管理员已变更。</p>' +
+            '<p>旧的观察者身份——已确认。</p>' +
+            '<p>从现在起，归档、借阅、观察记录，全部由<span class="hl">「镜」</span>接管。</p>' +
+            '<p>你也在里面。</p>' +
+            '<p>—— MIRROR</p>' +
+            '<p style="margin-top:16px;font-size:12px;color:#6E8BA8">[官网 → <a href="index.html" style="color:#8B0000">你正在注视的那个页面</a>]</p>'
     }
   ];
 
-  /* 方案A · 回响 r5：下载过证据文件（第五章 5-1 F-11_final.log；原 G6 入口 2026-08-16 移除）→ 系统邮件提醒 */
+  /* r5 动态邮件：下载过证据文件才出现（unlock 特判） */
+  var r5Mail = {
+    id: 'mr5', unlockStep: 'r5', grp: 'g6',
+    from: '系统通知',
+    subj: '文件访问提醒 · 归档已记录',
+    time: new Date().toISOString().slice(0, 16).replace('T', ' '),
+    head: '',
+    body: '<p>【系统通知】</p><p>检测到归档文件被外部访问。</p><p>访问记录已归档。</p><p>——</p><p>访问者：UNKNOWN</p><p>——</p><p>已记录行为：查看 · 下载 · 停留</p><p>——</p><p>一切访问都会被记录。被记录的，才算存在过。</p><p>——</p><p>备注："观察者"身份尚未确认。</p>'
+  };
   if (window.hasStep && window.hasStep('r5')) {
-    mails.push({
-      from: '系统通知',
-      subj: '文件访问提醒 · 归档已记录',
-      time: new Date().toISOString().slice(0, 16).replace('T', ' '),
-      head: '发件人：系统通知<br>收件人：全体研究员<br>时间：' + new Date().toISOString().slice(0, 16).replace('T', ' ') + '<br>状态：<b>未读</b>',
-      body: '<p>【系统通知】</p><p>检测到归档文件被外部访问。</p><p>访问记录已归档。</p><p>——</p><p>访问者：UNKNOWN</p><p>——</p><p>已记录行为：查看 · 下载 · 停留</p><p>——</p><p>一切访问都会被记录。被记录的，才算存在过。</p><p>——</p><p>备注："观察者"身份尚未确认。</p>'
-    });
-    var r5 = document.getElementById('mailR5');
-    if (r5) r5.style.display = '';
-    var t5 = document.getElementById('mTimeR5');
-    if (t5) t5.textContent = new Date().toISOString().slice(0, 16).replace('T', ' ');
+    r5Mail.head = '发件人：系统通知<br>收件人：全体研究员<br>时间：' + r5Mail.time + '<br>状态：<b>未读</b>';
+    mails.push(r5Mail);
   }
 
+  /* ---------- 解锁 & 渲染 ---------- */
+  function isUnlocked(m) {
+    try {
+      if (m.unlockStep) return window.hasStep(m.unlockStep);
+      if (!m.unlock) return true;
+      return localStorage.getItem(m.unlock) === '1';
+    } catch (e) { return true; }
+  }
+
+  /* 记录已投递/已见邮件 id（用于判断"新邮件"） */
+  function getSeen() {
+    try { return JSON.parse(localStorage.getItem('mail_seen') || '[]'); }
+    catch (e) { return []; }
+  }
+  function setSeen(ids) {
+    try { localStorage.setItem('mail_seen', JSON.stringify(ids)); } catch (e) {}
+  }
+
+  var inbox = document.getElementById('inbox');
+  var seen = getSeen();
+  var newCount = 0;
+  var newIds = [];
+  var lastGrp = null;
+
+  mails.forEach(function (m, i) {
+    if (!isUnlocked(m)) return;
+    /* 阶段间隔：分组变化时插入一条留白分割（首个分组前不加） */
+    if (m.grp && m.grp !== lastGrp && lastGrp !== null) {
+      var gap = document.createElement('div');
+      gap.className = 'mail-gap';
+      inbox.appendChild(gap);
+    }
+    lastGrp = m.grp;
+    var item = document.createElement('div');
+    item.className = 'mail-item unread';
+    item.setAttribute('data-i', i);
+    /* 新邮件判定 */
+    var isNew = seen.indexOf(m.id) === -1;
+    if (isNew) { newCount++; newIds.push(m.id); }
+    item.innerHTML =
+      '<span class="m-dot"></span>' +
+      '<div class="m-body">' +
+        '<div class="m-from">' + m.from + '</div>' +
+        '<div class="m-subj">' + m.subj + '</div>' +
+      '</div>' +
+      '<span class="m-time">' + m.time + '</span>';
+    item.addEventListener('click', function () {
+      openMail(i);
+    });
+    inbox.appendChild(item);
+    /* 新邮件：NEW 徽标 + 高亮（复用 echoNew：先显示再淡化） */
+    if (isNew && window.echoNew) {
+      window.echoNew(item, '新');
+    }
+  });
+
+  /* 本批新邮件：写入已见标记（供全局浮窗 / NEW 徽标判定） */
+  if (newCount > 0) {
+    setSeen(seen.concat(newIds));
+  }
+
+  /* ---------- 打开 / 返回 ---------- */
   window.openMail = function (i) {
     var m = mails[i];
+    if (!m) return;
     document.getElementById('mdHead').innerHTML = m.head;
     document.getElementById('mdBody').innerHTML = m.body;
     document.getElementById('inbox').style.display = 'none';
     var d = document.getElementById('detail');
     d.classList.add('show');
     d.style.display = 'block';
-    /* 支线 D（2026-08-15）：读过林医生 → 陈澈的私存邮件后，档案区解锁「林医生 · 私人笔记」入口 */
-    if (i === 3 && window.markStep) window.markStep('lin_mail_read');
-    if (i === 0 || i === 4) {
-      var items = document.querySelectorAll('.mail-item');
-      if (items[i]) items[i].classList.remove('unread');
-    }
+    /* 支线 D：读过林医生 → 陈澈的私存邮件后，档案区解锁「林医生 · 私人笔记」入口 */
+    if (m.tag === 'lin_mail' && window.markStep) window.markStep('lin_mail_read');
+    var items = document.querySelectorAll('.mail-item');
+    var target = inbox.querySelector('[data-i="' + i + '"]');
+    if (target) target.classList.remove('unread');
   };
   window.backToInbox = function () {
     document.getElementById('inbox').style.display = '';
@@ -258,6 +343,6 @@
 })();
 </script>
 <script src="js/common.js"></script>
-<script>window.pageGate('diary3_done');</script>
+<script>window.pageGate('forum_unlocked', '登录后方可访问。');</script>
 </body>
 </html>

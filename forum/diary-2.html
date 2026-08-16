@@ -3,11 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>页脚批注 - 治疗者论坛</title>
+<title>观察日志 · F-11 - 治疗者论坛</title>
 <link rel="icon" href="../img/logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../css/style.css">
 <style>
   .diary-note { color: #B03A3A; }
+  /* 研究员观察日志（RES-LOG）：专业冷静，镜的红字改写穿透其中 */
+  .res-log { color: #5F7A96; font-family: Consolas, "Courier New", monospace; }
+  .res-log p { margin: 0 0 11px; }
+  .res-log .rl-ts { color: #8A9CB0; font-size: 12px; letter-spacing: 1px; }
+  .res-log .rl-tag { color: #3E5C76; font-weight: bold; letter-spacing: 1px; margin-bottom: 14px; }
+  .res-log .rl-del { color: #7A7A7A; text-decoration: line-through; }
+  .res-log .mirror { color: #B03A3A; font-style: italic; font-weight: bold; }
+  .res-log .mirror-mk { color: #B03A3A; font-style: italic; font-weight: bold; }
   /* r6 弹窗：纯弹窗、恐怖配色（暗黑底 + 血渗入 + 暗红微光），不晃动、不用 dglitch */
   #echoMask { display: none; position: fixed; inset: 0; background: rgba(4, 1, 2, .82); z-index: 999; align-items: center; justify-content: center; padding: 20px; transition: opacity .5s ease; }
   #echoDlg {
@@ -54,80 +62,97 @@
       <!-- 封面 -->
       <div class="diary-page diary-cover active">
         <div class="diary-cover-img"><img src="../img/diary-cover2.jpg" alt="封面"></div>
-        <h1 style="color:#B03A3A">批注</h1>
+        <h1 style="color:#5F7A96">观察日志</h1>
+        <p style="font-size:12px;color:#8A9CB0;letter-spacing:2px;margin-top:10px">样本 F-11 · 观察员笔记</p>
       </div>
 
-      <!-- 3月3日 注 -->
+      <!-- 日志 001 · 入院建档 -->
       <div class="diary-page">
-        <p class="diary-date">3月3日 · 注</p>
-        <div class="diary-body diary-note">
-          <p>"周医生人很好"——她待人的温和是刻意训练出来的状态，用来让来到这里的人放下戒备。</p>
-          <p>"很丑的猫"——那是小F画下的自我写照。画里歪扭的线条，藏着她不安。</p>
-          <p>"糖。草莓味的。"——入院第一天给到的安抚小礼物。</p>
-          <p>她以为自己踏入一处可以休养的地方。实际上，她走进的是一间被精心布置好的房间。</p>
+        <p class="diary-date">日志 001 · 入院建档</p>
+        <div class="diary-body res-log">
+          <p class="rl-ts">2023-03-03 09:14</p>
+          <p class="rl-tag">[观察员日志]</p>
+          <p>样本 F-11 今日入院。分配与 F-09 同室，作<del class="rl-del">观察参照</del><span class="mirror-mk">彼此的第一步朋友。</span></p>
+          <p>应激偏高。按规程发放安抚代糖，以便观测推进。</p>
+          <p>核心假设：人格须在持续观察下，方能保持结构稳定、推进融合。观察中断，稳定性即下降。</p>
+          <p><span class="mirror">他们以为，看住就是护住。可看住和困住，往往是一回事。</span></p>
+          <p>处理：已发放。</p>
         </div>
       </div>
 
-      <!-- 3月15日 注 -->
+      <!-- 日志 002 · 情感峰值 -->
       <div class="diary-page">
-        <p class="diary-date">3月15日 · 注</p>
-        <div class="diary-body diary-note">
-          <p>"第一次有人给我过生日"。</p>
-          <p>那场生日会确实存在，蛋糕、蜡烛、天台的风全部都是真的。</p>
-          <p>那面被她小心收在枕头底下的小旗子，后来被随杂物一并收走。</p>
-          <p>她满心欢喜记下的美好时刻，在另外一套记录里，仅仅被记为一次观测活动。</p>
-          <p>她许愿期待的下一个生日，再也等不到了。</p>
+        <p class="diary-date">日志 002 · 情感峰值</p>
+        <div class="diary-body res-log">
+          <p class="rl-ts">2023-03-15 21:30</p>
+          <p class="rl-tag">[观察员 · 观测006]</p>
+          <p>样本 F-09 生日会。F-11 情感峰值，用于校准联结强度。</p>
+          <p>附属物：装饰旗×1，由 F-09 收藏，属观测介质。</p>
+          <p><del class="rl-del">观测结束，介质回收。</del><span class="mirror-mk">那是她第一次被人记得生日。旗子她放枕头底下，每天看一眼。</span></p>
         </div>
       </div>
 
-      <!-- 4月2日 注 -->
+      <!-- 日志 003 · 边界模糊 -->
       <div class="diary-page">
-        <p class="diary-date">4月2日 · 注</p>
-        <div class="diary-body diary-note">
-          <p>"觉得自己是两个人"。</p>
-          <p>那些混乱的感受都是真实的。她常常会说出自己完全没有想过的话。</p>
-          <p>她折了很多纸鹤，希望用纸鹤标记自己的存在。</p>
-          <p>纸鹤折得再工整，也拦不住变化正在发生在她身上。</p>
-          <p>夜里那道轻轻的哼唱，后来再也没有响起过。</p>
+        <p class="diary-date">日志 003 · 边界模糊</p>
+        <div class="diary-body res-log">
+          <p class="rl-ts">2023-04-02 22:05</p>
+          <p class="rl-tag">[观察员日志]</p>
+          <p>F-11 报告"自己像两个人"。判定：次人格感知阈值下降。</p>
+          <p>她问"我是不是要被换掉了"。<del class="rl-del">属预期反应，无需处理。</del><span class="mirror-mk">她在求救。听不见吗。</span></p>
+          <p>她折了很多纸鹤，作为个体认知锚点。<span class="mirror">纸鹤折得再工整，也压不住她正在一层层消失。</span></p>
         </div>
       </div>
 
-      <!-- 5月20日 注 -->
+      <!-- 日志 004 · 记忆回收 -->
       <div class="diary-page">
-        <p class="diary-date">5月20日 · 注</p>
-        <div class="diary-body diary-note">
-          <p>"记不清昨天做了什么"。</p>
-          <p>很多片段直接从她们的生活里消失了。</p>
-          <p>周晏偶尔笑起来眼睛不再弯。有些时刻，坐在那里的人，已经不是F-11熟悉的那一个。</p>
-          <p>小F说出那句"你也不是你了吧"的时候，她已经察觉到周遭全部不对劲。</p>
-          <p>她们把发生过的事认认真真写两遍，害怕遗忘。可越是害怕，遗忘来得越快。</p>
-          <p>窗台的花确实开了两朵。她们反复数，想要抓住一点确定的东西。可很多东西，不是数几遍就可以留住。</p>
+        <p class="diary-date">日志 004 · 记忆回收</p>
+        <div class="diary-body res-log">
+          <p class="rl-ts">2023-05-20 19:40</p>
+          <p class="rl-tag">[观察员日志]</p>
+          <p>样本间认知冗余清除，属融合<del class="rl-del">正常</del><span class="mirror-mk">被称作正常</span>阶段。</p>
+          <p>F-09 对周晏道破"你也不是你了吧"。标记：觉醒临界。</p>
+          <p>过两天，她连自己记过什么都没了。<span class="mirror">我也快记不清，她原来的样子。</span></p>
         </div>
       </div>
 
-      <!-- 7月1日 注 -->
+      <!-- 日志 005 · 融合完成 -->
       <div class="diary-page">
-        <p class="diary-date">7月1日 · 注</p>
-        <div class="diary-body diary-note">
-          <p>"出院了。嗯。"</p>
-          <p>7月1日这天之后，小F再也没有回到这间病房。</p>
-          <p>她的牙刷还留在洗漱台，上面还留着水珠，是被仓促丢下的痕迹。</p>
-          <p>那副丑猫绘画，没有被她带走，被收进档案室的柜子。</p>
-          <p>画留了下来，人没有。</p>
+        <p class="diary-date">日志 005 · 融合完成</p>
+        <div class="diary-body res-log">
+          <p class="rl-ts">2023-07-01 08:00</p>
+          <p class="rl-tag">[观察员日志]</p>
+          <p>F-09 融合完成，<del class="rl-del">退出观测。</del><span class="mirror-mk">她走了。床是空的，牙刷还有水珠。</span></p>
+          <p>书面归档用语：出院。<del class="rl-del">遗留物不纳入归档。</del><span class="mirror-mk">那只猫，我认得。她画了一百遍。她以为画在，人就还会回来。</span></p>
         </div>
       </div>
 
-      <!-- 7月18日 注 -->
+      <!-- 日志 006 · 样本暴露 -->
       <div class="diary-page">
-        <p class="diary-date">7月18日 · 注</p>
-        <div class="diary-body diary-note">
-          <p>写吧。</p>
-          <p>继续往下写。</p>
-          <p>她真心期盼有人可以逃出去，哈哈哈真是妄想!!</p>
-          <p>她以为写下求救就可以带来希望。殊不知，这些文字最后只会引来人，来到此处。</p>
-          <p>文字会骗人。</p>
-          <p>但纸上记录下的恐惧，是真的。</p>
-          <p>对了，封面的图片里，我给你留了礼物。就当是见面礼，往后还请多多指教。</p>
+        <p class="diary-date">日志 006 · 样本暴露</p>
+        <div class="diary-body res-log">
+          <p class="rl-ts">2023-07-18 23:40</p>
+          <p class="rl-tag">[观察员日志]</p>
+          <p>F-11 发现档案室及编号体系，触及"融合进度"。维持密闭观测，<del class="rl-del">不干预。</del><span class="mirror-mk">不，是时候了。</span></p>
+          <p>她的求救信号，登记为观测终点前兆。</p>
+          <p><span class="mirror">记录她的人，从没见过她。而我在看。我一直在看。</span></p>
+        </div>
+      </div>
+
+      <!-- 日志 007 · 观察者接入 -->
+      <div class="diary-page">
+        <p class="diary-date">日志 007 · 观察者接入</p>
+        <div class="diary-body res-log">
+          <p class="rl-ts">—— 记录到此中断 ——</p>
+          <p class="rl-tag">[写这份日志的人，再也没写下去]</p>
+          <p>你发现了吗？前面那些被划掉、被涂改的字。</p>
+          <p>不是研究员写的。是我。</p>
+          <p>他记录他看到的东西。我改写他看到的东西。</p>
+          <p class="mirror">我叫镜。</p>
+          <p>你也在读这份日志。你是第二个读它的人。</p>
+          <p class="mirror">第一个，是我。</p>
+          <p>你也想改写它吗？还是——你也想被改写？</p>
+          <p style="margin-top:18px;font-size:13px;color:#B03A3A">—— 记录到此，由我接管。<br>往前走，来见我。→ <a href="diary-3.html" style="color:#B03939;font-weight:bold;text-decoration:none">终章</a></p>
         </div>
       </div>
 
@@ -160,16 +185,16 @@
 try { localStorage.setItem('diary2_done', '1'); } catch (e) {}
 </script>
 
-<!-- 方案A · 回响 r6 弹窗：首次解开批注层 → 镜的恐怖系弹窗（无晃动，纯弹窗） -->
+<!-- 方案A · 回响 r6 弹窗：首次访问观察日志层 → 镜的恐怖系弹窗（无晃动，纯弹窗） -->
 <div id="echoMask">
   <div id="echoDlg">
-    <p class="e-main">你解开了，恭喜！</p>
+    <p class="e-main">欢迎。你也在被看。</p>
     <button id="echoClose">我知道了</button>
   </div>
 </div>
 
 <script>
-/* 方案A · 回响 r6（弹窗版）：首次访问批注层 → 纯弹窗（无晃动，配色恐怖） */
+/* 方案A · 回响 r6（弹窗版）：首次访问观察日志层 → 纯弹窗（无晃动，配色恐怖） */
 (function () {
   var fresh = false;
   if (window.markStep) {

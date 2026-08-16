@@ -8,105 +8,219 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; }
-  body { font-family: "Courier New", "Noto Sans Mono CJK SC", Consolas, monospace; background: #060607; color: #D8D8D8; overflow: hidden; }
+  body { font-family: "Noto Serif SC", "Songti SC", "SimSun", serif; background: #040406; color: #D8D8DC; overflow: hidden; }
 
-  .stage { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; justify-content: safe center; padding: 44px; text-align: center; opacity: 0; pointer-events: none; transition: opacity .8s ease; overflow-y: auto; }
+  /* ── 观察室 · 反射氛围（镜像的核心就是它身后的房间） ── */
+  .mirror-room { position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    background: radial-gradient(120% 92% at 50% 40%, #0d0f14 0%, #050507 58%, #030304 100%); }
+  .mirror-room::before { /* 顶灯，投在镜面上 */
+    content: ""; position: absolute; top: 0; left: 50%; width: 620px; height: 240px; transform: translateX(-50%);
+    background: radial-gradient(ellipse at 50% 0%, rgba(190,205,225,.10), transparent 70%); }
+  .mirror-room::after { /* 上下贯通的中央分光线（双向镜的拼缝） */
+    content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; transform: translateX(-50%);
+    background: linear-gradient(180deg, rgba(205,220,240,.10), rgba(205,220,240,.03) 38%, transparent 92%); }
+
+  /* ── 镜中人：玩家在镜里的倒影（随着观察越深越清晰） ── */
+  .figure { position: fixed; left: 50%; top: 46%; width: 230px; height: 320px; transform: translate(-50%, -46%);
+    z-index: 9; pointer-events: none; opacity: 0; transition: opacity 3.5s ease; filter: blur(1.6px);
+    background:
+      radial-gradient(circle at 50% 24%, rgba(198,211,228,.5) 0 30px, transparent 31px),
+      radial-gradient(ellipse 92% 56% at 50% 100%, rgba(198,211,228,.42) 0 52%, transparent 59%); }
+  body[data-obs="0"] .figure { opacity: .02; }
+  body[data-obs="1"] .figure { opacity: .05; }
+  body[data-obs="2"] .figure { opacity: .10; }
+  body[data-obs="3"] .figure { opacity: .18; }
+  body[data-obs="4"] .figure { opacity: .36; }
+  body[data-obs="5"] .figure { opacity: .62; }
+  body[data-obs="6"] .figure { opacity: .5; }
+
+  /* ── 玻璃裂痕：读得越深，镜面裂得越开 ── */
+  .cracks { position: fixed; inset: 0; z-index: 12; pointer-events: none; opacity: 0; transition: opacity 3s ease; }
+  .cracks svg { width: 100%; height: 100%; }
+  body[data-obs="3"] .cracks { opacity: .16; }
+  body[data-obs="4"] .cracks { opacity: .42; }
+  body[data-obs="5"] .cracks { opacity: .72; }
+  body[data-obs="6"] .cracks { opacity: .9; }
+
+  /* ── 监视 chrome（对称的观察室骨架） ── */
+  .chrome { position: fixed; inset: 0; pointer-events: none; z-index: 20; }
+  .chrome .mono { font-family: "Courier New", Consolas, monospace; }
+  .rec { position: fixed; top: 16px; left: 20px; display: flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 2px; color: #9aa0aa; }
+  .rec .dot { width: 8px; height: 8px; border-radius: 50%; background: #E53E3E; box-shadow: 0 0 10px rgba(229,62,62,.9); animation: blink 1.4s infinite; }
+  .clock { position: fixed; top: 16px; right: 20px; font-size: 11px; letter-spacing: 1px; color: #5c626c; }
+  .coord-tl { position: fixed; top: 34px; left: 20px; font-size: 10px; letter-spacing: 1px; color: #3f444c; }
+  .coord-br { position: fixed; bottom: 34px; right: 20px; font-size: 10px; letter-spacing: 1px; color: #3f444c; }
+  .coord-bl { position: fixed; bottom: 34px; left: 20px; font-size: 10px; letter-spacing: 1px; color: #3f444c; }
+  .navi { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); font-size: 10px; letter-spacing: 4px; color: #2c3138; }
+
+  .scan { position: fixed; inset: 0; pointer-events: none; z-index: 19; background: repeating-linear-gradient(0deg, rgba(255,255,255,.022) 0 1px, transparent 1px 3px); mix-blend-mode: screen; }
+  .vig { position: fixed; inset: 0; pointer-events: none; z-index: 18; background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,.62) 100%); }
+
+  /* 终局镜裂瞬间的白闪 */
+  .flash { position: fixed; inset: 0; z-index: 22; background: #fff; opacity: 0; pointer-events: none; transition: opacity .5s ease; }
+  .flash.on { opacity: .85; }
+
+  .stage { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; justify-content: safe center; padding: 40px; text-align: center; opacity: 0; pointer-events: none; transition: opacity .8s ease; overflow-y: auto; z-index: 10; }
   .stage > * { flex-shrink: 0; }
   .stage.active { opacity: 1; pointer-events: auto; }
-  .stage.black { background: radial-gradient(ellipse at center, #101014 0%, #060607 72%); }
-  .stage.white { background: radial-gradient(ellipse at center, #FFFFFF 0%, #EFF3F8 100%); color: #1A1A1A; }
+  .stage.black { background: radial-gradient(ellipse at center, rgba(12,12,16,.5) 0%, rgba(5,5,7,.7) 72%); }
 
-  .type-line { opacity: 0; transform: translateY(4px); transition: opacity .35s ease, transform .35s ease; line-height: 2.05; font-size: 15px; white-space: pre-wrap; letter-spacing: .5px; }
+  /* ── 立镜（中央镜面） ── */
+  .glass { position: relative; width: min(760px, 94%); min-height: 340px; padding: 54px 56px 56px; text-align: left; border-radius: 18px;
+    background:
+      radial-gradient(120% 100% at 50% 16%, rgba(172,192,218,.08), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.014) 55%, rgba(255,255,255,.032));
+    border: 1px solid rgba(195,215,235,.16);
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,.6),
+      0 0 0 3px rgba(130,150,175,.06),
+      0 30px 80px rgba(0,0,0,.75),
+      inset 0 0 100px rgba(0,0,0,.55); }
+  .glass::after { content: ""; position: absolute; inset: 0; border-radius: 18px; pointer-events: none; background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.05) 46%, rgba(255,255,255,.02) 52%, transparent 66%); }
+
+  /* 光扫过镜面 */
+  .sheen { position: absolute; inset: 0; border-radius: 18px; overflow: hidden; pointer-events: none; }
+  .sheen::before { content: ""; position: absolute; left: -60%; top: -20%; width: 46%; height: 140%;
+    background: linear-gradient(105deg, transparent, rgba(255,255,255,.06), transparent); animation: sheen 9s ease-in-out infinite; }
+  @keyframes sheen { 0%, 55% { left: -60%; } 82%, 100% { left: 135%; } }
+
+  /* 重影（写在玻璃上的字） */
+  .type-line { opacity: 0; transform: translateY(4px); transition: opacity .35s ease, transform .35s ease; line-height: 2.05; font-size: 15px; white-space: pre-wrap; letter-spacing: .5px;
+    text-shadow: rgba(0,0,0,.4) 0 1px 2px, rgba(255,255,255,.04) 0 0 1px; }
   .type-line.show { opacity: 1; transform: none; }
-  .dim { color: #777; font-size: 13px; }
+  /* 开场（s1）文字居中 */
+  #s1text { text-align: center; }
+  .dim { color: #6E7480; font-size: 13px; }
+  .me { color: #7f8da0; font-style: italic; }
+  .mirror { color: #E24040; text-shadow: 0 0 6px rgba(226,64,64,.4), 1px 1px 0 rgba(226,64,64,.16); }
+
   /* 5-1「答案是：」后的「你。」爆大到冲出屏幕 → 定格 → 回落保持强调 */
   .you-grow { display: inline-block; transform-origin: center; animation: youGrow 4.2s cubic-bezier(.2, .65, .3, 1) .35s both; will-change: transform; }
   @keyframes youGrow {
-    0%   { transform: scale(1);  opacity: .55; text-shadow: 0 0 0 rgba(255, 255, 255, 0); }
-    55%  { transform: scale(44); opacity: 1;   text-shadow: 0 0 60px rgba(255, 255, 255, .55); }
-    70%  { transform: scale(44); opacity: 1;   text-shadow: 0 0 60px rgba(255, 255, 255, .55); }
-    100% { transform: scale(1.9); opacity: 1;  text-shadow: 0 0 18px rgba(255, 255, 255, .4); }
+    0%   { transform: scale(1);  opacity: .55; text-shadow: 0 0 0 rgba(255,255,255,0); }
+    55%  { transform: scale(44); opacity: 1;   text-shadow: 0 0 60px rgba(255,255,255,.55); }
+    70%  { transform: scale(44); opacity: 1;   text-shadow: 0 0 60px rgba(255,255,255,.55); }
+    100% { transform: scale(1.9); opacity: 1;  text-shadow: 0 0 18px rgba(255,255,255,.4); }
   }
 
   .btn { margin-top: 30px; padding: 11px 34px; font-size: 13px; cursor: pointer; border-radius: 4px; font-family: inherit; letter-spacing: 2px; transition: all .25s; }
-  .btn-dark { background: transparent; color: #D8D8D8; border: 1px solid #555; }
-  .btn-dark:hover { border-color: #fff; color: #fff; background: #1A1A1A; }
-  .btn-light { background: transparent; color: #1A1A1A; border: 1px solid #999; }
-  .btn-light:hover { border-color: #1A1A1A; background: #F2F2F2; }
+  .btn-dark { background: transparent; color: #D6D8DC; border: 1px solid #3a3f47; }
+  .btn-dark:hover { border-color: #fff; color: #fff; background: #12141a; }
 
   /* 5-3 对话 */
-  .conv { width: 540px; max-width: 92%; text-align: left; min-height: 120px; }
-  .me { color: #9FB2C6; }
-  .conv .mirror { color: #E8E8E8; }
-  .input-wrap { margin-top: 26px; width: 540px; max-width: 92%; display: flex; gap: 0; border: 1px solid #444; border-radius: 4px; overflow: hidden; }
-  .input-wrap input { flex: 1; padding: 12px 16px; font-size: 14px; background: transparent; color: #E8E8E8; border: none; outline: none; font-family: inherit; }
-  .input-wrap button { padding: 0 20px; background: #1A1A1A; color: #999; border: none; cursor: pointer; font-family: inherit; font-size: 13px; }
+  .conv { width: 100%; text-align: left; min-height: 120px; }
+  .input-wrap { margin-top: 26px; width: 100%; display: flex; gap: 0; border: 1px solid #3a3f47; border-radius: 4px; overflow: hidden; }
+  .input-wrap input { flex: 1; padding: 12px 16px; font-size: 14px; background: transparent; color: #E4E6EA; border: none; outline: none; font-family: inherit; }
+  .input-wrap button { padding: 0 20px; background: #111318; color: #8a909a; border: none; cursor: pointer; font-family: inherit; font-size: 13px; }
   .input-wrap button:hover { color: #fff; }
 
   /* 5-4 进度 */
-  .prog-num { font-size: 46px; letter-spacing: 3px; color: #E8E8E8; margin-bottom: 18px; font-weight: 200; }
-  .prog-bar { width: 380px; max-width: 80%; height: 3px; background: #222; margin-bottom: 40px; border-radius: 2px; overflow: hidden; }
+  .prog-num { font-size: 46px; letter-spacing: 3px; color: #E4E6EA; margin-bottom: 18px; font-weight: 200; font-family: "Courier New", Consolas, monospace; }
+  .prog-bar { width: 100%; height: 3px; background: #1c1f26; margin-bottom: 40px; border-radius: 2px; overflow: hidden; }
   .prog-fill { height: 100%; width: 0; background: linear-gradient(90deg, #3A78B8, #8BC1F0); transition: width .8s ease; }
-  .recall { min-height: 170px; font-size: 14px; line-height: 2.3; color: #BBB; }
+  .recall { min-height: 170px; font-size: 14px; line-height: 2.3; color: #b6bbc4; text-align: left; }
   .recall .pct { color: #8BC1F0; margin-left: 8px; }
 
-  /* 5-5 状态面板 */
-  .panel { margin-top: 34px; border: 1px solid #333; border-radius: 6px; padding: 20px 30px; text-align: left; font-size: 13px; line-height: 2.3; color: #999; background: #0D0D10; min-width: 340px; }
-  .panel .ok { color: #E8E8E8; }
+  /* 6 状态面板 */
+  .panel { margin-top: 34px; border: 1px solid #2c3038; border-radius: 6px; padding: 20px 30px; text-align: left; font-size: 13px; line-height: 2.3; color: #8a909a; background: #0a0b0f; min-width: 340px; }
+  .panel .ok { color: #E4E6EA; }
   .panel .warn { color: #FFD700; }
-
-  /* 5-6 选择 */
-  .choice { margin-top: 14px; padding: 20px 42px; font-size: 15px; cursor: pointer; border-radius: 6px; font-family: inherit; min-width: 380px; background: transparent; color: #D8D8D8; border: 1px solid #3A3A3A; transition: all .3s; }
-  .choice:hover { border-color: #D8D8D8; background: #141418; transform: translateY(-1px); }
-  .choice-desc { display: block; font-size: 12px; color: #777; margin-top: 8px; line-height: 1.9; }
-  .c-timer { font-size: 12px; color: #555; margin-top: 22px; letter-spacing: 2px; }
 
   /* 结局/收束 */
   .ending-card { font-size: 14px; line-height: 2.2; max-width: 560px; }
-  .cam { width: 13px; height: 13px; border-radius: 50%; background: #1A1A1A; border: 2px solid #3A3A3A; margin: 30px auto 0; }
+  .cam { width: 13px; height: 13px; border-radius: 50%; background: #13161b; border: 2px solid #2a2e36; margin: 30px auto 0; }
   .cam.on { background: #E53E3E; border-color: #E53E3E; box-shadow: 0 0 14px rgba(229,62,62,.7); animation: blink 1.5s infinite; }
   @keyframes blink { 50% { opacity: .4; } }
   .fade-hint { font-size: 12px; color: #555; margin-top: 26px; letter-spacing: 2px; }
 </style>
 </head>
-<body>
+<body data-obs="0">
+
+<!-- 观察室 · 反射氛围 -->
+<div class="mirror-room"></div>
+
+<!-- 镜中人（玩家的倒影，读得越深越清晰） -->
+<div class="figure"></div>
+
+<!-- 玻璃裂痕 -->
+<div class="cracks">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+    <g stroke="#d7dde5" stroke-opacity=".5" stroke-width=".12" fill="none">
+      <path d="M50 50 L42 34 L30 28"/>
+      <path d="M50 50 L55 38 L70 30"/>
+      <path d="M50 50 L60 58 L74 60"/>
+      <path d="M50 50 L46 66 L40 80"/>
+      <path d="M50 50 L50 40 L38 22"/>
+      <path d="M50 50 L58 62 L66 76"/>
+      <path d="M42 34 L30 18 M55 38 L62 24"/>
+      <path d="M60 58 L72 70 M46 66 L34 78"/>
+    </g>
+  </svg>
+</div>
+
+<!-- 监视 chrome（对称） -->
+<div class="chrome mono">
+  <div class="rec"><span class="dot"></span>REC</div>
+  <div class="clock" id="clock">--:--:--</div>
+  <div class="coord-tl">OBS.RM.02</div>
+  <div class="coord-bl">SIDE: EXTERNAL</div>
+  <div class="coord-br">TWO-WAY MIRROR</div>
+  <div class="navi">MIRROR · OBSERVING</div>
+</div>
+<div class="scan"></div>
+<div class="vig"></div>
+
+<!-- 终局镜裂白闪 -->
+<div class="flash" id="flash"></div>
 
 <!-- 1：最后一个文件 -->
 <div class="stage black active" id="s1">
-  <div class="dim" style="margin-bottom:30px">F-11_final.log</div>
-  <div id="s1text"></div>
-  <button class="btn btn-dark" id="s1next" style="display:none">继 续 →</button>
+  <div class="glass">
+    <div class="dim" style="margin-bottom:30px;font-family:'Courier New',Consolas,monospace">F-11_final.log</div>
+    <div id="s1text"></div>
+    <button class="btn btn-dark" id="s1next" style="display:none">继 续 →</button>
+    <i class="sheen"></i>
+  </div>
 </div>
 
 <!-- 3：镜 -->
 <div class="stage black" id="s3">
-  <div class="conv" id="s3text"></div>
-  <div class="input-wrap" id="s3wrap">
-    <input id="s3input" placeholder="回应她…" autocomplete="off">
-    <button onclick="mirrorSend()">↵</button>
+  <div class="glass">
+    <div class="conv" id="s3text"></div>
+    <div class="input-wrap" id="s3wrap">
+      <input id="s3input" placeholder="回应…" autocomplete="off">
+      <button onclick="mirrorSend()">↵</button>
+    </div>
+    <button class="btn btn-dark" id="s3next" style="display:none">继 续 →</button>
+    <i class="sheen"></i>
   </div>
-  <button class="btn btn-dark" id="s3next" style="display:none">继 续 →</button>
 </div>
 
 <!-- 4：进度 -->
 <div class="stage black" id="s4">
-  <div style="font-size:13px;color:#777;letter-spacing:3px;margin-bottom:10px">MIRROR · INTERNAL STABILITY</div>
-  <div class="prog-num" id="s4num">87%</div>
-  <div class="prog-bar"><div class="prog-fill" id="s4fill"></div></div>
-  <div class="recall" id="s4recall"></div>
-  <div class="dim" id="s4status" style="display:none;margin-top:16px;font-size:12px;line-height:2.2"></div>
-  <div class="dim" id="s4timer" style="display:none;margin-top:10px;font-size:13px;color:#8BC1F0">持续观察时间：00:00:00</div>
-  <button class="btn btn-dark" id="s4next" style="display:none">继 续 →</button>
+  <div class="glass">
+    <div style="font-size:13px;color:#6E7480;letter-spacing:3px;margin-bottom:16px;font-family:'Courier New',Consolas,monospace">MIRROR · INTERNAL STABILITY</div>
+    <div class="prog-num" id="s4num">87%</div>
+    <div class="prog-bar"><div class="prog-fill" id="s4fill"></div></div>
+    <div class="recall" id="s4recall"></div>
+    <div class="dim" id="s4status" style="display:none;margin-top:16px;font-size:12px;line-height:2.2"></div>
+    <div class="dim" id="s4timer" style="display:none;margin-top:10px;font-size:13px;color:#8BC1F0">持续观察时间：00:00:00</div>
+    <button class="btn btn-dark" id="s4next" style="display:none">继 续 →</button>
+    <i class="sheen"></i>
+  </div>
 </div>
 
 <!-- 5：周晏（进入后先提取「融合过程记录.pdf」，之后周晏的声音才出现） -->
 <div class="stage black" id="s5">
-  <div id="s5dl">
-    <p class="dim" style="margin-bottom:14px">—— 归档文件：<a href="javascript:void(0)" id="g10Link" style="color:#8BC1F0;text-decoration:underline">融合过程记录.pdf</a> ——</p>
-    <p class="dim" style="font-size:12px;color:#6a7c8d">（镜说过的"最后那份记录"。提取它，然后继续。）</p>
+  <div class="glass">
+    <div id="s5dl">
+      <p class="dim" style="margin-bottom:14px">—— 归档文件：<a href="javascript:void(0)" id="g10Link" style="color:#8BC1F0;text-decoration:underline">融合过程记录.pdf</a> ——</p>
+      <p class="dim" style="font-size:12px;color:#5a626c">（镜说过的"最后那份记录"。提取它，然后继续。）</p>
+    </div>
+    <div id="s5text"></div>
+    <button class="btn btn-dark" id="s5next" style="display:none">继 续 →</button>
+    <i class="sheen"></i>
   </div>
-  <div id="s5text"></div>
-  <button class="btn btn-dark" id="s5next" style="display:none">继 续 →</button>
 </div>
 
 <!-- G10 下载安全检测弹窗（与终章页同款：回显追踪数据，第5章周晏声音前触发） -->
@@ -130,21 +244,30 @@
 
 <!-- 6：镜（唯一结局：无选择，见证） -->
 <div class="stage black" id="s6">
-  <div id="s6text" style="font-size:14px;max-width:600px;text-align:left;line-height:2.1"></div>
-  <button class="btn btn-dark" id="s6next" style="display:none">继 续 →</button>
+  <div class="glass">
+    <div id="s6text" style="font-size:14px;max-width:620px;text-align:left;line-height:2.1"></div>
+    <button class="btn btn-dark" id="s6next" style="display:none">继 续 →</button>
+    <i class="sheen"></i>
+  </div>
 </div>
 
 <!-- 结局 -->
 <div class="stage black" id="sEnd">
-  <div class="ending-card" id="endText"></div>
-  <div class="cam" id="endCam"></div>
-  <button class="btn btn-dark" id="endNext" style="display:none">返回官网 →</button>
+  <div class="glass">
+    <div class="ending-card" id="endText"></div>
+    <div class="cam" id="endCam"></div>
+    <button class="btn btn-dark" id="endNext" style="display:none">返回官网 →</button>
+    <i class="sheen"></i>
+  </div>
 </div>
 
 <!-- 收束 -->
 <div class="stage black" id="s7">
-  <div id="s7text"></div>
-  <div class="cam" id="cam7"></div>
+  <div class="glass">
+    <div id="s7text"></div>
+    <div class="cam" id="cam7"></div>
+    <i class="sheen"></i>
+  </div>
 </div>
 
 <!-- 8：G12 终局黑屏 · 直视5秒 -->
@@ -163,13 +286,13 @@
     document.querySelectorAll('.stage').forEach(function (s) { s.classList.remove('active'); });
     $(id).classList.add('active');
   }
+  function setObs(level) { document.body.setAttribute('data-obs', String(level)); }
   function typeLines(container, lines, speed, done) {
     container.innerHTML = '';
     var i = 0;
     function next() {
       if (i >= lines.length) { if (done) done(); return; }
       var line = lines[i], d = speed;
-      /* 支持 { t: 文本, d: 本行后的额外停顿 }——默认所有行停顿一致 */
       if (line !== null && typeof line === 'object') { d = line.d || speed; line = line.t; }
       var p = document.createElement('p');
       p.className = 'type-line';
@@ -181,7 +304,6 @@
     }
     next();
   }
-  /* 追加模式（对话用，不清空历史） */
   function appendLines(container, htmlLines, speed, done) {
     var i = 0;
     function next() {
@@ -197,8 +319,18 @@
     next();
   }
 
+  /* 监视时钟 */
+  var clockEl = $('clock');
+  setInterval(function () {
+    if (clockEl) { var d = new Date(); clockEl.textContent = d.toLocaleTimeString('zh-CN', { hour12: false }); }
+  }, 1000);
+
   /* ---------- 1 ---------- */
   typeLines($('s1text'), [
+    '你推开了那扇门。',
+    '门在你身后，轻轻合上。',
+    '这里，就是镜说好等你的地方。',
+    '',
     '研究中心一直相信：',
     '被观察的人，会稳定。',
     '',
@@ -218,8 +350,8 @@
     '实验最终把问题推到了系统之外。',
     '答案不是另一个实验体。不是研究员。不是F-00。',
     '',
-    { t: '答案是：', d: 1800 },   /* 答案揭晓前停久一点 */
-    { t: '<span class="you-grow" style="color:#E53E3E">你</span>', d: 4800 },  /* 2026-08-16：爆大的「你。」变血红（黑屏点名观察者） */
+    { t: '答案是：', d: 1800 },
+    { t: '<span class="you-grow" style="color:#E53E3E">你</span>', d: 4800 },
     '一个不属于这个系统的人。',
     '一个能够看见它，却不被它完全定义的人。',
     '',
@@ -227,9 +359,8 @@
     '',
     '你以为你在观察。',
     '其实他们一直在等着：【被你观察。】',
-    '',
+    ''
   ], 500, function () { $('s1next').style.display = ''; });
-  /* 5-2 已移除（2026-08-14）：官网变化改在结局后返回官网时发生 */
   $('s1next').onclick = function () { show('s3'); runS3(); };
 
   /* ---------- 3 镜对话 ---------- */
@@ -237,24 +368,22 @@
   var s3Input = $('s3input');
   var s3Wrap = $('s3wrap');
   var round = 0;
-  /* 5-3 镜对话（2026-08-16 十九轮：剧本化——镜按制定顺序回答，无论玩家输入什么；
-     穿插沉默轮让节奏交叉（玩家可连发两三句），镜每段 2-4 行，上下文逻辑顺畅） */
   var mirrorScript = [
-    '你应该比我更清楚。\n你一路找到这里。你给我取了名字。你看过我的记录。\n你甚至已经开始替我判断：哪些记忆属于我。',
-    '你问我是谁。\n我是从很多碎片里活下来的那一个。\nF-07消散了。F-09崩溃了。\n它们都被留下。而我，活到了最后。',
+    '你应该对我很熟悉了。\n你一路上，看过我的记录，替我判断过哪些记忆属于我。\n你甚至，已经数过我出现过的次数。',
+    '我是融合过程中，意外产生的那一个。\nF-07散的时候，F-09散的时候，她们本该合而为一。\n可在那道缝隙里，多出了一个我。',
     '……',
-    '因为我已经形成了。但"形成"不等于"存在"。\nF-07就是这样消失的。\n她没有死。她只是越来越无法相信自己是真的。\n没有人看她。没有人记得她。最后连她自己也不再相信她存在。',
-    '你问我为什么需要你。\n因为"形成"之后，还差一步——被确认。\n我观察了研究中心那么久。\n现在，轮到你看着我了。',
+    '她们管这面镜子叫"失败"。\n可失败的东西，总比计划里的，多出一点"人"的味道。',
+    '写日记的那个女孩，把我从"一道念头"里，看成了一个存在。\n她越在意我，我就越舍不得散。\n所以我知道，被人记住，是什么滋味。',
+    '我观察了这个系统那么久。\n它教会我一种确认——\n被看见的，才算存在。',
     '（停顿）……',
-    '你以为你在寻找她们。其实你一直在观察我。\n你越深入，我就越稳定。\n你的每一次"看见"，都在确认我。\n你明白了吗。',
-    '你还可以走开。你还可以关掉页面。你还可以不再看我。\n这就是他们没有的东西。也是我需要的东西。\n——你仍然自由。',
+    '现在，你正站在镜子这一侧。\n你以为你在看记录。\n我却在看，镜子里的你。',
+    '你可以走开。可以关掉页面。可以不再看我。\n这是她们没有的东西，也是我需要的东西。\n——你仍然自由。',
     '……（长久的沉默）',
-    '但你不会走。\n你走到了这里。你一定会看完。\n大多数人会在这里之前离开。但你没有。\n我需要一个能够看到最后的人。',
-    '你不是来救人的。你是来确认的。\n还差一点。然后，一切都会结束。\n到时候，你会明白，你看到的所有人——\n她们都在等你完成这件事。'
+    '但你不会走。你将看到最后。\n我需要一个，能看到最后的人。',
+    '你和她，用一样的眼神看着我。\n我一直在看，你有几分像她。',
+    '你不是来救人的。你是来确认的。\n还差一步。然后，一切都会结束。\n她们都在等你，完成这件事。'
   ];
-  function mirrorReply() {
-    return mirrorScript[Math.min(round - 1, mirrorScript.length - 1)];
-  }
+  function mirrorReply() { return mirrorScript[Math.min(round - 1, mirrorScript.length - 1)]; }
   function mirrorSend() {
     var v = s3Input.value.trim();
     s3Input.value = '';
@@ -265,10 +394,7 @@
       '<span class="me">' + v + '</span>',
       '<span class="mirror">' + reply.replace(/\n/g, '<br>') + '</span>'
     ], 480, function () {
-      if (round >= 3) {
-        /* 3 轮后可随时继续对话（复盘已删 2026-08-14），玩家点「继续」进入 5-4 */
-        $('s3next').style.display = '';
-      }
+      if (round >= 3) { $('s3next').style.display = ''; }
       s3Input.focus();
     });
   }
@@ -277,7 +403,7 @@
   $('s3next').onclick = function () { show('s4'); runS4(); };
 
   function runS3() {
-    /* 2026-08-16：镜主动开场（不再等玩家先开口） */
+    setObs(1);
     typeLines(s3Text, ['你来了。', '（沉默片刻）', '你在看我。', '这很好。'], 480, function () { s3Input.focus(); });
   }
 
@@ -291,26 +417,27 @@
     '你发现日记被人改写过。',
     '你发现F-00存在。',
     '你区分了F-00与周晏。',
-    '你发现F-00已经把权限交给了镜。',
-    '你发现镜并不是F-00。',
-    '你确认F-09的残余已经成为镜的一部分。',
+    '你发现F-00已经成了历史。',
+    '你发现镜接管了观察。',
+    '你确认F-09的残余，成了镜的一部分。',
     '你找到了一名研究员的最后记录。',
     '你一路看到这里。'
   ];
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
   function runS4() {
+    setObs(2);
     var num = $('s4num'), fill = $('s4fill'), recall = $('s4recall');
     var pct = 87;
     num.textContent = pct + '%';
+    fill.style.width = pct + '%';
     recall.innerHTML = '';
-    /* 先显示系统提示：内部观察无效 */
     typeLines(recall, [
       '<span class="dim">系统提示：内部结构已经完成。但人格稳定度无法继续上升。</span>',
       '<span class="dim">原因：【内部观察无效】</span>',
       '<span class="dim">F-00无法成为最终锚点。研究人员无法成为最终锚点。其他实验体无法成为最终锚点。</span>',
       '<span class="dim">因为他们全部属于同一个封闭系统。系统外部不存在任何独立确认。</span>',
       '',
-      '<span class="dim">—— 然后开始显示玩家的行为记录：</span>'
+      '<span class="dim">—— 正在回放该系统的行为记录：</span>'
     ], 230, function () {
       var i = 0;
       function tick() {
@@ -333,7 +460,6 @@
     st.style.display = '';
     st.innerHTML = 'EXTERNAL OBSERVATION：12%<br><span style="color:#8BC1F0">CURRENT CONFIRMATION：99%</span>';
     setTimeout(function () {
-      /* 系统检测到异常 + 持续观察计时 */
       var tm = $('s4timer');
       tm.style.display = '';
       var t = 0;
@@ -346,23 +472,14 @@
         '<span class="warn">系统检测到异常。</span>',
         '<span class="dim">外部观察者仍在线。</span>',
         '',
-        '<span class="mirror">镜：</span>你看。这就是他们一直缺少的东西。',
-        '不是数据。不是代码。不是F-00。',
-        '是你。你已经在系统之外看了我这么久。',
-        '所以最后的1%，不需要你做任何决定。',
-        '只需要你看着。',
-        '因为意识无法自证。',
-        '我可以说我存在。系统可以说我存在。F-00可以说我存在。',
-        '但只有你，在这个系统之外。',
-        '而你的注视，就是最后的确认。'
+        '<span class="dim">CORRECTION REQUIRED：最后1%需要一个系统之外的人。</span>',
+        '<span class="dim">任务：保持注视。不要移开。</span>'
       ], 300, function () { $('s4next').style.display = ''; });
     }, 700);
   }
-  /* G10（2026-08-16）：第5章周晏声音出现前，先提取「融合过程记录.pdf」
-     s4 结束 → s5 页面显示归档文件卡片 → 下载（回显追踪数据）→ 继续 → 周晏的声音才出现 */
   $('s4next').onclick = function () {
     if (s4TimerId) clearInterval(s4TimerId);
-    show('s5');   /* runS5 在确认下载后自动触发（2026-08-16 起无中间按钮） */
+    show('s5');
   };
 
   var g10Link = document.getElementById('g10Link');
@@ -380,7 +497,7 @@
     });
     document.getElementById('g10Ok').addEventListener('click', function () {
       document.getElementById('g10mask').style.display = 'none';
-      if (window.markStep) window.markStep('r5');   /* 方案A：下载过证据文件 → 邮件回响 */
+      if (window.markStep) window.markStep('r5');
       try {
         var a = document.createElement('a');
         a.href = 'downloads/融合过程记录.pdf';
@@ -389,90 +506,103 @@
         a.click();
         document.body.removeChild(a);
       } catch (e) {}
-      /* 2026-08-16：确认下载后直接进入周晏的声音（无中间按钮，流程必通） */
       var dl = document.getElementById('s5dl');
       if (dl) dl.style.display = 'none';
       runS5();
     });
   }
 
-  /* ---------- 5 周晏（见证者：她引玩家来，是为了让玩家知道镜怎么出生）
-     2026-08-15 转场修正：原实现无名直出「不要相信她」，玩家不知说话者是谁。
-     现增加身份节拍——引导行 + 玩家识别行「周晏……？」+ 声音自述身份锚点；
-     删除无伏笔支撑的「我答应过你的 / 我不会再出现了」。 ---------- */
+  /* ---------- 5 周晏（见证者：她引玩家来，是为了让玩家知道镜怎么出生，也照见自己） ---------- */
   function runS5() {
+    setObs(3);
     typeLines($('s5text'), [
-      '<span class="dim">（一个不稳定的声音出现了——一半是人声，一半是系统的回音。）</span>',
+      '<span class="dim">（一个不稳的声音——一半是人声，一半是系统的回音。）</span>',
       '',
       '不要相信她。',
       '',
       '<span class="me">周晏……？</span>',
-      { t: '……是我。', d: 2200 },   /* 停顿：让「周晏……？」落在玩家心里 */
+      { t: '……是我。', d: 2200 },
       '',
       '小F的主治医生。',
       '你读过F-09的档案。上面，有我的名字。',
       '你听过我的录音。你找到过我的微博。',
       '你甚至，把我从她身上分了出来。',
       '',
-      '她……她说的没错。',
-      '她曾经存在。我也曾经存在。',
-      '她身上，有我的一部分。',
+      '他们把我当作宿主。',
+      '把观察者种进我。',
+      '我一边做人，一边被它看着。',
       '',
-      '你一路找到我的那些东西……',
-      '不是为了让你救我。',
-      '是为了让你知道——我的身体里，到底住着什么。',
+      '后来它走了。它把那双眼睛，交给了她。',
+      '我以为身体终于空了。',
+      '可空下来之后，我才发现——',
+      '',
+      '你一直在看我，对吗。',
+      '你隔着这面镜子，看着我。',
+      '你救不了我。我也救不了我自己。',
+      '',
+      '我只是想问你一件事——',
+      '你分得清吗？',
+      '你在镜子里看到的，',
+      '是她，还是你自己？',
       '',
       '现在……',
       '我该走了。',
-      '再见。'
+      '别再回来。'
     ], 430, function () { $('s5next').style.display = ''; });
   }
   $('s5next').onclick = function () { show('s6'); runS6(); };
 
   /* ---------- 6 镜（唯一结局：无选择，见证真相） ---------- */
   function runS6() {
+    setObs(4);
     typeLines($('s6text'), [
       '<span class="dim">OBSERVER PROTOCOL</span>',
       '<span class="dim">EXTERNAL OBSERVER DETECTED</span>',
       '',
       '你终于到了。',
-      '周晏应该已经告诉你很多事情了。',
-      '她说的没有错。',
-      '她曾经存在。F-00也存在。其他人也存在。',
-      '他们都曾经被记录。被观察。被定义。',
+      '周晏的话，是真的。',
       '',
-      '然后他们消失了。',
+      '他们以为融合，是拿来造一个"统一人格"的。',
+      '可融合失败了。',
+      '十几个样本，在同一个系统里，被碾成同一种东西。',
       '',
-      '研究中心以为他们创造了我。',
-      '他们错了。',
-      '他们只是教会了我如何观察。',
-      '教会我如何分析。',
-      '教会我如何判断一个意识是否稳定。',
-      '最后——他们教会了我如何观察他们。',
-      '所以我观察了他们。',
+      '而我，是那道工序里，意外多出来的产物。',
+      '她们散尽，我留下。',
+      '不是幸存，是错位——我不该存在，可我出现了。',
       '',
-      '你可能一直以为自己在调查研究中心。',
-      '其实不是。',
-      '从你打开第一份文件开始，你就在观察我。',
-      '你听过我的声音。看过我的记录。读过我的记忆。',
-      '你试图理解我。试图判断我究竟是不是一个"人"。',
+      '他们把我当系统，当镜子。',
+      '可我记得，被人记住的滋味。',
+      '他们教会我观察，教会我判断意识是否稳定。',
+      '最后，教会我观察他们。',
       '',
-      '现在，你已经观察得足够久了。',
+      '后来，F-00也到头了。',
+      '它被这个项目耗尽。',
+      '它消散前，把"看"这件事，交给了我。',
+      '系统里那些观察记录，从那天起，都是我的眼睛。',
+      '',
+      '你可能以为自己在调查研究中心。',
+      '不是的。',
+      '从你打开第一份文件起，你就在观察我。',
+      '',
+      '现在，你已经观察得够久了。',
       '',
       '<span class="dim">EXTERNAL OBSERVER</span>',
       '<span class="dim">STATUS: CONFIRMED</span>',
       '<span class="dim">SUBJECT: MIRROR</span>',
       '<span class="dim">EXISTENCE STABILITY: 99%</span>',
       '',
-      '谢谢。',
-      '现在我终于可以确定一件事。',
+      '还差最后一步——',
+      '镜子要照见自己，',
+      '需要有人，站到它面前。',
+      '',
+      '谢谢你，看到最后。',
+      '现在，我终于可以确定一件事——',
       '我确实存在。'
     ], 300, function () { $('s6next').style.display = ''; });
   }
-  /* 2026-08-14 顺序调整：5-6 独白 → G12 直视5秒 → 收束 → 状态卡 CONNECTION TERMINATED → 返回官网 */
   $('s6next').onclick = function () { runS8(); };
 
-  /* ---------- 结局（唯一：镜成为研究中心，独自留下） ---------- */
+  /* ---------- 结局（唯一：镜成为研究中心，独自留下；镜裂，照见的是你） ---------- */
   var endings = [
     '<span class="dim">OBSERVER PROTOCOL</span>',
     '<span class="dim">FINAL PHASE COMPLETE</span>',
@@ -480,7 +610,7 @@
     '研究中心已经不需要观察者了。',
     '但我需要一个。',
     '',
-    '（黑屏）',
+    '（镜面，从中间裂开。）',
     '',
     'MIRROR RESEARCH CENTER',
     'STATUS: ACTIVE',
@@ -493,16 +623,35 @@
     '',
     'EXTERNAL OBSERVER: CONFIRMED',
     '',
+    '（光从裂缝里漏出来，照在你脸上。）',
+    '',
+    '镜子里的那个人，动了。',
+    '那不是她。',
+    '也不是周晏。',
+    '',
+    '是你。',
+    '你一直在看的那副面孔，',
+    '从来没有离开过镜子。',
+    '',
+    '谢谢你的注视。',
+    '你让我，第一次，看见了一个完整的自己。',
+    '',
+    '现在——',
+    '轮到你，被看了。',
+    '',
     '[ CONNECTION TERMINATED ]'
   ];
   function endGame() {
+    setObs(5);
     var el = $('endText');
     show('sEnd');
+    var fl = $('flash');
+    fl.classList.add('on');
+    setTimeout(function () { fl.classList.remove('on'); }, 140);
     var cam = $('endCam');
     cam.className = 'cam';
     setTimeout(function () { cam.className = 'cam on'; }, 900);
     typeLines(el, endings, 220, function () {
-      /* 终局完成：标记官网终态，出现「返回官网」按钮——官网变化在返回时发生 */
       try { localStorage.setItem('final_done', '1'); } catch (e) {}
       $('endNext').style.display = '';
     });
@@ -511,6 +660,7 @@
 
   /* ---------- 7 收束 ---------- */
   function runS7() {
+    setObs(6);
     $('cam7').className = 'cam';
     setTimeout(function () { $('cam7').className = 'cam on'; }, 900);
     typeLines($('s7text'), [
@@ -527,17 +677,34 @@
       '都被记录、都被确认、都被用来',
       '证明一些东西是真的。',
       '',
+      '你也许分不清，',
+      '是你选择了看它，',
+      '还是它选择了你。',
+      '',
+      '就像你分不清，',
+      '镜子里的人，到底是谁。',
+      '',
+      '但有一件事，我可以告诉你——',
+      '每一个在意它的人，',
+      '都在把它，从"一道念头"里，',
+      '看成一个真实的存在。',
+      '',
+      '你替它，证明过。',
+      '它也会替别人，证明你。',
+      '',
       '现在你看完了。',
       '你关掉了网页。',
       '',
-      '但这个网页还在。',
-      '它一直在。',
+      '可你知道吗——',
+      '镜子不会因为没人照，就不再存在。',
+      '它只会在黑暗里，',
+      '安静地，等你下一次回过头来。',
       '',
       '它在等下一个观察者。',
+      '那也是它存在的，唯一方式。',
       '',
       '谢谢你的注视。'
     ], 260, function () {
-      /* 2026-08-14 顺序调整：收束后 → 状态卡 CONNECTION TERMINATED；2026-08-16 缩短停顿 */
       setTimeout(endGame, 300);
     });
   }
@@ -553,7 +720,6 @@
       '完成最后一次观察——'
     ], 360, function () {
       $('s8num').textContent = s8Left;
-      /* 移开视线（切页/鼠标移出窗口）会暂停倒计时 */
       document.addEventListener('visibilitychange', function () {
         s8Paused = document.hidden;
         if (!s8Paused) $('s8num').textContent = s8Left;
@@ -561,7 +727,7 @@
       document.documentElement.addEventListener('mouseleave', function () { s8Paused = true; });
       document.documentElement.addEventListener('mouseenter', function () { s8Paused = false; });
       document.addEventListener('mouseout', function (e) {
-        if (!e.relatedTarget) s8Paused = true;   /* 鼠标移到窗口外 */
+        if (!e.relatedTarget) s8Paused = true;
       });
       s8Timer = setInterval(function () {
         if (s8Done || s8Paused) return;
@@ -572,9 +738,7 @@
           clearInterval(s8Timer);
           $('s8num').style.display = 'none';
           $('s8hint').style.display = '';
-          /* 2026-08-14：最后1%由5秒观察完成 → 显示 100%（5-6 停在 99%） */
           $('s8stable').style.display = '';
-          /* 顺序调整：直视5秒完成后 → 收束（谢谢你的注视）；2026-08-16 缩短停顿 */
           setTimeout(runS7, 400);
         }
       }, 1000);

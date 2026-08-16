@@ -29,6 +29,19 @@
     <p class="breadcrumb"><a href="index.html">论坛首页</a> / 病友档案</p>
     <h1>病友档案</h1>
     <p>本页面用于查询病友的基本信息与住院状态。档案信息由本人或家属提供，如有出入请与管理员联系更新。</p>
+
+    <!-- 归档检索：内部检索入口，口令解出前不显示任何链 -->
+    <div class="arc-search" id="arcSearch" style="margin-top:18px;max-width:360px">
+      <p style="font-size:11px;color:#B9C2CC;letter-spacing:1px;margin-bottom:6px">归档检索</p>
+      <div style="display:flex;gap:6px;align-items:center">
+        <input type="password" id="arcKey" placeholder="输入检索口令" autocomplete="off"
+               style="flex:1;min-width:0;padding:6px 10px;border:1px solid #E0E6EC;border-radius:5px;font-size:12px;color:#7A8694;background:#FBFCFD;outline:none"
+               onkeydown="if(event.key==='Enter')arcKeyUnlock()">
+        <button onclick="arcKeyUnlock()"
+                style="background:transparent;border:1px solid #D8DEE6;color:#8A97A5;padding:6px 14px;font-size:12px;border-radius:5px;cursor:pointer">检索</button>
+      </div>
+      <p id="arcKeyMsg" style="font-size:12px;color:#B03A3A;margin-top:6px;display:none">检索无结果。</p>
+    </div>
   </div>
 </div>
 
@@ -45,6 +58,7 @@
     </div>
     <div class="f-wrap" id="arcList">
       <div class="f-card">
+
         <div class="f-post">
           <span class="f-avatar" style="background:#FBF3E4;color:#B98A3E">F</span>
           <div class="f-body">
@@ -222,6 +236,13 @@
           <h4>档案说明</h4>
           <p style="font-size:13px;color:var(--text-sub);line-height:1.9">档案仅供内部工作人员查询，请勿外传。如您的档案信息有误，请联系林医生或论坛管理员。</p>
         </div>
+        <div class="f-card" id="diary2Card" style="display:none">
+          <h4>观察日志</h4>
+          <p style="font-size:13px;line-height:2.2">
+            <a href="diary-2.html" style="color:var(--accent)">F-11 · 观察员日志 →</a><br>
+            <span style="color:#B03939;font-size:12px">在她日记的页边，还有一本，看着她的。</span>
+          </p>
+        </div>
         <div class="f-card" id="toolsCard" style="display:none">
           <h4>常用工具</h4>
           <p style="font-size:13px;line-height:2.2">
@@ -282,22 +303,57 @@ function arcUnlock() {
   try { unlocked = localStorage.getItem('diary_unlocked') === '1'; } catch (e) {}
   var b = document.getElementById('arcBtn');
   if (b) b.style.display = unlocked ? 'block' : 'none';
+  var d2 = document.getElementById('diary2Card');
+  if (d2) d2.style.display = unlocked ? '' : 'none';
 })();
 
-/* 支线门控（2026-08-16）：所有支线——身份比对（A）、早期文件归档（E）、样本规范（F）、
-   借阅登记簿（G）、内部邮箱入口——统一在读完第三层日记（diary3_done，调试 ?d3=1）后开放 */
+/* 档案三链门控（2026-08-16）：
+   档案异常链（浅，历史归档/编号归档）→ 读日记1（diary_unlocked）即解锁，见上方 G5 门控。
+   身份之谜链（中，身份比对）→ 口令A（日记1角标凯撒解出，全文小写）。
+   立项黑幕链（深，早期文件归档/样本规范/借阅登记簿/内部邮箱入口）→ 口令B（日记2封面 EXIF）。
+   口令未解出前，入口一律隐藏，不显示为可见链接。 */
+var PWD_ID = 'iamwaitingforyou';
+var PWD_DEEP = 'hajiminameiluduo';
 (function () {
   var q = new URLSearchParams(location.search);
-  if (q.get('d3') === '1') { try { localStorage.setItem('diary3_done', '1'); } catch (e) {} }
-  var deep = false;
-  try { deep = localStorage.getItem('diary3_done') === '1'; } catch (e) {}
+  if (q.get('id') === '1') { try { localStorage.setItem('archive_id', '1'); } catch (e) {} }
+  if (q.get('deep') === '1') { try { localStorage.setItem('archive_deep', '1'); } catch (e) {} }
+  var idOk = false, deepOk = false;
+  try { idOk = localStorage.getItem('archive_id') === '1'; } catch (e) {}
+  try { deepOk = localStorage.getItem('archive_deep') === '1'; } catch (e) {}
   var idLink = document.getElementById('idLink');
-  if (idLink) idLink.style.display = deep ? '' : 'none';
+  if (idLink) idLink.style.display = idOk ? '' : 'none';
   var pl = document.getElementById('proposalLink');
-  if (pl) pl.style.display = deep ? '' : 'none';
+  if (pl) pl.style.display = deepOk ? '' : 'none';
   var tc = document.getElementById('toolsCard');
-  if (tc) tc.style.display = deep ? '' : 'none';
+  if (tc) tc.style.display = deepOk ? '' : 'none';
 })();
+
+/* 归档检索：输入口令A / 口令B 解锁对应链入口（不区分大小写，自动 trim） */
+function arcKeyUnlock() {
+  var inp = document.getElementById('arcKey');
+  var v = (inp && inp.value || '').trim().toLowerCase();
+  var idLink = document.getElementById('idLink');
+  var pl = document.getElementById('proposalLink');
+  var tc = document.getElementById('toolsCard');
+  var msg = document.getElementById('arcKeyMsg');
+  var matched = false;
+  if (v === PWD_ID) {
+    try { localStorage.setItem('archive_id', '1'); } catch (e) {}
+    if (idLink) idLink.style.display = '';
+    matched = true;
+  }
+  if (v === PWD_DEEP) {
+    try { localStorage.setItem('archive_deep', '1'); } catch (e) {}
+    if (pl) pl.style.display = '';
+    if (tc) tc.style.display = '';
+    matched = true;
+  }
+  if (msg) {
+    msg.style.display = matched ? 'none' : 'block';
+  }
+  if (matched && inp) inp.value = '';
+}
 
 function toggleArchive() {
   var d = document.getElementById('deepArchive');
