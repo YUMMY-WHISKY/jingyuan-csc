@@ -219,12 +219,6 @@
         </div>
 
         <button id="arcBtn" class="arc-btn" onclick="toggleArchive()" style="display:none">历史归档</button>
-
-        <div style="margin:6px 0 0 28px;font-size:13px;display:none" id="proposalLink">
-          <a href="original_proposal.html" style="color:#8B0000">→ 早期文件归档</a>
-          <span style="color:#C8BFAC">｜</span>
-          <a href="sample-guide.html" style="color:#8B0000">→ 内部文档 · 样本管理规范</a>
-        </div>
       </div>
 
       <aside class="f-side">
@@ -238,16 +232,9 @@
         </div>
         <div class="f-card" id="diary2Card" style="display:none">
           <h4>观察日志</h4>
-          <p style="font-size:13px;line-height:2.2">
+          <p style="font-size:13px;line-height:2.0">
             <a href="diary-2.html" style="color:var(--accent)">F-11 · 观察员日志 →</a><br>
             <span style="color:#B03939;font-size:12px">在她日记的页边，还有一本，看着她的。</span>
-          </p>
-        </div>
-        <div class="f-card" id="toolsCard" style="display:none">
-          <h4>常用工具</h4>
-          <p style="font-size:13px;line-height:2.2">
-            <a href="borrow-log.html" style="color:var(--accent)">档案借阅登记簿 →</a><br>
-            <a href="../mail.html" style="color:var(--accent)">内部邮箱 /mail →</a>
           </p>
         </div>
       </aside>
@@ -329,30 +316,24 @@ var PWD_DEEP = 'hajiminameiluduo';
   if (tc) tc.style.display = deepOk ? '' : 'none';
 })();
 
-/* 归档检索：输入口令A / 口令B 解锁对应链入口（不区分大小写，自动 trim） */
+/* 归档检索：输入口令A / 口令B，确认后直接跳转到对应页面（不再仅显示入口）
+   口令A（iamwaitingforyou，日记1角标凯撒解出）→ 身份比对工具 identity.html
+   口令B（hajiminameiluduo，日记2封面 EXIF 解出）→ 立项黑幕链入口页 deep-links.html（汇聚归档/样本规范/借阅簿/邮箱） */
 function arcKeyUnlock() {
   var inp = document.getElementById('arcKey');
   var v = (inp && inp.value || '').trim().toLowerCase();
-  var idLink = document.getElementById('idLink');
-  var pl = document.getElementById('proposalLink');
-  var tc = document.getElementById('toolsCard');
   var msg = document.getElementById('arcKeyMsg');
-  var matched = false;
   if (v === PWD_ID) {
     try { localStorage.setItem('archive_id', '1'); } catch (e) {}
-    if (idLink) idLink.style.display = '';
-    matched = true;
+    location.href = 'identity.html';
+    return;
   }
   if (v === PWD_DEEP) {
     try { localStorage.setItem('archive_deep', '1'); } catch (e) {}
-    if (pl) pl.style.display = '';
-    if (tc) tc.style.display = '';
-    matched = true;
+    location.href = 'deep-links.html';
+    return;
   }
-  if (msg) {
-    msg.style.display = matched ? 'none' : 'block';
-  }
-  if (matched && inp) inp.value = '';
+  if (msg) msg.style.display = 'block';
 }
 
 function toggleArchive() {

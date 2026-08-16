@@ -51,6 +51,27 @@
     if (t) document.body.classList.add(t);
   } catch (e) {}
 
+  /* 顶栏「内部邮箱」入口（2026-08-17）：mail.html 已解锁（forum_unlocked）后，
+     在论坛顶部导航（首页/全部帖子/病友档案/私信）追加「内部邮箱」链接；
+     不再与立项黑幕链（deep-links）的 3 个归档入口混排。 */
+  try {
+    if (localStorage.getItem('forum_unlocked') === '1') {
+      var navUl = document.querySelector('header .f-nav, .f-nav');
+      if (navUl) {
+        var hasMail = Array.prototype.some.call(navUl.querySelectorAll('a'),
+          function (a) { return /mail\.html/i.test(a.getAttribute('href') || ''); });
+        if (!hasMail) {
+          var li = document.createElement('li');
+          var a = document.createElement('a');
+          a.href = '../mail.html';
+          a.textContent = '内部邮箱';
+          li.appendChild(a);
+          navUl.appendChild(li);
+        }
+      }
+    }
+  } catch (e) {}
+
   /* 行为追踪（T2.4 模拟）：页面停留时长（2026-08-12：搜索词维度已整体移除） */
   try {
     var page = (location.pathname.split('/').pop() || 'index').replace('.html', '');
@@ -177,14 +198,14 @@
     if (localStorage.getItem('final_done') === '1') {
       var pg = location.pathname || '';
       if (!/forum/i.test(pg) && !/mail/i.test(pg) && !/observing/i.test(pg)) {
-        document.title = '我一直在注视着你';
+        document.title = '本系统已由镜接管';
         document.body.classList.add('taken-over');   /* 接管样式：轮播图放大等 */
         document.querySelectorAll('img').forEach(function (im) {
           im.src = 'img/lookingatyou.png';
-          im.alt = '我一直在注视着你';
+          im.alt = '本系统已由镜接管';
         });
         document.querySelectorAll('[placeholder]').forEach(function (el) {
-          el.placeholder = '我一直在注视着你';
+          el.placeholder = '本系统已由镜接管';
         });
         /* 遍历所有可见文本节点（跳过纯空白与 script/style 内部） */
         var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
@@ -197,10 +218,10 @@
         });
         var textNodes = [];
         while (walker.nextNode()) textNodes.push(walker.currentNode);
-        textNodes.forEach(function (n) { n.nodeValue = '我一直在注视着你'; });
+        textNodes.forEach(function (n) { n.nodeValue = '本系统已由镜接管'; });
         /* 数字元素（统计数字 / 新闻日期 / 问卷编号）→ 眼睛图标 */
         document.querySelectorAll('.stat b, .date, .num').forEach(function (el) {
-          el.innerHTML = '<img src="img/lookingatyou.png" alt="我一直在注视着你" style="height:1.1em;width:auto;display:inline-block;vertical-align:-.2em;border-radius:2px">';
+          el.innerHTML = '<img src="img/lookingatyou.png" alt="本系统已由镜接管" style="height:1.1em;width:auto;display:inline-block;vertical-align:-.2em;border-radius:2px">';
         });
 
         /* 终局收尾（2026-08-16）：右上角摄像头指示灯常亮，hover 触发最后一段很慢的打字机 */
@@ -212,14 +233,9 @@
         camLayer.id = 'camLayer';
         document.body.appendChild(camLayer);
         var camLines = [
-          '……你关掉了网页。',
+          '游戏已结束。',
           '',
-          '但这个网页还在。',
-          '它一直在。',
-          '',
-          '它在等下一个观察者。',
-          '',
-          '谢谢你的注视。'
+          '感谢你的游玩。'
         ];
         camDot.addEventListener('mouseenter', function () {
           if (camLayer.dataset.done) return;
@@ -253,7 +269,7 @@
       /* 与 mail.html 一致的解锁映射 */
       var map = {
         diary_unlocked: ['m1', 'm2', 'm3'],
-        diary2_done: ['m4', 'm5', 'm6', 'm7'],
+        diary2_done: ['m4', 'm5', 'm6', 'm7', 'm15'],
         diary3_done: ['m8', 'm9', 'm10', 'm13', 'm14'],
         final_done: ['m11']
       };

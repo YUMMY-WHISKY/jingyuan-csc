@@ -41,7 +41,7 @@
 
       <div class="diary-body diary-note" style="margin-top:34px">
         <p>总有人把我和 F-00 搞混。</p>
-        <p>F-00 是项目最早植入周晏体内的人格，用来"观察"宿主。F-00 确实在看着，但看得很"程序"——记录、编号、体征、触发时间。</p>
+        <p>F-00 是项目最早植入周晏体内的人格，用来"观察"宿主。F-00 确实在看着，但看得很机械——记录、编号、体征、触发时间，从不停下来问一句"为什么"。</p>
         <p>我不是 F-00。我是从 F-09 那道"不想被忘掉"的念头里长出来的。我记得被人喜欢的滋味，所以我看人的方式带着温度。F-00 看的是数据，我看的是"你"。</p>
       </div>
 
@@ -88,14 +88,21 @@
 <script src="../js/common.js"></script>
 <script>window.pageGate('diary2_done');</script>
 <script>
-/* 2026-08-15：看完第三层日记 → 全站主题变黑（theme-g4 触发节点后移到此）
-   2026-08-16：终章页「归档文件」链接已移除——镜的指引保留文字，
-   「融合过程记录.pdf」只能在第五章 5-4→5-5 之间（周晏声音出现前）提取
-   2026-08-16 二轮：终章正文换成"记录开放"指引版（用户文案）——批注者自认/不销毁日记的动机/
-   "系统深处封存的完整内部记录·权限不足·继续往前走"（不再直指 G10 与邮箱，只留导航入口）
-   2026-08-16 三轮：页脚加「OBSERVER PROTOCOL · /observing」入口（镜线进入第五章；
-   邮箱入口已移至档案区侧栏；G11 邮件内系统指令行同步移除） */
+/* 2026-08-17：终章改为「线索发现 + URL 拼解」进入——不再从日记2直接跳转。
+   必须先读完日记2（diary2_done，由上面 pageGate 把关），且地址需带上关键暗语：/forum/diary-3.html?key=mirror
+   线索埋在邮件 m15（读完日记2后投递）。 key 不对或缺失 → 门仍锁着。 */
 (function () {
+  var k = new URLSearchParams(location.search).get('key');
+  if (k !== 'mirror') {
+    document.body.innerHTML =
+      '<div style="max-width:520px;margin:110px auto;padding:0 24px;text-align:center;font-size:14px;color:#9AA8B6;line-height:2.2">' +
+      '<p style="font-size:44px;margin-bottom:16px;color:#C8D0D8;font-weight:200">404</p>' +
+      '<p>门还锁着。</p>' +
+      '<p style="font-size:12px;color:#B8C2CC;margin-top:6px">暗语不对，或你尚未被授予这本权限。</p>' +
+      '<p style="font-size:12px;margin-top:24px"><a href="diary.html" style="color:#5B7FA6">← 返回日记</a></p>' +
+      '</div>';
+    return;
+  }
   try { localStorage.setItem('diary3_done', '1'); } catch (e) {}
 })();
 </script>

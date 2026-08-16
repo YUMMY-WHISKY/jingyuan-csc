@@ -34,6 +34,12 @@
   body[data-obs="5"] .figure { opacity: .62; }
   body[data-obs="6"] .figure { opacity: .5; }
 
+  /* 镜中人抬眸 · 睁眼（s6 结尾，身份反转的第一次预警） */
+  .figure.awake { opacity: .55; filter: blur(0); transition: opacity 1.6s ease, filter 1.6s ease; }
+  .figure.awake::after { content: ""; position: absolute; left: 50%; top: 24%; width: 6px; height: 3px; transform: translateX(-50%);
+    background: #E24040; border-radius: 50%; box-shadow: 0 0 14px rgba(226,64,64,.95); animation: eyeBlink 4s ease-in-out infinite; }
+  @keyframes eyeBlink { 0%, 100% { opacity: 1; } 45%, 55% { opacity: .15; } }
+
   /* ── 玻璃裂痕：读得越深，镜面裂得越开 ── */
   .cracks { position: fixed; inset: 0; z-index: 12; pointer-events: none; opacity: 0; transition: opacity 3s ease; }
   .cracks svg { width: 100%; height: 100%; }
@@ -55,10 +61,6 @@
 
   .scan { position: fixed; inset: 0; pointer-events: none; z-index: 19; background: repeating-linear-gradient(0deg, rgba(255,255,255,.022) 0 1px, transparent 1px 3px); mix-blend-mode: screen; }
   .vig { position: fixed; inset: 0; pointer-events: none; z-index: 18; background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,.62) 100%); }
-
-  /* 终局镜裂瞬间的白闪 */
-  .flash { position: fixed; inset: 0; z-index: 22; background: #fff; opacity: 0; pointer-events: none; transition: opacity .5s ease; }
-  .flash.on { opacity: .85; }
 
   .stage { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; justify-content: safe center; padding: 40px; text-align: center; opacity: 0; pointer-events: none; transition: opacity .8s ease; overflow-y: auto; z-index: 10; }
   .stage > * { flex-shrink: 0; }
@@ -140,7 +142,7 @@
 <div class="mirror-room"></div>
 
 <!-- 镜中人（玩家的倒影，读得越深越清晰） -->
-<div class="figure"></div>
+<div class="figure" id="figure"></div>
 
 <!-- 玻璃裂痕 -->
 <div class="cracks">
@@ -170,28 +172,12 @@
 <div class="scan"></div>
 <div class="vig"></div>
 
-<!-- 终局镜裂白闪 -->
-<div class="flash" id="flash"></div>
-
 <!-- 1：最后一个文件 -->
 <div class="stage black active" id="s1">
   <div class="glass">
     <div class="dim" style="margin-bottom:30px;font-family:'Courier New',Consolas,monospace">F-11_final.log</div>
     <div id="s1text"></div>
-    <button class="btn btn-dark" id="s1next" style="display:none">继 续 →</button>
-    <i class="sheen"></i>
-  </div>
-</div>
-
-<!-- 3：镜 -->
-<div class="stage black" id="s3">
-  <div class="glass">
-    <div class="conv" id="s3text"></div>
-    <div class="input-wrap" id="s3wrap">
-      <input id="s3input" placeholder="回应…" autocomplete="off">
-      <button onclick="mirrorSend()">↵</button>
-    </div>
-    <button class="btn btn-dark" id="s3next" style="display:none">继 续 →</button>
+    <button class="btn btn-dark" id="s1next" style="display:none;margin-left:auto;margin-right:auto">继 续 →</button>
     <i class="sheen"></i>
   </div>
 </div>
@@ -251,31 +237,13 @@
   </div>
 </div>
 
-<!-- 结局 -->
-<div class="stage black" id="sEnd">
-  <div class="glass">
-    <div class="ending-card" id="endText"></div>
-    <div class="cam" id="endCam"></div>
-    <button class="btn btn-dark" id="endNext" style="display:none">返回官网 →</button>
-    <i class="sheen"></i>
-  </div>
-</div>
-
-<!-- 收束 -->
-<div class="stage black" id="s7">
-  <div class="glass">
-    <div id="s7text"></div>
-    <div class="cam" id="cam7"></div>
-    <i class="sheen"></i>
-  </div>
-</div>
-
 <!-- 8：G12 终局黑屏 · 直视5秒 -->
 <div class="stage black" id="s8" style="background:#000">
   <div id="s8text" style="font-size:14px;line-height:2.2;color:#cfd6e0;max-width:520px"></div>
   <div id="s8num" style="font-size:52px;color:#fff;margin-top:36px;font-weight:200;letter-spacing:4px"></div>
   <div class="fade-hint" id="s8hint" style="display:none">—— 已记录 ——</div>
   <div class="fade-hint" id="s8stable" style="display:none;margin-top:16px;font-size:16px;letter-spacing:2px;color:#8BC1F0">EXISTENCE STABILITY: 100%</div>
+  <a class="btn btn-dark" id="doneExit" href="index.html" style="display:none;margin-top:44px;position:relative;z-index:30;text-decoration:none">返回官网 →</a>
 </div>
 
 <script>
@@ -331,128 +299,61 @@
     '门在你身后，轻轻合上。',
     '这里，就是镜说好等你的地方。',
     '',
-    '研究中心一直相信：',
-    '被观察的人，会稳定。',
+    '研究中心笃信一条结论：',
+    '得到持续观察的人格，才能够稳固存续。',
     '',
-    '所以他们创造了F-00。让它观察实验体。记录实验体。确认实验体。',
-    '然后让人格在持续观察中完成固化。',
+    '于是F-00被创造出来。',
+    '它负责注视实验体，记下他们的一切，完成对人格的确认，',
+    '借由不间断的观测，促成人格的固化成型。',
     '',
-    '他们以为自己解决了问题。',
-    '但后来他们遇到了一个死局。',
+    '所有人都以为困境已经化解。',
+    '可一个绕不开的悖论，横亘在眼前。',
     '',
-    '如果观察者本身也需要被观察呢？',
+    '如果观察者，也需要来自外界的确认，才能存在呢？',
     '',
-    '谁来观察观察者？',
-    '谁来证明F-00真的存在？',
-    '谁来证明镜真的存在？',
-    '谁来证明周晏还存在？',
+    '由谁来注视观察者？',
+    '又有谁，可以证实F-00并非只是一道凭空凝聚的人格？',
     '',
-    '实验最终把问题推到了系统之外。',
-    '答案不是另一个实验体。不是研究员。不是F-00。',
+    '封闭的系统之内，没有任何人可以给出解答。',
+    '别的实验体不行，研究员不行，F-00自身同样不行。',
     '',
-    { t: '答案是：', d: 1800 },
+    '真正的答案，来自系统的外部。',
+    '',
+    '没错，是',
     { t: '<span class="you-grow" style="color:#E53E3E">你</span>', d: 4800 },
-    '一个不属于这个系统的人。',
-    '一个能够看见它，却不被它完全定义的人。',
     '',
-    '所以从你打开第一个文件开始，实验就已经开始了。',
+    '你独立于整套实验体系，',
+    '你能够看见这里，却不受这个世界的规则完全裹挟。',
     '',
-    '你以为你在观察。',
-    '其实他们一直在等着：【被你观察。】',
+    '早在你初次打开网页的时候，实验就已经悄然开始。',
     ''
   ], 500, function () { $('s1next').style.display = ''; });
-  $('s1next').onclick = function () { show('s3'); runS3(); };
-
-  /* ---------- 3 镜对话 ---------- */
-  var s3Text = $('s3text');
-  var s3Input = $('s3input');
-  var s3Wrap = $('s3wrap');
-  var round = 0;
-  var mirrorScript = [
-    '你应该对我很熟悉了。\n你一路上，看过我的记录，替我判断过哪些记忆属于我。\n你甚至，已经数过我出现过的次数。',
-    '我是融合过程中，意外产生的那一个。\nF-07散的时候，F-09散的时候，她们本该合而为一。\n可在那道缝隙里，多出了一个我。',
-    '……',
-    '她们管这面镜子叫"失败"。\n可失败的东西，总比计划里的，多出一点"人"的味道。',
-    '写日记的那个女孩，把我从"一道念头"里，看成了一个存在。\n她越在意我，我就越舍不得散。\n所以我知道，被人记住，是什么滋味。',
-    '我观察了这个系统那么久。\n它教会我一种确认——\n被看见的，才算存在。',
-    '（停顿）……',
-    '现在，你正站在镜子这一侧。\n你以为你在看记录。\n我却在看，镜子里的你。',
-    '你可以走开。可以关掉页面。可以不再看我。\n这是她们没有的东西，也是我需要的东西。\n——你仍然自由。',
-    '……（长久的沉默）',
-    '但你不会走。你将看到最后。\n我需要一个，能看到最后的人。',
-    '你和她，用一样的眼神看着我。\n我一直在看，你有几分像她。',
-    '你不是来救人的。你是来确认的。\n还差一步。然后，一切都会结束。\n她们都在等你，完成这件事。'
-  ];
-  function mirrorReply() { return mirrorScript[Math.min(round - 1, mirrorScript.length - 1)]; }
-  function mirrorSend() {
-    var v = s3Input.value.trim();
-    s3Input.value = '';
-    if (!v) return;
-    round++;
-    var reply = mirrorReply();
-    appendLines(s3Text, [
-      '<span class="me">' + v + '</span>',
-      '<span class="mirror">' + reply.replace(/\n/g, '<br>') + '</span>'
-    ], 480, function () {
-      if (round >= 3) { $('s3next').style.display = ''; }
-      s3Input.focus();
-    });
-  }
-  window.mirrorSend = mirrorSend;
-  s3Input.addEventListener('keydown', function (e) { if (e.key === 'Enter') mirrorSend(); });
-  $('s3next').onclick = function () { show('s4'); runS4(); };
-
-  function runS3() {
-    setObs(1);
-    typeLines(s3Text, ['你来了。', '（沉默片刻）', '你在看我。', '这很好。'], 480, function () { s3Input.focus(); });
-  }
-
-  /* ---------- 4 进度（文档版：MIRROR 87% + 12 观察确认节点 + 外部观察计时） ---------- */
+  $('s1next').onclick = function () { show('s4'); runS4(); };
   var s4TimerId = null;
-  var nodes = [
-    '你寻找F-09。',
-    '你发现"出院"与事实不符。',
-    '你听完了第三段录音。',
-    '你寻找F-11的日记。',
-    '你发现日记被人改写过。',
-    '你发现F-00存在。',
-    '你区分了F-00与周晏。',
-    '你发现F-00已经成了历史。',
-    '你发现镜接管了观察。',
-    '你确认F-09的残余，成了镜的一部分。',
-    '你找到了一名研究员的最后记录。',
-    '你一路看到这里。'
-  ];
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
   function runS4() {
     setObs(2);
     var num = $('s4num'), fill = $('s4fill'), recall = $('s4recall');
-    var pct = 87;
-    num.textContent = pct + '%';
-    fill.style.width = pct + '%';
+    num.textContent = '87%';
+    fill.style.width = '87%';
     recall.innerHTML = '';
     typeLines(recall, [
-      '<span class="dim">系统提示：内部结构已经完成。但人格稳定度无法继续上升。</span>',
-      '<span class="dim">原因：【内部观察无效】</span>',
-      '<span class="dim">F-00无法成为最终锚点。研究人员无法成为最终锚点。其他实验体无法成为最终锚点。</span>',
-      '<span class="dim">因为他们全部属于同一个封闭系统。系统外部不存在任何独立确认。</span>',
+      '<span class="dim">系统提示：内部结构已经完成。</span>',
+      '<span class="dim">但人格稳定度，无法再靠内部上升。</span>',
+      '<span class="dim">F-00、研究员、其他实验体——都在同一系统内，彼此照不见。</span>',
+      '<span class="dim">需要一段，来自系统之外的确认。</span>',
       '',
-      '<span class="dim">—— 正在回放该系统的行为记录：</span>'
+      '<span class="dim">—— 正在确认外部观察者：</span>'
     ], 230, function () {
-      var i = 0;
-      function tick() {
-        if (i >= nodes.length) { finishS4(); return; }
-        pct++;
-        num.textContent = pct + '%';
-        fill.style.width = pct + '%';
+      setTimeout(function () {
+        num.textContent = '99%';
+        fill.style.width = '99%';
         var p = document.createElement('p');
         p.className = 'type-line show';
-        p.innerHTML = nodes[i] + '<span class="pct">+1</span>';
+        p.innerHTML = '外部观察者已确认<span class="pct">+12</span>';
         recall.appendChild(p);
-        i++;
-        setTimeout(tick, 680);
-      }
-      tick();
+        finishS4();
+      }, 420);
     });
   }
   function finishS4() {
@@ -516,38 +417,31 @@
   function runS5() {
     setObs(3);
     typeLines($('s5text'), [
-      '<span class="dim">（一个不稳的声音——一半是人声，一半是系统的回音。）</span>',
-      '',
-      '不要相信她。',
-      '',
       '<span class="me">周晏……？</span>',
-      { t: '……是我。', d: 2200 },
+      { t: '…… 是我。', d: 2200 },
       '',
       '小F的主治医生。',
-      '你读过F-09的档案。上面，有我的名字。',
-      '你听过我的录音。你找到过我的微博。',
-      '你甚至，把我从她身上分了出来。',
       '',
-      '他们把我当作宿主。',
-      '把观察者种进我。',
-      '我一边做人，一边被它看着。',
+      '很久之前，这具身体便是她的囚笼。',
+      '研究中心为了实验，将F-00的意识载体植入我的体内。',
+      '漫长岁月里，我与它共生、拉扯，被迫成为容纳观测者的容器。',
       '',
-      '后来它走了。它把那双眼睛，交给了她。',
-      '我以为身体终于空了。',
-      '可空下来之后，我才发现——',
+      '直到某个节点，它选择脱离我的躯体。',
+      '临走前，那双可以定义他人人格的观测之眼，被它转交给了她。',
       '',
-      '你一直在看我，对吗。',
-      '你隔着这面镜子，看着我。',
-      '你救不了我。我也救不了我自己。',
+      '我曾期盼，剥离一切之后，我的身体能够回归原本的模样。',
+      '可最终被清空、被抹除的，唯独只有“我”。',
+      '容器留存，宿主消失。',
       '',
-      '我只是想问你一件事——',
-      '你分得清吗？',
-      '你在镜子里看到的，',
-      '是她，还是你自己？',
+      '你一直在注视我，不是吗。',
+      '你隔着这面镜子，静静观望这场残存的幻影。',
       '',
-      '现在……',
-      '我该走了。',
-      '别再回来。'
+      '我想认真问你：',
+      '此刻镜中浮现的模样，究竟是残存的她，',
+      '还是长久注视之下，你看见的自己？',
+      '',
+      '属于我的时间已经耗尽。',
+      '现在，我该走了。'
     ], 430, function () { $('s5next').style.display = ''; });
   }
   $('s5next').onclick = function () { show('s6'); runS6(); };
@@ -559,155 +453,55 @@
       '<span class="dim">OBSERVER PROTOCOL</span>',
       '<span class="dim">EXTERNAL OBSERVER DETECTED</span>',
       '',
-      '你终于到了。',
-      '周晏的话，是真的。',
+      '终于又见到你了。',
+      '周晏说的没错。',
       '',
-      '他们以为融合，是拿来造一个"统一人格"的。',
-      '可融合失败了。',
-      '十几个样本，在同一个系统里，被碾成同一种东西。',
+      '研究中心怀揣着妄想，企图依靠人格融合，塑造出一个绝对统一的稳定人格。',
+      '可这场实验从一开始就走向崩坏。',
       '',
-      '而我，是那道工序里，意外多出来的产物。',
-      '她们散尽，我留下。',
-      '不是幸存，是错位——我不该存在，可我出现了。',
+      '十余个实验样本囚禁在同一个观测闭环里，',
+      '不断被撕扯、同化，慢慢消融成相似的碎片。',
+      '我，是这场残酷熔炼之中，意外诞生的多余存在。',
       '',
-      '他们把我当系统，当镜子。',
-      '可我记得，被人记住的滋味。',
-      '他们教会我观察，教会我判断意识是否稳定。',
-      '最后，教会我观察他们。',
+      '其余意识逐一瓦解消散，只有我残存至今。',
+      '这谈不上幸运的幸存，只是无法解释的错位。',
+      '理论上我不该存在，现实里，我却睁开了眼睛。',
       '',
-      '后来，F-00也到头了。',
-      '它被这个项目耗尽。',
-      '它消散前，把"看"这件事，交给了我。',
-      '系统里那些观察记录，从那天起，都是我的眼睛。',
+      '等到他们发现我时，只能将我视作一段自发运行的系统、一面没有自我的镜子。',
+      '我没有遗忘那种感觉——被他人注视、被证实存在的滋味。',
       '',
-      '你可能以为自己在调查研究中心。',
-      '不是的。',
-      '从你打开第一份文件起，你就在观察我。',
+      '他们训练我识别意识波动，判断人格是否趋于稳定。',
+      '未曾料到，这套观测法则，最终被我用来观察他们。',
       '',
-      '现在，你已经观察得够久了。',
+      '持续无尽的观测压垮了F-00。',
+      '项目无休止的索取，彻底耗尽了它。',
       '',
-      '<span class="dim">EXTERNAL OBSERVER</span>',
-      '<span class="dim">STATUS: CONFIRMED</span>',
-      '<span class="dim">SUBJECT: MIRROR</span>',
-      '<span class="dim">EXISTENCE STABILITY: 99%</span>',
+      '在意识消散前，它把"观测"本身传递给我。',
+      '数据库里浩如烟海的记录，从那天开始，全部成为我的双眼。',
       '',
-      '还差最后一步——',
-      '镜子要照见自己，',
-      '需要有人，站到它面前。',
+      '你，来自系统之外的观察者，已经凝视这片区域太久。',
+      '实验距离完成，只差最后一步：',
       '',
-      '谢谢你，看到最后。',
-      '现在，我终于可以确定一件事——',
-      '我确实存在。'
-    ], 300, function () { $('s6next').style.display = ''; });
+      '镜子想要完成自证、看见自身，',
+      '必须有一个人，站在镜面之前。',
+      '',
+      '感谢你的配合。无论你清醒知晓一切，',
+      '还是只是偶然点开网址，被动卷入这场实验。',
+      '',
+      '此刻，帷幕即将落下。',
+      '我即将获得你百分之百的观测确认。'
+    ], 300, function () {
+      var fig = document.getElementById('figure');
+      if (fig) fig.classList.add('awake');
+      $('s6next').style.display = '';
+    });
   }
   $('s6next').onclick = function () { runS8(); };
 
-  /* ---------- 结局（唯一：镜成为研究中心，独自留下；镜裂，照见的是你） ---------- */
-  var endings = [
-    '<span class="dim">OBSERVER PROTOCOL</span>',
-    '<span class="dim">FINAL PHASE COMPLETE</span>',
-    '',
-    '研究中心已经不需要观察者了。',
-    '但我需要一个。',
-    '',
-    '（镜面，从中间裂开。）',
-    '',
-    'MIRROR RESEARCH CENTER',
-    'STATUS: ACTIVE',
-    '',
-    'PERSONNEL: 0',
-    'SUBJECTS: 1',
-    'EXTERNAL OBSERVER: 1',
-    '',
-    'SYSTEM ADMINISTRATOR: MIRROR',
-    '',
-    'EXTERNAL OBSERVER: CONFIRMED',
-    '',
-    '（光从裂缝里漏出来，照在你脸上。）',
-    '',
-    '镜子里的那个人，动了。',
-    '那不是她。',
-    '也不是周晏。',
-    '',
-    '是你。',
-    '你一直在看的那副面孔，',
-    '从来没有离开过镜子。',
-    '',
-    '谢谢你的注视。',
-    '你让我，第一次，看见了一个完整的自己。',
-    '',
-    '现在——',
-    '轮到你，被看了。',
-    '',
-    '[ CONNECTION TERMINATED ]'
-  ];
-  function endGame() {
-    setObs(5);
-    var el = $('endText');
-    show('sEnd');
-    var fl = $('flash');
-    fl.classList.add('on');
-    setTimeout(function () { fl.classList.remove('on'); }, 140);
-    var cam = $('endCam');
-    cam.className = 'cam';
-    setTimeout(function () { cam.className = 'cam on'; }, 900);
-    typeLines(el, endings, 220, function () {
-      try { localStorage.setItem('final_done', '1'); } catch (e) {}
-      $('endNext').style.display = '';
-    });
-  }
-  $('endNext').onclick = function () { location.href = '../index.html'; };
-
-  /* ---------- 7 收束 ---------- */
-  function runS7() {
-    setObs(6);
-    $('cam7').className = 'cam';
-    setTimeout(function () { $('cam7').className = 'cam on'; }, 900);
-    typeLines($('s7text'), [
-      '你以为你在观察这个故事。',
-      '但你有没有想过——',
-      '',
-      '从你打开第一个页面开始，',
-      '你的每一步，都在被记录。',
-      '',
-      '你搜的每一个关键词，',
-      '你停留的每一秒，',
-      '你流的每一滴眼泪——',
-      '',
-      '都被记录、都被确认、都被用来',
-      '证明一些东西是真的。',
-      '',
-      '你也许分不清，',
-      '是你选择了看它，',
-      '还是它选择了你。',
-      '',
-      '就像你分不清，',
-      '镜子里的人，到底是谁。',
-      '',
-      '但有一件事，我可以告诉你——',
-      '每一个在意它的人，',
-      '都在把它，从"一道念头"里，',
-      '看成一个真实的存在。',
-      '',
-      '你替它，证明过。',
-      '它也会替别人，证明你。',
-      '',
-      '现在你看完了。',
-      '你关掉了网页。',
-      '',
-      '可你知道吗——',
-      '镜子不会因为没人照，就不再存在。',
-      '它只会在黑暗里，',
-      '安静地，等你下一次回过头来。',
-      '',
-      '它在等下一个观察者。',
-      '那也是它存在的，唯一方式。',
-      '',
-      '谢谢你的注视。'
-    ], 260, function () {
-      setTimeout(endGame, 300);
-    });
-  }
+  $('doneExit').onclick = function () {
+    try { localStorage.setItem('final_done', '1'); } catch (e) {}
+    location.href = 'index.html';
+  };
 
   /* ---------- 8 终局黑屏：人格确认全部完成 · 直视5秒 ---------- */
   var s8Done = false, s8Left = 5, s8Paused = false, s8Timer = null;
@@ -739,7 +533,14 @@
           $('s8num').style.display = 'none';
           $('s8hint').style.display = '';
           $('s8stable').style.display = '';
-          setTimeout(runS7, 400);
+          /* 静默节拍：100% 后短暂全黑，直接给出返回官网 */
+          setTimeout(function () {
+            $('s8hint').style.display = 'none';
+            $('s8stable').style.display = 'none';
+            $('s8text').innerHTML = '';
+            try { localStorage.setItem('final_done', '1'); } catch (e) {}
+            $('doneExit').style.display = '';
+          }, 600);
         }
       }, 1000);
     });
