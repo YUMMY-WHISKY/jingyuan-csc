@@ -554,7 +554,15 @@
             $('s8hint').style.display = 'none';
             $('s8stable').style.display = 'none';
             $('s8text').innerHTML = '';
-            try { localStorage.setItem('final_done', '1'); } catch (e) {}
+            try { 
+              localStorage.setItem('final_done', '1'); 
+              /* 提前将 m11 标记为已通知，防止在本页弹出打扰玩家 */
+              var noted = JSON.parse(localStorage.getItem('mail_global_notified') || '[]');
+              if (noted.indexOf('m11') === -1) {
+                noted.push('m11');
+                localStorage.setItem('mail_global_notified', JSON.stringify(noted));
+              }
+            } catch (e) {}
             $('doneExit').style.display = '';
           }, 600);
         }
