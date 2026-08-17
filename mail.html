@@ -7,37 +7,64 @@
 <link rel="icon" href="img/logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="css/style.css">
 <style>
-  body { background: #1A1F26; color: #C9D6E4; }
-  .mail-top { background: #101318; border-bottom: 1px solid #2A3340; }
-  .mail-top .container { display: flex; justify-content: space-between; align-items: center; height: 52px; font-size: 13px; color: #8FA3B8; }
-  .mail-top a { color: #6E8BA8; text-decoration: none; }
-  .mail-top a:hover { color: #fff; }
+  /* 主题跟随全局进度：默认温情浅色；body.theme-g4（读完第三层日记后）整页转黑红，
+     与论坛/官网的变黑节奏保持一致 */
+  body { background: #F5F8FB; color: #2B3947; }
+  .mail-top { background: #FFFFFF; border-bottom: 1px solid #E3EAF2; }
+  .mail-top .container { display: flex; justify-content: space-between; align-items: center; height: 52px; font-size: 13px; color: #5A6B7C; }
+  .mail-top a { color: #3A78B8; text-decoration: none; }
+  .mail-top a:hover { color: #234F7E; }
   .mail-wrap { max-width: 720px; margin: 40px auto 60px; padding: 0 24px; }
-  .mail-title { font-size: 20px; color: #E8F0FA; letter-spacing: 3px; margin-bottom: 6px; }
-  .mail-sub { font-size: 12px; color: #6E7E90; margin-bottom: 26px; }
-  .mail-list { background: #151A21; border: 1px solid #2A3340; border-radius: 8px; overflow: hidden; }
+  .mail-title { font-size: 20px; color: #1F2A36; letter-spacing: 3px; margin-bottom: 6px; }
+  .mail-sub { font-size: 12px; color: #8897A6; margin-bottom: 26px; }
+  .mail-list { background: #FFFFFF; border: 1px solid #E3EAF2; border-radius: 8px; overflow: hidden; }
   /* 阶段之间的间隔（无文字，仅留白分隔） */
-  .mail-gap { height: 12px; background: #101318; border-top: 1px solid #222A33; border-bottom: 1px solid #222A33; }
-  .mail-item { display: flex; align-items: center; gap: 14px; padding: 16px 20px; border-bottom: 1px solid #222A33; cursor: pointer; transition: background .2s; }
+  .mail-gap { height: 12px; background: #EFF4F9; border-top: 1px solid #E6EDF5; border-bottom: 1px solid #E6EDF5; }
+  .mail-item { display: flex; align-items: center; gap: 14px; padding: 16px 20px; border-bottom: 1px solid #EEF2F7; cursor: pointer; transition: background .2s; }
   .mail-item:last-child { border-bottom: none; }
-  .mail-item:hover { background: #1C232D; }
-  .mail-item.unread .m-from { font-weight: bold; color: #E8F0FA; }
+  .mail-item:hover { background: #F2F6FB; }
+  .mail-item.unread .m-from { font-weight: bold; color: #1F2A36; }
   .m-dot { width: 8px; height: 8px; border-radius: 50%; background: #3A78B8; flex-shrink: 0; }
-  .mail-item.read .m-dot { background: #2A3340; }
+  .mail-item.read .m-dot { background: #CBD6E0; }
   .m-body { flex: 1; min-width: 0; }
-  .m-from { font-size: 14px; color: #B8C6D4; margin-bottom: 3px; }
-  .m-subj { font-size: 13px; color: #8FA3B8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .m-time { font-size: 12px; color: #5A6B7C; flex-shrink: 0; }
+  .m-from { font-size: 14px; color: #33424F; margin-bottom: 3px; }
+  .m-subj { font-size: 13px; color: #6B7A89; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .m-time { font-size: 12px; color: #9AA8B6; flex-shrink: 0; }
   /* 邮件详情 */
-  .mail-detail { display: none; background: #151A21; border: 1px solid #2A3340; border-radius: 8px; padding: 28px 30px; }
+  .mail-detail { display: none; background: #FFFFFF; border: 1px solid #E3EAF2; border-radius: 8px; padding: 28px 30px; }
   .mail-detail.show { display: block; }
-  .md-head { border-bottom: 1px solid #222A33; padding-bottom: 16px; margin-bottom: 20px; font-size: 13px; line-height: 2.1; color: #8FA3B8; }
-  .md-head b { color: #E8F0FA; font-weight: normal; }
-  .md-body { font-size: 14px; line-height: 2.2; color: #C9D6E4; }
+  .md-head { border-bottom: 1px solid #EEF2F7; padding-bottom: 16px; margin-bottom: 20px; font-size: 13px; line-height: 2.1; color: #6B7A89; }
+  .md-head b { color: #1F2A36; font-weight: normal; }
+  .md-body { font-size: 14px; line-height: 2.2; color: #33424F; }
   .md-body p { margin-bottom: 14px; }
-  .md-body .hl { color: #D8A657; }
-  .md-back { font-size: 12px; color: #6E8BA8; cursor: pointer; margin-bottom: 14px; display: inline-block; }
-  .md-back:hover { color: #fff; }
+  .md-body .hl { color: #C98A2C; }
+  .md-back { font-size: 12px; color: #3A78B8; cursor: pointer; margin-bottom: 14px; display: inline-block; }
+  .md-back:hover { color: #234F7E; }
+
+  /* ---- 黑红（theme-g4：读完第三层日记后，与全站一起变黑） ---- */
+  body.theme-g4 { background: #1A1F26; color: #C9D6E4; }
+  body.theme-g4 .mail-top { background: #101318; border-bottom-color: #2A3340; color: #8FA3B8; }
+  body.theme-g4 .mail-top a { color: #6E8BA8; }
+  body.theme-g4 .mail-top a:hover { color: #fff; }
+  body.theme-g4 .mail-title { color: #E8F0FA; }
+  body.theme-g4 .mail-sub { color: #6E7E90; }
+  body.theme-g4 .mail-list { background: #151A21; border-color: #2A3340; }
+  body.theme-g4 .mail-gap { background: #101318; border-color: #222A33; }
+  body.theme-g4 .mail-item { border-bottom-color: #222A33; }
+  body.theme-g4 .mail-item:hover { background: #1C232D; }
+  body.theme-g4 .mail-item.unread .m-from { color: #E8F0FA; }
+  body.theme-g4 .m-dot { background: #3A78B8; }
+  body.theme-g4 .mail-item.read .m-dot { background: #2A3340; }
+  body.theme-g4 .m-from { color: #B8C6D4; }
+  body.theme-g4 .m-subj { color: #8FA3B8; }
+  body.theme-g4 .m-time { color: #5A6B7C; }
+  body.theme-g4 .mail-detail { background: #151A21; border-color: #2A3340; }
+  body.theme-g4 .md-head { border-bottom-color: #222A33; color: #8FA3B8; }
+  body.theme-g4 .md-head b { color: #E8F0FA; }
+  body.theme-g4 .md-body { color: #C9D6E4; }
+  body.theme-g4 .md-body .hl { color: #D8A657; }
+  body.theme-g4 .md-back { color: #6E8BA8; }
+  body.theme-g4 .md-back:hover { color: #fff; }
 </style>
 </head>
 <body>
