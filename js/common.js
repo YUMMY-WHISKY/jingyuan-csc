@@ -217,7 +217,9 @@
   try {
     if (localStorage.getItem('final_done') === '1') {
       var pg = location.pathname || '';
-      if (!/forum/i.test(pg) && !/mail/i.test(pg) && !/observing/i.test(pg)) {
+      /* 排除论坛、邮箱、观察室、以及根目录下的特定互动解谜页面（如 7-24_...html 等），
+         这些页面虽然是根目录，但属于游戏核心内容，不应被接管 */
+      if (!/forum/i.test(pg) && !/mail/i.test(pg) && !/observing/i.test(pg) && !/\d+[-_]\d+[-_]/i.test(pg)) {
         document.title = '本系统已由镜接管';
         document.body.classList.add('taken-over');   /* 接管样式：轮播图放大等 */
         document.querySelectorAll('img').forEach(function (im) {
