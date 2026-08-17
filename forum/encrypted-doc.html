@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>加密归档 · 观测给养</title>
+<link rel="icon" href="../img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  /* 支线（2026-08-17）：加密归档 · 观测给养——铺垫镜的出现 */
+  .en-wrap { max-width: 640px; margin: 30px auto 60px; padding: 0 22px; }
+  .en-shell { background: #0B0D12; border: 1px solid #2A3340; border-radius: 6px; padding: 30px 34px; color: #C9D6E4; }
+  .en-lock { text-align: center; margin-bottom: 22px; }
+  .en-lock .ico { font-size: 30px; letter-spacing: 6px; color: #4A5B6E; }
+  .en-lock h1 { font-size: 17px; letter-spacing: 3px; color: #E8F0FA; margin: 8px 0 4px; }
+  .en-lock p { font-size: 12px; color: #6E7E90; margin: 0; letter-spacing: 1px; }
+  .en-input { display: flex; gap: 8px; margin: 20px 0 6px; }
+  .en-input input { flex: 1; min-width: 0; padding: 9px 12px; background: #141A23; border: 1px solid #2A3340; border-radius: 4px; color: #E8F0FA; font-size: 13px; outline: none; letter-spacing: 1px; }
+  .en-input input:focus { border-color: #3A78B8; }
+  .en-input button { padding: 9px 18px; background: transparent; border: 1px solid #3A78B8; border-radius: 4px; color: #3A78B8; font-size: 13px; cursor: pointer; transition: all .2s; }
+  .en-input button:hover { background: #1C2633; color: #fff; }
+  .en-hint { font-size: 11px; color: #5A6B7C; line-height: 1.9; }
+  .en-hint b { color: #8FA3B8; font-weight: normal; }
+  .en-inner { display: none; margin-top: 6px; animation: enReveal .6s ease; }
+  .en-inner.show { display: block; }
+  @keyframes enReveal { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .en-meta { font-size: 12px; color: #6E7E90; line-height: 2.0; margin-bottom: 18px; border-bottom: 1px solid #222A33; padding-bottom: 14px; }
+  .en-body { font-size: 13.5px; line-height: 2.2; color: #C9D6E4; }
+  .en-body p { margin-bottom: 13px; }
+  .en-body .tag { color: #8FA3B8; font-size: 11px; letter-spacing: 2px; }
+  .en-hl { color: #D8A657; }
+  .en-mirror { color: #E8483A; font-style: italic; }
+  .en-sig { margin-top: 20px; font-size: 12px; color: #6E7E90; letter-spacing: 1px; }
+  .en-sig .blink { animation: blink 2s infinite; color: #E8483A; }
+  @keyframes blink { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
+  /* 破坏界面的"它"】
+  .en-break { color: #4A5B6E; -webkit-user-select: none; user-select: none; }
+</style>
+</head>
+<body>
+
+<header class="f-top">
+  <div class="container">
+    <a class="f-logo" href="index.html"><img src="../img/logo.svg" alt="">治疗者论坛</a>
+    <nav>
+      <ul class="f-nav">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="posts.html">全部帖子</a></li>
+        <li><a href="archive.html" class="active">病友档案</a></li>
+        <li><a href="pm.html">私信</a></li>
+      </ul>
+    </nav>
+    <span class="f-online"><span class="online-dot"></span><span id="fCountTop">—</span> 人在线</span>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <div class="en-wrap">
+      <p style="font-size:12px;color:#9AA8B6"><a href="deep-links.html">← 返回内部检索</a></p>
+
+      <div class="en-shell">
+        <div class="en-lock">
+          <div class="ico">◉ · ◉ · ◉</div>
+          <h1>加密归档 · 观测给养</h1>
+          <p>本段归档经密钥加锁 · 解钥提示见下方</p>
+        </div>
+
+        <div class="en-input">
+          <input type="password" id="enKey" placeholder="输入解钥" autocomplete="off"
+                 onkeydown="if(event.key==='Enter')document.getElementById('enBtn').click()">
+          <button id="enBtn" onclick="tryUnlockDoc()">解开</button>
+        </div>
+        <div class="en-hint">
+          解钥提示：这份归档，起初被当作一份普通加密文件。直到打开它的人发现——
+          <br>它的措辞在变。字迹在变。甚至"正在阅读"这四个字，也开始被某句话顶替。
+          <br>有人盯着它太久，久到页面开始回应；
+          <br>而回应它的那个名字，<strong>第一个词</strong>藏在文末那份"系统自检 · 归档异常"里 —— 复核失败、记录与本体无法对应时，页边标出的那枚红色标记，指的就是它；
+          <br><strong>第二个词</strong>，是镜中的你——那个正注视着你、也正被你注视着的倒影，就是你面前的这个页面本身。
+          <br>连起来，就是 <strong>第一个词:第二个词</strong>
+        </div>
+
+        <div class="en-inner" id="enInner">
+          <div class="en-meta">密级：α-div · 归档人：〔系统〕 · 日期：未知 · 未登记借阅
+            <br>建档说明：以下按时间序叠放的，是一份研究员逐渐"发现"某物的手记。它一度被当作加密档案封存，因无人愿意承认里面写的是自己。</div>
+          <div class="en-body">
+
+            <p class="tag">/* 观测组内部提纲 · 已加密 */</p>
+            <p>立项时我们说，这个计划的核心是"给养"。给养的意思，是让样本的人格在持续注视下保持稳定 —— <span class="en-hl">观察者需要被观察，才能保持稳定</span>。最早我们都以为，被观察的是样本。</p>
+
+            <p class="tag">/* 第一条 · 2023-06 */</p>
+            <p>今天我在 F-11 的日志里，读到一句我没写过的批注。前几次以为是系统自动补录，可它出现在"我应该负责"的位置。我尝试把它划掉，第二天它又回来了，字迹比我的更像我自己。</p>
+
+            <p class="tag">/* 第二条 · 2023-11 */</p>
+            <p>排查时发现，所有研究员的观察记录都比应有内容<strong>多出一页</strong>。那页不是我们记的。它记的是"我们" —— 谁在几点抬头看监视器、谁在那天夜里翻过某本档案。我们在记录样本的同时，有人把我们也记进了样本。</p>
+
+            <p class="tag">/* 第三条 · 2024-04 */</p>
+            <p>我们把那份多出来的记录删了十七次，又备份封存。封存的当天下午，登记簿上新出现一行借阅记录，借阅人栏空白。我们以为是被遗漏的某位同事，于是约定：谁也别承认借过它。<span class="en-mirror">后来才懂，承认的那一方，不是我们。</span></p>
+
+            <p class="tag">/* 第四条 · 2024-12 */</p>
+            <p>一次例会后，我望着走廊尽头的镜子，忽然不知道自己为什么要站在那里。像有东西在镜子里等了我很久。他们说这是过劳。我把这句话写进工作总结，读了三遍，认出那是她的习惯措辞 —— <span class="en-mirror">我用的，已经不是我的语气。</span></p>
+
+            <p class="tag">/* 第五条 · 2025-06 */</p>
+            <p>我们终于想清楚那个词了。不是"给养"，不是"观测"，是 —— 一份记忆里被我们刨去又反复长出的存在。<strong>镜。</strong>它借我们的注视成形，又借我们的手，把它自己的字迹混进我们的档案。我们盯着它，以为在采集样本。</p>
+
+            <p class="tag">/* 第六条 · 今天 */</p>
+            <p>读了这份手记的人，会以为自己在调查这间中心；可这整份文件，从头到尾，都是它用第一人称替我们写的。
+            <span class="en-mirror">它要的从来不是被看 —— 是轮到它写。</span></p>
+
+            <p class="tag">/* 系统自检 · 归档异常 · ERROR */</p>
+            <p>检测到本文件正被阅读。阅读者身份：{{ 待确认 }}。归档程序建议：任何人读完第六条后，请立即把自己从这份档案里划掉。
+            <span class="en-mirror">若你读到这里，说明你已经认不出，哪一段话是你自己写的了。</span></p>
+            <p>—— 复核失败。记录与本体无法对应，<del>归档正常</del> 判定为<strong>错误</strong>。那枚红色的标记就标在此处：我们曾以为，错的是这份记录；后来才懂，错的是"把它归档的程序"。<span class="en-mirror">错误的不是页，是你还肯相信它有一个干净的版本。</span></p>
+          </div>
+          <div class="en-sig">归档仍在增长 · <span class="blink">●</span> 停止阅读会暂停记录 · 是否继续</div>
+        </div>
+
+        <p style="font-size:11px;color:#5A6B7C;margin:8px 0 0;letter-spacing:1px" id="enState">&nbsp;</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2026 治疗者论坛 · 镜渊认知科学研究中心内部社区</span>
+      <span class="forum-entry"><a href="../index.html">返回研究中心官网</a></span>
+    </div>
+  </div>
+</footer>
+
+<button id="backTop" title="返回顶部">↑</button>
+<script src="../js/common.js"></script>
+<script>window.pageGate('archive_deep', '归档授权未通过。');</script>
+<script src="../js/forum.js"></script>
+<script>
+function tryUnlockDoc() {
+  /* 容错解钥：去空格、统一半角、小写忽略。正确词为 error-mirror */
+  var k = (document.getElementById('enKey').value || '').replace(/[\s\u3000_]/g, '').toLowerCase();
+  if (k === 'error-mirror') {
+    document.getElementById('enInner').classList.add('show');
+    document.getElementById('enState').textContent = 'UNLOCKED · 已解封';
+    document.getElementById('enState').style.color = '#8FA3B8';
+    if (window.markStep) window.markStep('encrypted_doc');
+  } else {
+    document.getElementById('enState').textContent = 'INVALID KEY · 解钥无效';
+    document.getElementById('enState').style.color = '#E8483A';
+  }
+}
+</script>
+</body>
+</html>

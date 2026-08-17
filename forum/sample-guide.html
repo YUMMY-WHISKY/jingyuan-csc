@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>样本管理规范 - 治疗者论坛</title>
+<title>样本管理规范</title>
 <link rel="icon" href="../img/logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../css/style.css">
 <style>
@@ -24,6 +24,12 @@
   .op-note .rev .who { font-size: 11.5px; color: #9A8B6E; }
   .rev-red { font-family: "KaiTi", "STKaiti", serif; color: #A63A2B; font-weight: bold; letter-spacing: .5px; }
   .rev-ball { font-family: "KaiTi", "STKaiti", serif; color: #4A5A4E; }
+  /* 折叠残页（第2版被删来源的复印残页） */
+  .op-foil { border: 1px dashed #B8AE96; border-radius: 3px; padding: 14px 18px; margin: 14px 0 6px; font-family: "SimSun", "STSong", serif; font-size: 13px; line-height: 2.1; color: #5C5344; background: #EAE4D2; }
+  .op-foil summary { cursor: pointer; list-style: none; font-size: 12px; color: #9A8B6E; letter-spacing: 1px; user-select: none; }
+  .op-foil summary::before { content: "▸ "; color: #A89B80; }
+  .op-foil[open] summary::before { content: "▾ "; }
+  .op-foil .foil-tag { font-size: 11px; color: #9A8B6E; letter-spacing: 1px; }
 </style>
 </head>
 <body>
@@ -67,6 +73,19 @@
         <p class="op-redact-block"></p>
         <p class="op-para op-hand" style="color:#7E7260">（第 2 版此处原有「合成样本来源」一节，第 3 版修订时删除，内容不再公开。如有疑问请勿向样本本人提及。）</p>
 
+        <!-- 第2版被删来源的复印残页（陈说"复印存档在别处"，此处留一份不清晰的复印件） -->
+        <details class="op-foil">
+          <summary>折叠 · 第 2 版「合成样本来源」复印残页（铅笔·字迹模糊）</summary>
+          <div style="margin-top:8px">
+            <div class="foil-tag">下列内容为第 2 版被删除章节的残留复印件，仅命名页可辨认。</div>
+            <p>第一节　合成样本的来源</p>
+            <p>合成样本并非通过招募取得。其形成需要一个稳定的<strong>观察锚点</strong>——一段被反复注视、反复记录的生活基线。当观察足够连续、足够漫长，原本模糊的"自我"影像会逐渐显影，进而具备独立行动与回应的能力。</p>
+            <p>……观察一旦中断超过<span class="op-redact">▉▉</span>小时，已显影的部分会迅速回退，回到……</p>
+            <p style="color:#9A8B6E">（此处下段文字被硬物刮去，仅余一句可辨）</p>
+            <p><span class="rev-ball">观察者需要被观察，才能保持稳定。</span></p>
+          </div>
+        </details>
+
         <p class="op-sec">二、编号规则</p>
         <p class="op-para">
           研究编号统一使用 F- 前缀，按入组顺序编号（F-01 起），注销或终止后编号不再复用。档案封皮编号与观察数据编号必须一致，不一致时按「档案异常」流程处理。
@@ -92,6 +111,8 @@
           <div class="rev"><span class="who">第 3 版 2025-09　批准人：顾明远</span><br>删除「合成样本来源」一节；明确合成样本保密要求。</div>
           <div class="rev"><span class="rev-ball">〔页边批注〕第 2 版那节内容，复印存档在别处，培训时不用提。 —— 陈</span></div>
           <div class="rev"><span class="rev-red">我不记得我们审批过这一版。谁加的"删除来源"？ —— 顾</span></div>
+          <div class="rev"><span class="rev-ball">来源一节，复印档被人取走了。取走的人没登记。更早的时候，我怕过另一件事：<span style="color:#3E5C76">写这本规范的人，会不会有一天也被写进这本规范里。</span></span></div>
+          <div class="rev"><span class="rev-red">……写着写着，观察员的名字从"借阅人"栏里一个接一个消失了。是从哪一天开始的？ —— 顾</span></div>
         </div>
       </div>
     </div>

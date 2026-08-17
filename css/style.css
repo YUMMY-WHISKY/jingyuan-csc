@@ -81,9 +81,9 @@ img { max-width: 100%; display: block; }
 .nav-links { display: flex; list-style: none; gap: 30px; }
 .nav-links a {
   color: var(--text); font-size: 15px; padding: 26px 0;
-  border-bottom: 2px solid transparent; display: block;
+  display: block;
 }
-.nav-links a:hover, .nav-links a.active { color: var(--accent); border-bottom-color: var(--accent); }
+.nav-links a:hover, .nav-links a.active { color: var(--accent); }
 
 /* ---------- 页头（内页） ---------- */
 .page-head { background: linear-gradient(135deg, var(--bg-soft), var(--card)); border-bottom: 1px solid var(--border); padding: 34px 0 30px; }
@@ -582,9 +582,9 @@ body.theme-g4.f07-page p[style*="color:#8B0000"] { color: #C0392B !important; }
 body.f07-page .post-main .sig-hidden { margin: 0; line-height: 2; }
 /* 短内容页：footer 贴视口底部（f07/unknown 档案页 + 帖子页 + 私信页） */
 body.f07-page, body.unknown-page,
-body:has(.post-main), body:has(.pm-box), body:has(.arc-lock) { min-height: 100vh; display: flex; flex-direction: column; }
+body:has(.post-main), body:has(.pm-box), body:has(.arc-lock), body:has(.id-wrap), body:has(.en-wrap) { min-height: 100vh; display: flex; flex-direction: column; }
 body.f07-page main, body.unknown-page main,
-body:has(.post-main) main, body:has(.pm-box) main, body:has(.arc-lock) main { flex: 1; }
+body:has(.post-main) main, body:has(.pm-box) main, body:has(.arc-lock) main, body:has(.id-wrap) main, body:has(.en-wrap) main { flex: 1; }
 
 /* 终局收尾（2026-08-16）：摄像头指示灯 + 最后一段隐藏文字 */
 #camFinal { position: fixed; top: 14px; right: 16px; z-index: 9999; cursor: pointer; padding: 8px; }
@@ -597,3 +597,152 @@ body:has(.post-main) main, body:has(.pm-box) main, body:has(.arc-lock) main { fl
 #camLayer { display: none; position: fixed; inset: 0; background: rgba(5,8,14,.92); z-index: 9998; align-items: center; justify-content: center; padding: 24px; flex-direction: column; color: #cfd6e0; font-family: Consolas, "Courier New", monospace; font-size: 15px; line-height: 2.2; letter-spacing: 1px; cursor: pointer; }
 #camLayer p { margin: 0; }
 #camLayer p:empty { height: 1em; }
+
+/* ============================================================
+   设计系统 v2 · 覆盖层（2026-08-17）
+   —— 统一升级字体与动效，不破坏下方各页面专属样式
+   视觉定位：科研机构之温 → 冷峻之蓝 → 黑红之渊（朝终局过渡）
+   ============================================================ */
+
+/* ---------- 设计令牌：字体 + 节奏 + 渐变 ---------- */
+:root {
+  --font-display: "Noto Serif SC", "Songti SC", "Source Han Serif SC", "STSong", "SimSun", serif;
+  --font-body: "PingFang SC", "Microsoft YaHei", "Source Han Sans SC", "思源黑体", sans-serif;
+  --ease: cubic-bezier(.22, .61, .36, 1);
+  --dur-s: .45s;
+  --dur-m: .8s;
+  --grad: linear-gradient(115deg, #5D99D6 0%, #9CC0EC 100%);
+  --accent-glow: rgba(74, 144, 217, .16);
+  --ring: 0 0 0 3px var(--accent-glow);
+}
+body.theme-g3 {
+  --grad: linear-gradient(115deg, #4786C9 0%, #83AEDF 100%);
+  --accent-glow: rgba(58, 110, 168, .16);
+}
+body.theme-g4 {
+  --grad: linear-gradient(115deg, #A31212 0%, #E04A4A 100%);
+  --accent-glow: rgba(163, 18, 18, .30);
+}
+
+/* 基础正文：更克制的行距与平滑渲染 */
+body {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  letter-spacing: .01em;
+}
+
+/* 系统级文本选择 / 焦点环 */
+::selection { background: var(--accent); color: #fff; }
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: none; box-shadow: var(--ring); border-radius: 4px;
+}
+
+/* ---------- 独特字体：衬线标题点亮编辑部式的克制 ---------- */
+.logo { font-family: var(--font-display); font-weight: 700; letter-spacing: .08em; }
+.logo span { font-weight: 700; }
+.hero h1 { font-family: var(--font-display); font-weight: 700; letter-spacing: .02em; }
+.page-head h1 { font-family: var(--font-display); letter-spacing: .03em; }
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 700; letter-spacing: .10em;
+  position: relative; padding-bottom: 18px; text-indent: .10em;
+}
+/* 标题下的小节线下划线：渐变动点，四季更替的坐标轴 */
+.section-title::after {
+  content: ""; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
+  width: 54px; height: 2px; border-radius: 2px;
+  background: var(--grad); box-shadow: 0 0 12px var(--accent-glow);
+}
+.section-sub { letter-spacing: .22em; text-indent: .22em; }
+.stats b {
+  font-family: var(--font-display);
+  background: var(--grad); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  font-variant-numeric: tabular-nums; letter-spacing: .02em;
+}
+.f-title { font-weight: 600; }
+
+/* ---------- 动效体系：Hero 载入 / 滚动显现 / 微交互 ---------- */
+
+/* ① Hero 载入：分层错落的进入（挡住下一张 slide 的绝对定位） */
+.hero .slide { isolation: isolate; }
+.hero .slide .hero-tag,
+.hero .slide h1,
+.hero .slide .hero-sub,
+.hero .slide .btn, .hero .slide .hero-img {
+  opacity: 0; transform: translateY(16px);
+  transition: opacity .7s var(--ease), transform .7s var(--ease);
+  animation: heroEnter .7s var(--ease) forwards;
+}
+.hero .slide.active .hero-tag { animation-delay: .10s; }
+.hero .slide.active h1 { animation-delay: .22s; }
+.hero .slide.active .hero-sub { animation-delay: .34s; }
+.hero .slide.active .btn, .hero .slide.active .hero-img { animation-delay: .46s; }
+@keyframes heroEnter {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ② 滚动显现：common.js 给 <main> 的结构块加 .reveal-up（初始隐藏），进入视口后加 .in 播放浮起动效。
+   类名用唯一 token，避免与 original_proposal 修订记录里原有的 .rev 冲突 */
+.reveal-up { opacity: 0; transform: translateY(22px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+.reveal-up.in { opacity: 1; transform: none; }
+/* 结构块内子项：随父级显现时依次浮起（1-9 排消除器，线性渐增延迟） */
+.reveal-up .grid > *, .reveal-up .partners > *, .reveal-up .news li, .reveal-up .stats .stat,
+.reveal-up .grid-3 > *, .reveal-up .grid-2 > *, .reveal-up .grid-4 > * { opacity: 0; transform: translateY(14px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+.reveal-up.in .grid > *, .reveal-up.in .partners > *, .reveal-up.in .news li, .reveal-up.in .stats .stat,
+.reveal-up.in .grid-3 > *, .reveal-up.in .grid-2 > *, .reveal-up.in .grid-4 > * { opacity: 1; transform: none; }
+/* 遮蔽滚动显现的初始态：在未观测到系统时放行展示（见 JS-fallback） */
+html.no-reveal .reveal-up, html.no-reveal .reveal-up .card *, html.no-reveal .reveal-up .grid > *, html.no-reveal .reveal-up .partners > * { opacity: 1 !important; transform: none !important; }
+
+/* ③ 导航：原版链接自带 border-bottom 下划线（激活/悬停变色），此处不再叠加，避免出现双线 */
+
+/* ④ 按钮：渐变色流动 + 掠过光芒 */
+.btn {
+  position: relative; overflow: hidden; isolation: isolate;
+  background-image: var(--grad); background-size: 180% 100%; background-position: 0% 0;
+  transition: background-position .4s var(--ease), transform .25s var(--ease), box-shadow .3s var(--ease);
+  box-shadow: 0 2px 12px var(--accent-glow);
+}
+.btn:hover { background-position: 100% 0; transform: translateY(-1px); box-shadow: 0 4px 20px var(--accent-glow); }
+.btn.ghost { background-image: none; box-shadow: none; }
+.btn::before {
+  content: ""; position: absolute; top: 0; left: -80%; width: 56%; height: 100%;
+  background: linear-gradient(105deg, transparent, rgba(255,255,255,.35), transparent);
+  transform: skewX(-20deg); transition: left .55s var(--ease); z-index: 1;
+}
+.btn:hover::before { left: 130%; }
+
+/* ⑤ 卡片：浮起 + 顶部高光收纳线 */
+.card { position: relative; }
+.card::before {
+  content: ""; position: absolute; top: 0; left: 18px; right: 18px; height: 1px;
+  background: var(--grad); opacity: 0; transition: opacity .3s var(--ease); border-radius: 2px;
+}
+.card:hover::before { opacity: 1; }
+.card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+@media (hover: hover) {
+  .card { transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s var(--ease); }
+}
+
+/* 应用场景：第 1/2 阶段背景的柔和氛围光 */
+.hero, .page-head { position: relative; overflow: hidden; }
+.hero::before, .page-head::before {
+  content: ""; position: absolute; width: 480px; height: 480px; border-radius: 50%;
+  background: radial-gradient(circle at center, var(--accent-glow), transparent 70%);
+  top: -160px; right: -120px; pointer-events: none; z-index: 0;
+}
+.hero .container, .page-head .container { position: relative; z-index: 1; }
+
+/* 减少动态偏好：关闭横向位移与显现动效 */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal-up, .reveal-up .grid > *, .reveal-up .partners > *, .reveal-up .news li, .reveal-up .stats .stat,
+  .reveal-up .grid-3 > *, .reveal-up .grid-2 > *, .reveal-up .grid-4 > *,
+  .hero .slide .hero-tag, .hero .slide h1, .hero .slide .hero-sub,
+  .hero .slide .btn, .hero .slide .hero-img { opacity: 1 !important; transform: none !important; transition: none !important; animation: none !important; }
+}
+
+/* ---------- 短内容页底栏对齐 ------------- */
+body:has(.reveal-up) { scroll-behavior: smooth; }

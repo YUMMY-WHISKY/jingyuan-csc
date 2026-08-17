@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>身份比对 - 治疗者论坛</title>
+<title>身份比对</title>
 <link rel="icon" href="../img/logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../css/style.css">
 <style>
@@ -17,6 +17,7 @@
   .id-card .mt { font-size: 12px; color: #9AA8B6; margin: 4px 0 8px; }
   .id-card .ag { font-size: 12px; color: #5B7FA6; margin-bottom: 8px; }
   .id-card .note { font-size: 12px; color: #4A5A6A; line-height: 1.8; }
+  .id-card.id-dragging { opacity: .4; }
   .id-drop { border: 2px dashed #C9D8E8; border-radius: 12px; padding: 22px; min-height: 96px; background: #F8FAFD; }
   .id-drop.hover { border-color: #5B7FA6; background: #F0F5FB; }
   .id-drop .ph { font-size: 13px; color: #9AA8B6; text-align: center; margin-top: 18px; }
@@ -121,10 +122,9 @@
       '<div class="box" style="background:#FDFCF7;border:1px solid #E7E2D2;border-radius:10px;padding:18px 22px;font-size:13px;color:#9AA8B6">' +
       '<p>如需使用身份比对工具，请先完成档案核对流程。</p>' +
       '<p style="font-size:12px;margin-top:6px">—— 档案室 · 系统提示</p></div>';
+    window.__idLocked = true;   /* 未解锁：拦截后续主逻辑 */
     return; /* 阻止后续逻辑 */
   }
-  /* 拦截后续初始化：用标记让主逻辑跳过 */
-  window.__idLocked = true;
 })();
 </script>
 <script>
@@ -173,7 +173,7 @@
       result.style.display = 'none';
       return;
     }
-    result.style.display = '';
+    result.style.display = 'block';   /* 用 block 显式覆盖 CSS 的 .id-result{display:none}，否则结果区永不显示 */
     if (added.length === 1) {
       box.innerHTML = '<p>已放入 1 份档案。请再放入一份，才能开始比对。</p>';
       return;
@@ -217,29 +217,73 @@
     box.innerHTML = html;
   }
 
-  /* 点击加入/移除（移动端兜底，无需拖拽） */
+  /* 交互（2026-08-17 重构）：「原生点击」+「Pointer 拖拽」双通道，互不冲突、任何环境都可用。
+     - 点击通道：始终可用，负责点击卡片加入/移除。
+     - 拖拽通道：Pointer 按下移动显示浮层，松手落在比对区即加入；拖拽后不派发出 toggle。
+     用 suppressClickAt 时间戳，避免"拖拽结束紧接的 click"被重复处理。 */
+  var suppressClickAt = 0;
+
   document.querySelectorAll('.id-card').forEach(function (card) {
     card.addEventListener('click', function () {
+      if (Date.now() < suppressClickAt) { render(); return; }   /* 忽略拖拽松手后误触的 click */
       var id = card.getAttribute('data-id');
       var i = added.indexOf(id);
       if (i === -1) { if (added.length < 4) added.push(id); }
       else added.splice(i, 1);
       render();
     });
-    card.addEventListener('dragstart', function (e) {
-      e.dataTransfer.setData('text/plain', card.getAttribute('data-id'));
+
+    /* Pointer 按下：开始拖拽追踪 */
+    card.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      window.__drag = {
+        id: card.getAttribute('data-id'),
+        x: e.clientX, y: e.clientY, moved: false
+      };
+      try { card.setAttribute('draggable', 'false'); } catch (err) {}
+      document.body.style.userSelect = 'none';
     });
   });
 
-  drop.addEventListener('dragover', function (e) { e.preventDefault(); drop.classList.add('hover'); });
-  drop.addEventListener('dragleave', function () { drop.classList.remove('hover'); });
-  drop.addEventListener('drop', function (e) {
-    e.preventDefault();
-    drop.classList.remove('hover');
-    var id = e.dataTransfer.getData('text/plain');
-    if (id && CARDS[id] && added.indexOf(id) === -1 && added.length < 4) added.push(id);
-    render();
+  document.addEventListener('pointermove', function (e) {
+    var d = window.__drag;
+    if (!d) return;
+    if (!d.moved && Math.max(Math.abs(e.clientX - d.x), Math.abs(e.clientY - d.y)) > 6) {
+      d.moved = true;
+      if (!d.ghost) {
+        d.ghost = document.createElement('div');
+        d.ghost.textContent = CARDS[d.id] ? CARDS[d.id].name : '';
+        d.ghost.style.cssText = 'position:fixed;z-index:9999;background:#fff;border:1px solid #5B7FA6;border-radius:8px;' +
+          'padding:8px 16px;font-size:13px;color:#2B3A4A;box-shadow:0 6px 18px rgba(0,0,0,.18);pointer-events:none;';
+        document.body.appendChild(d.ghost);
+      }
+      d.ghost.style.left = (e.clientX - 30) + 'px';
+      d.ghost.style.top = (e.clientY - 20) + 'px';
+    }
+    if (d.moved) {
+      var r = drop.getBoundingClientRect();
+      drop.classList.toggle('hover',
+        e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom);
+    }
   });
+
+  function endDrag(x, y) {
+    var d = window.__drag;
+    window.__drag = null;
+    if (!d) return;
+    if (d.ghost) { d.ghost.remove(); }
+    document.body.style.userSelect = '';
+    drop.classList.remove('hover');
+    if (d.moved) {
+      var r = drop.getBoundingClientRect();
+      var inside = x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+      if (inside && CARDS[d.id] && added.indexOf(d.id) === -1 && added.length < 4) added.push(d.id);
+      suppressClickAt = Date.now() + 400;   /* 拖拽后阻止紧随的 click 再次处理 */
+      render();
+    }
+  }
+  document.addEventListener('pointerup', function (e) { endDrag(e.clientX, e.clientY); });
+  document.addEventListener('pointercancel', function () { endDrag(-1, -1); });
 
   drop.addEventListener('click', function (e) {
     var rm = e.target.getAttribute && e.target.getAttribute('data-id');

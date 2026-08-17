@@ -72,6 +72,26 @@
     }
   } catch (e) {}
 
+  /* 设计系统 v2：滚动显现（2026-08-17）
+     给 <main> 的结构块加 .reveal-up（初始隐藏），进入视口后加 .in 播放浮起动效。
+     仅作用于官网结构块（.section/.hero/.stats），不影响论坛/日记/邮件等页面专属结构。
+     IO 不可用或页面短内容时放行展示，绝不隐藏内容。 */
+  try {
+    if ('IntersectionObserver' in window) {
+      var rev = document.querySelectorAll('main .section, main .hero, main .stats, main .page-head');
+      if (rev.length) {
+        var revIO = new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            if (en.isIntersecting) { en.target.classList.add('in'); revIO.unobserve(en.target); }
+          });
+        }, { rootMargin: '0px 0px -8% 0px', threshold: .10 });
+        rev.forEach(function (el) { el.classList.add('reveal-up'); revIO.observe(el); });
+      }
+    } else {
+      document.documentElement.classList.add('no-reveal');   // 兜底：无 IO 时直接展示
+    }
+  } catch (e) { document.documentElement.classList.add('no-reveal'); }
+
   /* 行为追踪（T2.4 模拟）：页面停留时长（2026-08-12：搜索词维度已整体移除） */
   try {
     var page = (location.pathname.split('/').pop() || 'index').replace('.html', '');
@@ -235,7 +255,8 @@
         var camLines = [
           '游戏已结束。',
           '',
-          '感谢你的游玩。'
+          '你的观察已确认完毕。',
+          '感谢你的配合。'
         ];
         camDot.addEventListener('mouseenter', function () {
           if (camLayer.dataset.done) return;
@@ -266,60 +287,92 @@
       function arrGet(k) { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch (e) { return []; } }
       function arrSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
-      /* 与 mail.html 一致的解锁映射 */
-      var map = {
-        diary_unlocked: ['m1', 'm2', 'm3'],
-        diary2_done: ['m4', 'm5', 'm6', 'm7', 'm15'],
-        diary3_done: ['m8', 'm9', 'm10', 'm13', 'm14'],
-        final_done: ['m11']
-      };
-      var unlocked = [];
-      Object.keys(map).forEach(function (k) {
-        if (lsGet(k) === '1') unlocked = unlocked.concat(map[k]);
-      });
-      if (window.hasStep && window.hasStep('r5')) unlocked.push('mr5');
+      /* 与 mail.html 一致的解锁映射
+         keys：任一标记为 1 即解锁该批邮件
+         allKeys：需全部为 1 才解锁（m15 = 口令A archive_id + 口令B archive_deep） */
+      var unlockRules = [
+        { keys: ['diary_unlocked'], ids: ['m1', 'm2', 'm3'] },
+        { keys: ['diary2_done'], ids: ['m4', 'm5', 'm6', 'm7'] },
+        { keys: ['diary3_done'], ids: ['m8', 'm9', 'm10', 'm13', 'm14'] },
+        { keys: ['final_done'], ids: ['m11'] },
+        { allKeys: ['archive_id', 'archive_deep'], ids: ['m15'] }
+      ];
 
-      var seen = arrGet('mail_seen');
-      var noted = arrGet('mail_global_notified');
-      var fresh = unlocked.filter(function (id) {
-        return seen.indexOf(id) === -1 && noted.indexOf(id) === -1;
-      });
-      if (fresh.length === 0) return;
-
-      /* 先标记已提示，避免重复弹 */
-      arrSet('mail_global_notified', noted.concat(fresh));
-
-      /* 动画关键帧（一次性注入） */
-      if (!document.getElementById('mtKeyframes')) {
-        var st = document.createElement('style');
-        st.id = 'mtKeyframes';
-        st.textContent = '@keyframes mtFade{from{opacity:0;transform:translate(-50%,-8px)}to{opacity:1;transform:translate(-50%,0)}}';
-        document.head.appendChild(st);
+      /* 计算「已解锁但玩家尚未看过且本页未提示过」的新邮件 id */
+      function computeFresh() {
+        var unlocked = [];
+        unlockRules.forEach(function (rule) {
+          if (rule.allKeys) {
+            var all = true;
+            for (var i = 0; i < rule.allKeys.length; i++) {
+              if (lsGet(rule.allKeys[i]) !== '1') { all = false; break; }
+            }
+            if (all) unlocked = unlocked.concat(rule.ids);
+          } else {
+            for (var j = 0; j < rule.keys.length; j++) {
+              if (lsGet(rule.keys[j]) === '1') { unlocked = unlocked.concat(rule.ids); break; }
+            }
+          }
+        });
+        if (window.hasStep && window.hasStep('r5')) unlocked.push('mr5');
+        var seen = arrGet('mail_seen');
+        var noted = arrGet('mail_global_notified');
+        return unlocked.filter(function (id) {
+          return seen.indexOf(id) === -1 && noted.indexOf(id) === -1;
+        });
       }
 
-      var toast = document.createElement('div');
-      toast.style.cssText = 'position:fixed;top:14px;left:50%;transform:translate(-50%,0);z-index:9999;' +
-        'background:rgba(16,20,26,.97);border:1px solid #3A78B8;border-left:3px solid #3A78B8;' +
-        'border-radius:6px;padding:12px 20px;font-size:13px;color:#fff;letter-spacing:1px;' +
-        'box-shadow:0 6px 24px rgba(0,0,0,.45);cursor:pointer;animation:mtFade .4s ease;' +
-        'display:flex;align-items:center;gap:14px;';
-      /* 邮箱页固定在根目录，不用 forum 相对路径：在 forum 子页面里会落去不存在的 forum/mail.html */
-      var mailHref = location.pathname.indexOf('forum') !== -1 ? '../mail.html' : 'mail.html';
-      var link = document.createElement('a');
-      link.href = mailHref;
-      link.textContent = '收到 ' + fresh.length + ' 封新邮件 · 查看 →';
-      link.style.cssText = 'color:#fff;text-decoration:none;white-space:nowrap;';
-      var close = document.createElement('span');
-      close.textContent = '×';
-      close.style.cssText = 'color:#6E7E90;cursor:pointer;font-size:15px;line-height:1;';
-      close.addEventListener('click', function (e) { e.stopPropagation(); toast.remove(); });
-      toast.appendChild(link);
-      toast.appendChild(close);
-      toast.addEventListener('click', function () { location.href = mailHref; });
-      document.body.appendChild(toast);
+      /* 单次尝试弹出：有可提示的新邮件才弹，并把本批写进 mail_global_notified 去重 */
+      function run() {
+        if (window.__suppressMailToast === true) return;
+        var fresh = computeFresh();
+        if (fresh.length === 0) return;
 
-      /* 自动消失（12s） */
-      setTimeout(function () { if (toast.parentNode) toast.remove(); }, 12000);
+        /* 先标记已提示，避免重复弹 */
+        arrSet('mail_global_notified', arrGet('mail_global_notified').concat(fresh));
+
+        /* 动画关键帧（一次性注入） */
+        if (!document.getElementById('mtKeyframes')) {
+          var st = document.createElement('style');
+          st.id = 'mtKeyframes';
+          st.textContent = '@keyframes mtFade{from{opacity:0;transform:translate(-50%,-8px)}to{opacity:1;transform:translate(-50%,0)}}';
+          document.head.appendChild(st);
+        }
+
+        var toast = document.createElement('div');
+        toast.style.cssText = 'position:fixed;top:14px;left:50%;transform:translate(-50%,0);z-index:9999;' +
+          'background:rgba(16,20,26,.97);border:1px solid #3A78B8;border-left:3px solid #3A78B8;' +
+          'border-radius:6px;padding:12px 20px;font-size:13px;color:#fff;letter-spacing:1px;' +
+          'box-shadow:0 6px 24px rgba(0,0,0,.45);cursor:pointer;animation:mtFade .4s ease;' +
+          'display:flex;align-items:center;gap:14px;';
+        /* 邮箱页固定在根目录，不用 forum 相对路径：在 forum 子页面里会落去不存在的 forum/mail.html */
+        var mailHref = location.pathname.indexOf('forum') !== -1 ? '../mail.html' : 'mail.html';
+        var link = document.createElement('a');
+        link.href = mailHref;
+        link.textContent = '收到 ' + fresh.length + ' 封新邮件 · 查看 →';
+        link.style.cssText = 'color:#fff;text-decoration:none;white-space:nowrap;';
+        var close = document.createElement('span');
+        close.textContent = '×';
+        close.style.cssText = 'color:#6E7E90;cursor:pointer;font-size:15px;line-height:1;';
+        close.addEventListener('click', function (e) { e.stopPropagation(); toast.remove(); });
+        toast.appendChild(link);
+        toast.appendChild(close);
+        toast.addEventListener('click', function () { location.href = mailHref; });
+        document.body.appendChild(toast);
+
+        /* 自动消失（12s） */
+        setTimeout(function () { if (toast.parentNode) toast.remove(); }, 12000);
+      }
+
+      run();
+      /* 暴露给全站：在任意「解锁动作」完成后可手动调用，立即检测新解锁邮件并弹出 */
+      window.__checkMailToast = run;
+      /* 2026-08-17：浮窗必须"及时弹出"而不是等刷新。
+         玩家常在当前页完成解锁（读日志/输口令/下载），此时 JS 不会自动重跑。
+         这里用 pageshow / visibilitychange / 轮询 反复检查，一旦有新解锁邮件立即弹出。 */
+      window.addEventListener('pageshow', run);
+      document.addEventListener('visibilitychange', function () { if (!document.hidden) run(); });
+      setInterval(run, 800);
     })();
   } catch (e) {}
 })();

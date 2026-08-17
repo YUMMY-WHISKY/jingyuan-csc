@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>病友档案 - 治疗者论坛</title>
+<title>病友档案</title>
 <link rel="icon" href="../img/logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../css/style.css">
 </head>
@@ -212,7 +212,7 @@
           <p>F-06 ｜ 吴女士 ｜ 出院原因：<span class="res-fail">终止 · 原因未注明</span></p>
           <p>F-07 ｜ （档案封存）｜ 出院原因：<span class="res-gone">人格消散</span> <span class="arc-hand-red">（手写笔迹，与其余不同）</span></p>
           <p>F-08 ｜ 罗女士 ｜ 出院原因：<span class="res-fail">终止 · 原因未注明</span></p>
-          <p>F-09 ｜ 小F（档案见上 · 多版本）｜ 融合进度：87% —— <span class="arc-hand-brown">记录中断（最后记录：6月29日，手写批注）</span></p>
+          <p>F-09 ｜ 小F（档案见上）｜ 融合进度：87% —— <span class="arc-hand-brown">记录中断（最后记录：6月29日，手写批注）</span></p>
           <p>── 另有未编号归档 ×4，档案未开放 ──</p>
           <p>（无名氏档案：3月3日入院 · 失联 —— 编号未公开）</p>
           <p class="arc-hint">※ 此归档与公开档案存在差异，请勿外传。如有疑问请联系管理员。</p>
@@ -233,7 +233,7 @@
         <div class="f-card" id="diary2Card" style="display:none">
           <h4>观察日志</h4>
           <p style="font-size:13px;line-height:2.0">
-            <a href="diary-2.html" style="color:var(--accent)">F-11 · 观察员日志 →</a>
+            <a href="diary-2.html" style="color:var(--accent)">观察员日志 →</a>
           </p>
         </div>
       </aside>
@@ -340,11 +340,13 @@ function arcKeyUnlock() {
   var msg = document.getElementById('arcKeyMsg');
   if (v === PWD_ID) {
     try { localStorage.setItem('archive_id', '1'); } catch (e) {}
+    if (window.__checkMailToast) window.__checkMailToast();   /* 立即检测是否有新解锁邮件 */
     location.href = 'identity.html';
     return;
   }
   if (v === PWD_DEEP) {
     try { localStorage.setItem('archive_deep', '1'); } catch (e) {}
+    if (window.__checkMailToast) window.__checkMailToast();   /* 立即检测是否有新解锁邮件 */
     location.href = 'deep-links.html';
     return;
   }

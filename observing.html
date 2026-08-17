@@ -199,7 +199,7 @@
 <!-- 5：周晏（进入后先提取「融合过程记录.pdf」，之后周晏的声音才出现） -->
 <div class="stage black" id="s5">
   <div class="glass">
-    <div id="s5dl">
+    <div id="s5dl" style="text-align:center">
       <p class="dim" style="margin-bottom:14px">—— 归档文件：<a href="javascript:void(0)" id="g10Link" style="color:#8BC1F0;text-decoration:underline">融合过程记录.pdf</a> ——</p>
       <p class="dim" style="font-size:12px;color:#5a626c">（镜说过的"最后那份记录"。提取它，然后继续。）</p>
     </div>
@@ -331,6 +331,8 @@
   $('s1next').onclick = function () { show('s4'); runS4(); };
   var s4TimerId = null;
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
+  /* 2026-08-17：人格确认进度改为"每解开一个谜 +1"——用固定脚本逐个 +1%（87→99），
+     对齐 design 5-4，不动态统计、也不一次性 +12 */
   function runS4() {
     setObs(2);
     var num = $('s4num'), fill = $('s4fill'), recall = $('s4recall');
@@ -345,15 +347,32 @@
       '',
       '<span class="dim">—— 正在确认外部观察者：</span>'
     ], 230, function () {
-      setTimeout(function () {
-        num.textContent = '99%';
-        fill.style.width = '99%';
-        var p = document.createElement('p');
-        p.className = 'type-line show';
-        p.innerHTML = '外部观察者已确认<span class="pct">+12</span>';
-        recall.appendChild(p);
-        finishS4();
-      }, 420);
+      /* 人格确认进度逐个 +1%（对应 design 5-4） */
+      var steps = [
+        '你填完问卷，拿下了进入论坛的资格。',
+        '你拆开那张GIF，顺着二维码，找到了周晏。',
+        '你搜索那四段摘抄，第一次听见了她的求救。',
+        '你解开网盘密码，看穿了录音声音的另一面。',
+        '你读完日记，读懂了被改写的那层冷批注。',
+        '你比对身份、破译口令，翻出了被抹掉的立项记录。',
+        '你走到"倒影"的最后一页，却分不清那句话究竟写给谁。',
+        '', '', '', '', ''
+      ];
+      var cur = 87, k = 0;
+      (function tick() {
+        if (k >= steps.length) { finishS4(); return; }
+        cur += 1;
+        num.textContent = cur + '%';
+        fill.style.width = cur + '%';
+        if (steps[k]) {
+          var p = document.createElement('p');
+          p.className = 'type-line show';
+          p.innerHTML = steps[k] + '<span class="pct">+1%</span>';
+          recall.appendChild(p);
+        }
+        k++;
+        setTimeout(tick, 420);
+      })();
     });
   }
   function finishS4() {
@@ -416,6 +435,8 @@
   /* ---------- 5 周晏（见证者：她引玩家来，是为了让玩家知道镜怎么出生，也照见自己） ---------- */
   function runS5() {
     setObs(3);
+    /* 2026-08-17：周晏独白全程不弹新邮件浮窗（隐私感 / 氛围），独白结束再恢复 */
+    window.__suppressMailToast = true;
     typeLines($('s5text'), [
       '<span class="me">周晏……？</span>',
       { t: '…… 是我。', d: 2200 },
@@ -442,7 +463,7 @@
       '',
       '属于我的时间已经耗尽。',
       '现在，我该走了。'
-    ], 430, function () { $('s5next').style.display = ''; });
+    ], 430, function () { window.__suppressMailToast = false; $('s5next').style.display = ''; });
   }
   $('s5next').onclick = function () { show('s6'); runS6(); };
 
