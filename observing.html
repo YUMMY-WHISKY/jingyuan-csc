@@ -458,7 +458,17 @@
       '',
       '属于我的时间已经耗尽。',
       '现在，我该走了。'
-    ], 430, function () { window.__suppressMailToast = false; $('s5next').style.display = ''; });
+    ], 430, function () {
+      /* 周晏结束：预先将所有非 m11 的邮件标记为已通知，防止弹窗打扰此刻的情绪 */
+      try {
+        var allMailIds = ['m1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8', 'm9', 'm10', 'm12', 'm13', 'm14', 'm15'];
+        var noted = JSON.parse(localStorage.getItem('mail_global_notified') || '[]');
+        var merged = noted.concat(allMailIds.filter(function(id) { return noted.indexOf(id) === -1; }));
+        localStorage.setItem('mail_global_notified', JSON.stringify(merged));
+      } catch (e) {}
+      window.__suppressMailToast = false; 
+      $('s5next').style.display = ''; 
+    });
   }
   $('s5next').onclick = function () { show('s6'); runS6(); };
 
@@ -554,15 +564,7 @@
             $('s8hint').style.display = 'none';
             $('s8stable').style.display = 'none';
             $('s8text').innerHTML = '';
-            try { 
-              localStorage.setItem('final_done', '1'); 
-              /* 提前将 m11 标记为已通知，防止在本页弹出打扰玩家 */
-              var noted = JSON.parse(localStorage.getItem('mail_global_notified') || '[]');
-              if (noted.indexOf('m11') === -1) {
-                noted.push('m11');
-                localStorage.setItem('mail_global_notified', JSON.stringify(noted));
-              }
-            } catch (e) {}
+            try { localStorage.setItem('final_done', '1'); } catch (e) {}
             $('doneExit').style.display = '';
           }, 600);
         }
