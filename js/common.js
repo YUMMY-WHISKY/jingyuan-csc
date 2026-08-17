@@ -351,6 +351,8 @@
         var mailHref = location.pathname.indexOf('forum') !== -1 ? '../mail.html' : 'mail.html';
         var link = document.createElement('a');
         link.href = mailHref;
+        link.target = '_blank';
+        link.rel = 'noopener';
         link.textContent = '收到 ' + fresh.length + ' 封新邮件 · 查看 →';
         link.style.cssText = 'color:#fff;text-decoration:none;white-space:nowrap;';
         var close = document.createElement('span');
@@ -359,7 +361,6 @@
         close.addEventListener('click', function (e) { e.stopPropagation(); toast.remove(); });
         toast.appendChild(link);
         toast.appendChild(close);
-        toast.addEventListener('click', function () { location.href = mailHref; });
         document.body.appendChild(toast);
 
         /* 自动消失（12s） */

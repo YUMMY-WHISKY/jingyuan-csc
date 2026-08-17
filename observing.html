@@ -566,6 +566,8 @@
             $('s8text').innerHTML = '';
             try { localStorage.setItem('final_done', '1'); } catch (e) {}
             $('doneExit').style.display = '';
+            /* 立即触发一次邮件检查，消除 800ms 轮询延迟 */
+            try { if (window.__checkMailToast) window.__checkMailToast(); } catch (e) {}
           }, 600);
         }
       }, 1000);
