@@ -198,12 +198,12 @@
 
 <!-- 5：周晏（进入后先提取「融合过程记录.pdf」，之后周晏的声音才出现） -->
 <div class="stage black" id="s5">
-  <div class="glass">
-    <div id="s5dl" style="text-align:center">
-      <p class="dim" style="margin-bottom:14px">—— 归档文件：<a href="javascript:void(0)" id="g10Link" style="color:#8BC1F0;text-decoration:underline">融合过程记录.pdf</a> ——</p>
-      <p class="dim" style="font-size:12px;color:#5a626c">（镜说过的"最后那份记录"。提取它，然后继续。）</p>
+  <div class="glass" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px">
+    <div id="s5dl">
+      <p class="dim" style="margin-bottom:14px;text-align:center">—— 归档文件：<a href="javascript:void(0)" id="g10Link" style="color:#8BC1F0;text-decoration:underline">融合过程记录.pdf</a> ——</p>
+      <p class="dim" style="font-size:12px;color:#5a626c;text-align:center">（镜说过的"最后那份记录"。提取它，然后继续。）</p>
     </div>
-    <div id="s5text"></div>
+    <div id="s5text" style="text-align:center"></div>
     <button class="btn btn-dark" id="s5next" style="display:none">继 续 →</button>
     <i class="sheen"></i>
   </div>
@@ -295,10 +295,6 @@
 
   /* ---------- 1 ---------- */
   typeLines($('s1text'), [
-    '你推开了那扇门。',
-    '门在你身后，轻轻合上。',
-    '这里，就是镜说好等你的地方。',
-    '',
     '研究中心笃信一条结论：',
     '得到持续观察的人格，才能够稳固存续。',
     '',
