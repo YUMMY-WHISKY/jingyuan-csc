@@ -27,7 +27,7 @@
   setInterval(refreshCount, 10000);
 
   /* ---------- 登录口 ---------- */
-  var INVITE_CODE = 'COG2024X';
+  var INVITE_CODE = 'HIYOONING';
 
   window.loginTry = function () {
     var input = document.getElementById('inviteCode');
